@@ -807,6 +807,26 @@
                 gap: 1.5rem;
             }
         }
+
+        /* 占位图样式 */
+        .placeholder-img {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--card-bg) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .placeholder-img i {
+            margin-right: 0.5rem;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -1374,7 +1394,33 @@
             });
         }
 
-        // 渲染网站卡片
+        // 添加占位图片生成函数
+        function generatePlaceholder(siteName) {
+            // 从网站名称生成颜色（简单哈希）
+            const hash = siteName.split('').reduce((acc, char) => {
+                return char.charCodeAt(0) + ((acc << 5) - acc);
+            }, 0);
+            const hue = Math.abs(hash) % 360;
+            const bgColor = `hsl(${hue}, 70%, 95%)`;
+            const textColor = `hsl(${hue}, 70%, 30%)`;
+            
+            // 获取网站首字母或前两个字符作为显示内容
+            const initial = siteName.length > 0 ? siteName.charAt(0).toUpperCase() : '?';
+            const secondChar = siteName.length > 1 ? siteName.charAt(1) : '';
+            const displayText = initial + secondChar;
+            
+            return `data:image/svg+xml,${encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" viewBox="0 0 400 225">
+                    <rect width="400" height="225" fill="${bgColor}" />
+                    <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="60" font-weight="bold" 
+                          fill="${textColor}" text-anchor="middle" dominant-baseline="middle">
+                        ${displayText}
+                    </text>
+                </svg>
+            `)}`;
+        }
+
+        // 渲染网站卡片（修改）
         function renderSiteCards(sites, container) {
             // 按显示顺序排序网站
             const sortedSites = [...sites].sort((a, b) => a.displayOrder - b.displayOrder);
@@ -1402,11 +1448,15 @@
                     `<div class="hot-label" style="left: 12px; right: auto;">热门</div>` : 
                     (isNew ? `<div class="hot-label" style="left: 12px; right: auto;">新品</div>` : '');
                 
+                // 生成占位图片URL
+                const placeholderUrl = generatePlaceholder(site.name);
+                
                 // 生成卡片HTML
                 const cardHtml = `
                     <a href="${site.url}" target="_blank" class="site-card" data-site-id="${site.id}" data-tags="${site.tags.map(t => t.name).join(' ')}">
                         <div class="card-img-container">
-                            <img src="${site.screenshot}" alt="${site.name}" class="card-img" onerror="this.src='https://via.placeholder.com/400x225?text=无图片'">
+                            <img src="${site.screenshot || placeholderUrl}" alt="${site.name}" class="card-img" 
+                                 onerror="this.onerror=null; this.src='${placeholderUrl}';">
                             ${hotLabelHtml}
                         </div>
                         <div class="card-content">
