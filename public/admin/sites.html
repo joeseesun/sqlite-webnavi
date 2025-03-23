@@ -949,12 +949,10 @@
             padding: 0.2em 0.5em 0.2em 0.5em !important;
         }
         
+        /* 移除可能导致冲突的样式 */
         .tagify__tag__removeBtn {
             margin-left: 5px !important;
             margin-right: 0 !important;
-            position: static !important;
-            order: 2 !important;
-            cursor: pointer !important;
         }
         
         .tagify__tag__removeBtn::after {
@@ -2768,14 +2766,20 @@
                 console.log('创建新的Tagify实例');
                 tagifyInstance = new Tagify(input, {
                     enforceWhitelist: false,    // 允许用户创建新标签
-                    editTags: 1,                // 单击标签可以编辑
+                    editTags: false,            // 禁用标签编辑
                     maxTags: 20,                // 最多20个标签
-                    backspace: "edit",          // 按退格键时编辑前一个标签
+                    backspace: true,            // 按退格键删除最后一个标签
                     placeholder: "添加或选择标签",
                     delimiters: ", ",           // 用逗号或空格添加标签
                     trim: true,                 // 去除前后空格
                     keepInvalidTags: false,     // 移除无效标签
-                    addTagOnBlur: true,         // 失去焦点时添加标签
+                    duplicates: false,          // 不允许重复标签
+                    callbacks: {
+                        beforeRemoveTag: (tagElms) => { 
+                            console.log("即将删除标签", tagElms); 
+                            return true; // 返回true允许删除
+                        }
+                    },
                     transformTag: function(tagData) {
                         // 确保标签数据包含所有必要属性
                         if (tagData.id) {
@@ -2804,9 +2808,9 @@
                                     tabIndex="-1"
                                     class="${isNew}"
                                     ${this.getAttributes(tagData)}>
+                                    <x title='删除' class='tagify__tag__removeBtn' role='button' aria-label='删除标签'></x>
                                     <div>
                                         <span class='tagify__tag__text'>${tagData.value}</span>
-                                        <span title='删除' class='tagify__tag__removeBtn' role='button' aria-label='删除标签'></span>
                                     </div>
                                 </tag>
                             `;
