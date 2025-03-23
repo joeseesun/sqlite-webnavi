@@ -438,6 +438,212 @@
             max-height: 100%;
             object-fit: contain;
         }
+        /* 标签样式定制 */
+        .tagify {
+            --tags-focus-border-color: #d1d5db;
+            --tag-bg: #f3f4f6;
+            --tag-hover: #e5e7eb;
+            --tag-text-color: #374151;
+            --tag-border-radius: 2px;
+            --tag-pad: 0.25rem 0.5rem;
+            --tag-min-width: 30px;
+            --tag-inset-shadow: none;
+            background-color: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 0.35rem;
+            min-height: 38px;
+            transition: all 0.2s ease;
+        }
+
+        .tagify:hover {
+            border-color: #9ca3af;
+        }
+
+        .tagify--focus {
+            border-color: #6b7280;
+            box-shadow: 0 0 0 1px rgba(107, 114, 128, 0.1);
+        }
+
+        .tagify__tag {
+            margin: 2px;
+            border-radius: 2px;
+            transition: all 0.15s ease;
+            box-shadow: none;
+            background-color: #f3f4f6;
+        }
+
+        .tagify__tag__removeBtn {
+            color: #6b7280;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+            border-radius: 0;
+            background: transparent;
+            margin-right: 0;
+            margin-left: 4px;
+            font-size: 1rem;
+        }
+
+        /* 处理中的标签样式 */
+        .processing-tag {
+            animation: pulse 1.5s infinite;
+            background-color: #f3f4f6 !important;
+            color: #6b7280 !important;
+            border: 1px dashed #9ca3af !important;
+        }
+        
+        /* 成功状态的标签样式 */
+        .success-tag {
+            background-color: #ecfdf5 !important;
+            color: #047857 !important;
+            border: 1px solid #10b981 !important;
+            transition: background-color 0.3s ease;
+        }
+        
+        /* 错误状态的标签样式 */
+        .error-tag {
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+            border: 1px solid #ef4444 !important;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        /* 标签加载脉动动画 */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        /* 标签错误动画 */
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            20%, 60% {
+                transform: translateX(-5px);
+            }
+            40%, 80% {
+                transform: translateX(5px);
+            }
+        }
+        
+        /* 优化标签删除按钮 */
+        .tagify__tag__removeBtn {
+            color: #6b7280;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+            border-radius: 0;
+            background: transparent;
+            margin-right: 0;
+            margin-left: 4px;
+            font-size: 1rem;
+        }
+        
+        .tagify__tag__removeBtn:hover {
+            color: #ef4444;
+            opacity: 1;
+            background: rgba(239,68,68,0.1);
+            transform: scale(1.1);
+        }
+        
+        /* 优化下拉菜单样式 */
+        .tagify__dropdown {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 999;
+        }
+        
+        .tagify__dropdown__wrapper {
+            max-height: 280px;
+            overflow: hidden;
+        }
+        
+        .tagify__dropdown__item {
+            padding: 8px 14px;
+            border-radius: 6px;
+            margin: 2px 4px;
+            color: #374151;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tagify__dropdown__item--active {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+        
+        .tagify__dropdown__item:hover {
+            background: #dbeafe;
+        }
+        
+        .tagify__dropdown__item--create {
+            color: #059669;
+        }
+        
+        .tagify__dropdown__item--exists {
+            color: #4f46e5;
+        }
+        
+        /* 设置标签输入区域的加载状态 */
+        .tagify--loading {
+            position: relative;
+        }
+        
+        .tagify--loading::after {
+            content: "";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: rotate 1s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 标签样式定制 - 更符合截图中的简洁风格 */
+        .tagify {
+            --tags-focus-border-color: #d1d5db;
+            --tag-bg: #f3f4f6;
+            --tag-hover: #e5e7eb;
+            --tag-text-color: #4b5563;
+            --tag-border-radius: 0px;
+            --tag-pad: 0.2rem 0.4rem;
+            --tag-min-width: 30px;
+            --tag-inset-shadow: none;
+            --tag-border: none;
+            --tag-remove-btn-color: #9ca3af;
+            background-color: #fff;
+            border: 1px solid #d1d5db;
+            border-radius: 2px;
+            padding: 0.35rem;
+            min-height: 36px;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -550,23 +756,13 @@
                     <select id="site-categories" class="form-input" multiple>
                         <option value="">加载中...</option>
                     </select>
-                    <div class="text-sm text-gray-500 mt-1">可以选择多个分类，如果没有合适的分类，可以点击"新建分类"</div>
-                    <div class="flex justify-between mt-2">
-                        <button type="button" id="add-category-btn" class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-plus-circle"></i> 新建分类
-                        </button>
-                        <button type="button" id="clear-categories-btn" class="text-red-600 hover:text-red-800">
-                            去掉
-                        </button>
-                    </div>
+                    
+                    
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label" for="site-tags">标签</label>
                     <input id="site-tags" class="form-input tagify-input" placeholder="输入标签名称，按回车或逗号添加">
-                    <div class="text-sm text-gray-500 mt-1">
-                        输入标签名称后按回车或逗号添加标签
-                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -2217,8 +2413,9 @@
             tagifyInstance = new Tagify(input, {
                 enforceWhitelist: false,
                 editTags: false,
-                maxTags: 10,
-                delimiters: ",|\n", // 用逗号或回车添加标签
+                maxTags: 20,
+                delimiters: ",| ", // 用逗号、空格或回车添加标签
+                trim: true,
                 dropdown: {
                     enabled: 1,
                     maxItems: 10,
@@ -2236,10 +2433,10 @@
                                 tabIndex="-1"
                                 class="${tagData.isNew ? 'tagify__tag--new' : ''}"
                                 ${this.getAttributes(tagData)}>
-                                <x title='' class='tagify__tag__removeBtn' role='button' aria-label='remove tag'></x>
                                 <div>
                                     <span class='tagify__tag__text'>${tagData.value}</span>
                                 </div>
+                                <x title='删除' class='tagify__tag__removeBtn' role='button' aria-label='删除标签'>×</x>
                             </tag>
                         `;
                     },
