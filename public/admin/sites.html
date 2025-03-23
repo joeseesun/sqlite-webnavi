@@ -575,7 +575,7 @@
                     <div class="preview-container" id="screenshot-preview-container">
                         <i class="fas fa-image"></i>
                         <img id="current-screenshot" class="hidden screenshot-preview">
-                        <div class="paste-tip">支持 Ctrl + V 粘贴截图</div>
+                        <div class="paste-tip" id="paste-tip">支持 Ctrl + V 粘贴截图</div>
                 </div>
                     <div class="file-input-container">
                         <button type="button" class="custom-file-button">
@@ -750,7 +750,16 @@
                 openModal(false);
             });
             
-            // 提交表单事件
+            // 添加以下代码：检测操作系统和设置粘贴提示
+            detectOS();
+            
+            // 添加以下代码：添加动画样式
+            addAnimationStyles();
+            
+            // 文件上传和粘贴事件处理
+            setupPasteListeners();
+            
+            // 表单提交事件
             document.getElementById('site-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 try {
@@ -770,9 +779,9 @@
                 button.addEventListener('click', closeModal);
             });
             
-            // 文件上传处理
-            document.getElementById('site-screenshot').addEventListener('change', handleFileSelect);
-            document.getElementById('site-screenshot-container').addEventListener('paste', handlePaste);
+            // 移除冗余的事件监听器设置，由setupPasteListeners统一处理
+            // document.getElementById('site-screenshot').addEventListener('change', handleFileSelect);
+            // document.getElementById('site-screenshot-container').addEventListener('paste', handlePaste);
             
             // 初始化拖放排序
             initializeSortable();
@@ -1066,6 +1075,7 @@
                 const file = imageItem.getAsFile();
                 if (!file) {
                     console.error('无法获取粘贴的图片文件');
+                    showToast('error', '无法获取粘贴的图片数据');
                     return;
                 }
                 
@@ -1075,6 +1085,12 @@
                     size: file.size,
                     lastModified: new Date(file.lastModified).toLocaleString()
                 });
+                
+                // 文件大小检查
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('screenshot', '图片文件过大，请选择小于5MB的图片');
+                    return;
+                }
                 
                 // 创建带扩展名的File对象
                 let fileExt = 'png'; // 默认扩展名
@@ -1097,10 +1113,18 @@
                 });
                 
                 // 更新文件输入
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(renamedFile);
-                document.getElementById('site-screenshot').files = dataTransfer.files;
-                console.log('更新文件输入成功，包含', document.getElementById('site-screenshot').files.length, '个文件');
+                try {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(renamedFile);
+                    document.getElementById('site-screenshot').files = dataTransfer.files;
+                    console.log('更新文件输入成功，包含', document.getElementById('site-screenshot').files.length, '个文件');
+                } catch (error) {
+                    console.error('更新文件输入失败:', error);
+                    // 兼容性处理，某些浏览器可能不支持DataTransfer
+                    // 提示用户可以尝试手动选择文件
+                    showToast('error', '粘贴图片失败，请尝试使用选择图片按钮');
+                    return;
+                }
                 
                 // 显示预览
                 const reader = new FileReader();
@@ -1115,16 +1139,29 @@
                     previewContainer.appendChild(previewImage);
                     previewContainer.classList.add('has-image');
                     
+                    // 添加点击图片可放大预览的功能
+                    previewImage.onclick = function() {
+                        previewScreenshot(e.target.result);
+                    };
+                    
                     console.log('粘贴图片预览已加载');
                 };
                 reader.readAsDataURL(renamedFile);
                 
                 // 显示成功消息
-                showToast('success', '图片已粘贴到截图区域');
+                showToast('success', '截图已成功粘贴');
                 // 清除错误
                 clearError('screenshot');
+                
+                // 添加动画效果，提升用户体验
+                const container = document.getElementById('screenshot-preview-container');
+                container.classList.add('upload-success');
+                setTimeout(() => {
+                    container.classList.remove('upload-success');
+                }, 1000);
+                
             } catch (error) {
-                console.error('图片粘贴处理错误:', error);
+                console.error('处理粘贴事件时出错:', error);
                 showError('screenshot', '处理粘贴的图片时出错: ' + error.message);
             }
         }
@@ -2295,6 +2332,83 @@
             
             console.log('Tagify事件处理程序已设置');
         }
+
+        // 检测操作系统，为Mac用户显示Command+V提示
+        function detectOS() {
+            const userAgent = window.navigator.userAgent;
+            const isMac = userAgent.indexOf("Mac") !== -1;
+            const pasteTip = document.getElementById('paste-tip');
+            
+            if (pasteTip) {
+                if (isMac) {
+                    pasteTip.textContent = '支持 Command + V 粘贴截图';
+                } else {
+                    pasteTip.textContent = '支持 Ctrl + V 粘贴截图';
+                }
+            }
+        }
+        
+        // 增强粘贴事件监听
+        function setupPasteListeners() {
+            // 为整个表单区域添加粘贴事件监听
+            const siteForm = document.getElementById('site-form');
+            const previewContainer = document.getElementById('screenshot-preview-container');
+            
+            // 为预览容器添加粘贴提示和点击事件
+            if (previewContainer) {
+                // 添加点击事件提示用户可以粘贴
+                previewContainer.addEventListener('click', function() {
+                    const isMac = navigator.userAgent.indexOf("Mac") !== -1;
+                    showToast('info', `请使用 ${isMac ? 'Command + V' : 'Ctrl + V'} 粘贴截图`);
+                });
+                
+                // 添加粘贴事件监听
+                previewContainer.addEventListener('paste', handlePaste);
+            }
+            
+            // 为整个表单添加粘贴事件，使用户无论聚焦在哪个区域都能粘贴
+            if (siteForm) {
+                siteForm.addEventListener('paste', handlePaste);
+            }
+            
+            // 为document添加粘贴事件，确保全局都能粘贴
+            document.addEventListener('paste', function(e) {
+                // 只有当模态框显示时才处理全局粘贴事件
+                const modal = document.getElementById('site-modal');
+                if (modal && modal.classList.contains('active')) {
+                    handlePaste(e);
+                }
+            });
+        }
+        
+        // 添加CSS动画样式
+        function addAnimationStyles() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .paste-tip {
+                    color: #6B7280;
+                    font-size: 0.9rem;
+                    margin-top: 8px;
+                    text-align: center;
+                }
+                
+                .upload-success {
+                    animation: pulse 1s;
+                }
+                
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+                    70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // 初始化
+        detectOS();
+        setupPasteListeners();
+        addAnimationStyles();
     </script>
 </body>
 </html> 
