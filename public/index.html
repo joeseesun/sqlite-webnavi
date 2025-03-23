@@ -1,185 +1,1614 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>网址导航 - 发现优质网站</title>
-    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>乔木精选推荐 | 精选AI与知识工具集</title>
+    <meta name="description" content="发现最佳AI、阅读与知识管理工具，提升工作效率">
+    <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            --secondary: #14b8a6;
+            --secondary-light: #2dd4bf;
+            --secondary-dark: #0d9488;
+            --secondary-gradient: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --accent-dark: #d97706;
+            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --card-shadow: rgba(51, 65, 85, 0.1);
+            --nav-blur: rgba(255, 255, 255, 0.9);
+        }
+
+        .dark {
+            --primary: #818cf8;
+            --primary-light: #a5b4fc;
+            --primary-dark: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #818cf8 0%, #a5b4fc 100%);
+            --secondary: #2dd4bf;
+            --secondary-light: #5eead4;
+            --secondary-dark: #14b8a6;
+            --secondary-gradient: linear-gradient(135deg, #2dd4bf 0%, #5eead4 100%);
+            --accent: #fbbf24;
+            --accent-light: #fcd34d;
+            --accent-dark: #f59e0b;
+            --accent-gradient: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --card-shadow: rgba(0, 0, 0, 0.3);
+            --nav-blur: rgba(15, 23, 42, 0.9);
+        }
+
         body {
             font-family: 'Noto Sans SC', sans-serif;
-            background-color: #f3f4f6;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
         }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .category-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            height: 4px;
+            width: 60px;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        /* 美化的卡片样式 */
         .site-card {
-            transition: all 0.3s ease;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
+            display: block;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--card-border);
+            text-decoration: none;
+            color: inherit;
         }
+
         .site-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px var(--card-shadow);
+            border-color: var(--primary-light);
         }
-        .category-badge {
-            transition: all 0.2s ease;
+
+        .card-img-container {
+            position: relative;
+            overflow: hidden;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background-color: #f9fafb;
         }
-        .category-badge:hover {
-            background-color: #4f46e5;
+
+        .dark .card-img-container {
+            background-color: #374151;
+        }
+
+        .card-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .site-card:hover .card-img {
+            transform: scale(1.08);
+        }
+
+        /* 美化的标签 */
+        .tag {
+            padding: 0.3rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tag-ai {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .dark .tag-ai {
+            background-color: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .tag-productivity {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .dark .tag-productivity {
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .tag-reading {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .dark .tag-reading {
+            background-color: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* 美化的搜索框 */
+        .search-container {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            background-color: var(--card-bg);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 1rem 1.5rem 1rem 3.5rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* 美化的分类标签 */
+        .category-tabs {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            gap: 1rem;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            white-space: nowrap;
+            padding: 0.6rem 1.2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border: 1px solid transparent;
+        }
+
+        .category-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            color: var(--primary);
+        }
+
+        .category-tab.active {
+            background: var(--primary-gradient);
             color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
-        .tag-badge {
-            transition: all 0.2s ease;
-        }
-        .tag-badge:hover {
-            background-color: #3b82f6;
-            color: white;
-        }
-        .search-input {
+
+        /* 美化的导航栏 */
+        .navbar {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: var(--nav-blur);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.2);
             transition: all 0.3s ease;
         }
-        .search-input:focus {
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+
+        .dark .navbar {
+            border-bottom: 1px solid rgba(55, 65, 81, 0.6);
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 0;
+            margin: 0 1rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: var(--primary-gradient);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* 汉堡菜单 */
+        .hamburger {
+            width: 28px;
+            height: 20px;
+            position: relative;
+            cursor: pointer;
+            z-index: 60;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: var(--text-primary);
+            border-radius: 3px;
+            transition: .25s ease-in-out;
+        }
+
+        .hamburger span:nth-child(1) {
+            top: 0;
+        }
+
+        .hamburger span:nth-child(2), .hamburger span:nth-child(3) {
+            top: 8px;
+        }
+
+        .hamburger span:nth-child(4) {
+            top: 16px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            top: 8px;
+            width: 0%;
+            left: 50%;
+        }
+
+        .hamburger.active span:nth-child(2) {
+            transform: rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg);
+        }
+
+        .hamburger.active span:nth-child(4) {
+            top: 8px;
+            width: 0%;
+            left: 50%;
+        }
+
+        /* 移动菜单 */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            height: 100vh;
+            background-color: var(--bg-primary);
+            z-index: 50;
+            padding: 2rem 1.5rem;
+            transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            left: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+            backdrop-filter: blur(3px);
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: relative;
+            width: 56px;
+            height: 28px;
+            border-radius: 14px;
+            background: var(--primary-gradient);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background-color: white;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark .theme-toggle {
+            background: var(--primary-gradient);
+        }
+
+        .dark .theme-toggle::after {
+            transform: translateX(28px);
+            background-color: var(--bg-secondary);
+        }
+
+        .theme-toggle:hover::after {
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 热门标签 */
+        .hot-label {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: auto;
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+            transform: translateY(0);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* 返回顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-gradient);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 30;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .category-title {
+                margin-bottom: 1rem;
+            }
+            .category-title::after {
+                width: 40px;
+                height: 3px;
+            }
+            .hot-label {
+                padding: 0.2rem 0.5rem;
+                font-size: 0.7rem;
+            }
+            .back-to-top {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* 波浪背景 */
+        .wave-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%234f46e5" fill-opacity="0.1" d="M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+
+        .dark .wave-bg {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%236366f1" fill-opacity="0.15" d="M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        }
+
+        /* 鼠标悬停访问按钮效果 */
+        .visit-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary-light);
+        }
+
+        .visit-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .visit-btn i {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .visit-btn:hover i {
+            transform: translateX(3px);
+        }
+
+        /* 页面加载动画 */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s, visibility 0.6s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loader-text {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 卡片平滑出现动画 */
+        .site-card {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .site-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 美化分割线 */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--card-border) 50%, transparent);
+            margin: 2.5rem 0;
+        }
+
+        /* Hero 区域美化 */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            padding: 4rem 0;
+            background-color: var(--bg-secondary);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 20%), 
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 20%);
+        }
+
+        .dark .hero-section {
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 25%), 
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 25%);
+        }
+
+        /* Logo美化 */
+        .logo {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+            font-size: 1.75rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
+        }
+
+        /* 卡片内部信息布局优化 */
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        /* 页脚美化 */
+        .footer-wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="%23f3f4f6" fill-opacity="1" d="M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            transform: rotate(180deg);
+            z-index: 1;
+        }
+
+        .dark .footer-wave {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="%231f2937" fill-opacity="1" d="M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        }
+
+        /* 社交图标美化 */
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: var(--text-secondary);
+            background-color: var(--bg-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            color: white;
+            background: var(--primary-gradient);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* 赞赏模态框 */
+        .donation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .donation-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .donation-content {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .donation-modal.active .donation-content {
+            transform: translateY(0);
+        }
+
+        .donation-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+
+        .donation-close:hover {
+            color: var(--primary);
+        }
+
+        .donation-qrcode {
+            max-width: 200px;
+            border-radius: 8px;
+            margin: 1.5rem auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 提示气泡 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--card-border);
+            font-size: 0.8rem;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (min-width: 1024px) {
+            .lg\:grid-cols-4 {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+            .gap-6 {
+                gap: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-gray-900">网址导航</h1>
+    <!-- 页面加载动画 -->
+    <div class="loader" id="pageLoader">
+        <div class="loader-inner">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">加载中...</div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-30 navbar">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="hamburger md:hidden" id="menuToggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <a href="#" class="logo">乔木精选推荐</a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#ai-tools" class="nav-link" style="color: var(--text-primary);">AI工具</a>
+                    <a href="#reading" class="nav-link" style="color: var(--text-primary);">阅读与知识</a>
+                    <a href="#newsletter" class="nav-link" style="color: var(--text-primary);">精选Newsletter</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="theme-toggle" id="themeToggle" title="切换深色/浅色模式"></div>
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- 主要内容区域 -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- 搜索框 -->
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
         <div class="mb-8">
-            <div class="relative">
-                <input type="text" id="search-input" class="search-input w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="搜索工具、平台或技术...">
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <i class="fas fa-search text-gray-400"></i>
+            <a href="#" class="logo">乔木精选推荐</a>
+        </div>
+        <nav class="space-y-5">
+            <a href="#ai-tools" class="block py-2 text-lg font-medium hover:text-primary transition-colors mobile-link" style="color: var(--text-primary);">
+                <i class="fas fa-robot mr-3"></i>AI工具
+            </a>
+            <a href="#reading" class="block py-2 text-lg font-medium hover:text-primary transition-colors mobile-link" style="color: var(--text-primary);">
+                <i class="fas fa-book-reader mr-3"></i>阅读与知识
+            </a>
+            <a href="#newsletter" class="block py-2 text-lg font-medium hover:text-primary transition-colors mobile-link" style="color: var(--text-primary);">
+                <i class="fas fa-newspaper mr-3"></i>精选Newsletter
+            </a>
+        </nav>
+        <div class="mt-8 pt-6 border-t" style="border-color: var(--card-border);">
+            <div class="flex justify-center mt-4">
+                <a href="https://github.com/joeseesun" target="_blank" class="social-icon mx-2" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://twitter.com/vista8" target="_blank" class="social-icon mx-2" title="Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="mailto:vista8@gmail.com" class="social-icon mx-2" title="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <div class="social-icon mx-2 cursor-pointer" id="mobileDonateTrigger" title="联系作者">
+                    <i class="fas fa-user-plus"></i>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 分类过滤 -->
-        <div class="mb-8">
-            <div id="categories" class="flex flex-wrap gap-2">
-                <!-- 分类按钮将通过 JavaScript 动态添加 -->
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 relative inline-block">
+                    <span style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">效率工具集锦</span>
+                </h1>
+                <p class="text-lg md:text-xl mb-10" style="color: var(--text-secondary);">
+                    发现最佳AI、阅读与知识管理工具，<span class="font-semibold" style="color: var(--primary);">提升工作效率</span>
+                </p>
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-box" 
+                        placeholder="搜索工具、平台或技术..."
+                        style="color: var(--text-primary);"
+                    >
+                </div>
             </div>
         </div>
+        <div class="wave-bg"></div>
+    </section>
 
-        <!-- 网站卡片网格 -->
-        <div id="sites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <!-- 网站卡片将通过 JavaScript 动态添加 -->
+    <!-- Category Tabs (Mobile Scrollable) -->
+    <div class="container mx-auto px-4 mt-10">
+        <div class="category-tabs">
+            <div class="category-tab active" data-category="all">
+                <i class="fas fa-th-large mr-2"></i>全部
+            </div>
+            <div class="category-tab" data-category="ai-tools">
+                <i class="fas fa-robot mr-2"></i>AI工具
+            </div>
+            <div class="category-tab" data-category="reading">
+                <i class="fas fa-book-reader mr-2"></i>阅读与知识
+            </div>
+            <div class="category-tab" data-category="newsletter">
+                <i class="fas fa-newspaper mr-2"></i>精选Newsletter
+            </div>
         </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- AI Tools Section -->
+        <section id="ai-tools" class="mb-12 category-section" data-category="ai-tools">
+            <h2 class="category-title text-2xl md:text-3xl font-bold">AI工具</h2>
+            <p class="text-lg mb-8" style="color: var(--text-secondary);">AI驱动的高效生产力工具，让您的工作更智能化</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Windsurf -->
+                <a href="https://codeium.com/windsurf" target="_blank" class="site-card" data-tags="ai coding development">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/bd80c6574a0cb508cc91ef7af0b2ede4.png" alt="Windsurf" class="card-img">
+                        <div class="hot-label" style="left: 12px; right: auto;">新品</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Windsurf</h3>
+                        </div>
+                        <p class="card-description">Codeium 推出的新一代 AI IDE，具备深度上下文理解、多文件编辑、智能命令建议等功能，让开发者保持心流状态。</p>
+                        <div>
+                            <span class="tag tag-ai">AI编程</span>
+                            <span class="tag tag-productivity">IDE</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Cursor -->
+                <a href="https://www.cursor.com/" target="_blank" class="site-card" data-tags="ai coding development">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/37b3f6674b3f3b0911ec5d7186409540.png" alt="Cursor" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Cursor</h3>
+                        </div>
+                        <p class="card-description">Cursor是一款AI编程工具，支持Claude模型，提供了强大的代码补全和代码 review功能。</p>
+                        <div>
+                            <span class="tag tag-ai">AI编程</span>
+                            <span class="tag tag-productivity">开发工具</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Warp -->
+                <a href="https://www.warp.dev/" target="_blank" class="site-card" data-tags="ai terminal development">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/f51143140040d174c098c4dac967a6b3.png" alt="Warp" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Warp</h3>
+                        </div>
+                        <p class="card-description">Warp是一款智能终端工具，内置AI功能和开发团队知识库，支持MacOS、Windows和Linux。</p>
+                        <div>
+                            <span class="tag tag-ai">AI助手</span>
+                            <span class="tag tag-productivity">终端工具</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Raycast AI -->
+                <a href="https://raycast.com/?via=joe-seesun" target="_blank" class="site-card" data-tags="ai productivity assistant mac">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/1f6a6452f3dd7832f943ae3280326407.png" alt="Raycast AI" class="card-img">
+                        <div class="hot-label" style="left: 12px; right: auto;">热门</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Raycast AI</h3>
+                        </div>
+                        <p class="card-description">Raycast AI是一款Mac生产力工具的AI功能集，提供快速AI问答、AI聊天窗口和自定义AI命令功能。</p>
+                        <div>
+                            <span class="tag tag-ai">AI助手</span>
+                            <span class="tag tag-productivity">效率工具</span>
+                            <span class="tag tag-productivity">Mac</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Reading Section -->
+        <section id="reading" class="mb-12 category-section" data-category="reading">
+            <h2 class="category-title text-2xl md:text-3xl font-bold">阅读与知识</h2>
+            <p class="text-lg mb-8" style="color: var(--text-secondary);">优质的阅读平台与知识工具，拓展视野、积累智慧</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Obsidian -->
+                <a href="https://obsidian.md/" target="_blank" class="site-card" data-tags="knowledge notes markdown">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/e8f1a884b08749b6d24c21b11aa1c3eb.png" alt="Obsidian" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Obsidian</h3>
+                        </div>
+                        <p class="card-description">强大的知识管理工具，支持双向链接的个人知识库，让笔记形成知识网络。</p>
+                        <div>
+                            <span class="tag tag-productivity">知识管理</span>
+                            <span class="tag tag-reading">笔记</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 飞书 -->
+                <a href="https://www.feishu.cn/" target="_blank" class="site-card" data-tags="productivity collaboration">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/f51143140040d174c098c4dac967a6b3.png" alt="飞书" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">飞书</h3>
+                        </div>
+                        <p class="card-description">字节跳动出品的新一代办公套件，集文档、知识库、项目管理于一体。</p>
+                        <div>
+                            <span class="tag tag-productivity">知识管理</span>
+                            <span class="tag tag-productivity">协作</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- SumBuddy -->
+                <a href="https://sumbuddy.app/" target="_blank" class="site-card" data-tags="ai reading assistant">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/8de7116ef526ce37767a733169d76d4a.png" alt="SumBuddy" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">SumBuddy</h3>
+                        </div>
+                        <p class="card-description">SumBuddy是一个浏览器AI阅读助手，包含翻译、总结等常见AI操作。</p>
+                        <div>
+                            <span class="tag tag-ai">AI阅读</span>
+                            <span class="tag tag-reading">阅读助手</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 3分钟AI读书 -->
+                <a href="https://3min.top/?v=BETA" target="_blank" class="site-card" data-tags="ai reading book">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/12d24f1d8476565af9ba25ddeb86edcd.png" alt="3分钟AI读书" class="card-img">
+                        <div class="hot-label" style="left: 12px; right: auto;">热门</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">3分钟AI读书</h3>
+                        </div>
+                        <p class="card-description">好友小明开发的AI辅助阅读工具，支持PDF、EPub电子书阅读，生成脑图，AI翻译，按章节总结，划线问AI等功能。</p>
+                        <div>
+                            <span class="tag tag-ai">AI阅读</span>
+                            <span class="tag tag-reading">电子书</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 微信读书 -->
+                <a href="https://weread.qq.com/" target="_blank" class="site-card" data-tags="reading books ebook">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/1f117450f5cdf352cf2b7895bd00821f.png" alt="微信读书" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">微信读书</h3>
+                        </div>
+                        <p class="card-description">微信读书是腾讯推出的基于微信关系链的官方阅读平台，支持iOS和Android系统。</p>
+                        <div>
+                            <span class="tag tag-reading">电子书</span>
+                            <span class="tag tag-reading">阅读平台</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section id="newsletter" class="mb-12 category-section" data-category="newsletter">
+            <h2 class="category-title text-2xl md:text-3xl font-bold">精选Newsletter</h2>
+            <p class="text-lg mb-8" style="color: var(--text-secondary);">定期送达的精华内容，了解行业动态与深度洞察</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 歸藏AIGC周刊 -->
+                <a href="https://www.xiaobot.net/p/guizangNews?refer=57b15ed3-a4b9-4f45-8137-7c0e49d84bbe" target="_blank" class="site-card" data-tags="newsletter ai news">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/46f974715d102189d80e45e2726e62e0.png" alt="歸藏AIGC周刊" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">歸藏AIGC周刊</h3>
+                        </div>
+                        <p class="card-description">歸藏AIGC周刊是国内最好的AI Newsletter，提供AI领域的最新信息和技术分享。</p>
+                        <div>
+                            <span class="tag tag-ai">AI资讯</span>
+                            <span class="tag tag-reading">周刊</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- AI项目商业解析 -->
+                <a href="https://www.xiaobot.net/p/aiyanjiu?refer=57b15ed3-a4b9-4f45-8137-7c0e49d84bbe" target="_blank" class="site-card" data-tags="newsletter ai business">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/e8f1a884b08749b6d24c21b11aa1c3eb.png" alt="AI项目商业解析" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">AI项目商业解析</h3>
+                        </div>
+                        <p class="card-description">AI项目商业解析是国内时间最早的AI商业分析newsletter。</p>
+                        <div>
+                            <span class="tag tag-ai">AI商业</span>
+                            <span class="tag tag-reading">分析</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 独立开发营销获客增长手册 -->
+                <a href="https://www.xiaobot.net/p/devgrowth?refer=57b15ed3-a4b9-4f45-8137-7c0e49d84bbe" target="_blank" class="site-card" data-tags="newsletter marketing indie">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/3f7c1606fb1594259c004d58d1bd113a.png" alt="独立开发营销获客增长手册" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">独立开发营销获客增长手册</h3>
+                        </div>
+                        <p class="card-description">独立开发营销获客增长手册是朋友yangyi倾囊相授的流量增长实战案例小报童账号。</p>
+                        <div>
+                            <span class="tag tag-productivity">独立开发</span>
+                            <span class="tag tag-reading">营销</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 独立开发者成长指南 -->
+                <a href="https://www.xiaobot.net/p/developer-growth?refer=57b15ed3-a4b9-4f45-8137-7c0e49d84bbe" target="_blank" class="site-card" data-tags="newsletter indie development">
+                    <div class="card-img-container">
+                        <img src="https://pic.readnow.pro/2025/03/1f6a6452f3dd7832f943ae3280326407.png" alt="独立开发者成长指南" class="card-img">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">独立开发者成长指南</h3>
+                        </div>
+                        <p class="card-description">分享独立开发者的成长经验、技术选型、项目管理等实用知识。</p>
+                        <div>
+                            <span class="tag tag-productivity">独立开发</span>
+                            <span class="tag tag-reading">成长</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
     </main>
 
-    <script>
-        // 加载分类
-        async function loadCategories() {
-            try {
-                const response = await fetch('/api/categories');
-                const categories = await response.json();
-                
-                const categoriesContainer = document.getElementById('categories');
-                categoriesContainer.innerHTML = '';
-                
-                // 添加"全部"按钮
-                const allButton = document.createElement('button');
-                allButton.className = 'category-badge px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200';
-                allButton.textContent = '全部';
-                allButton.onclick = () => filterSites();
-                categoriesContainer.appendChild(allButton);
-                
-                // 添加分类按钮
-                categories.forEach(category => {
-                    const button = document.createElement('button');
-                    button.className = 'category-badge px-4 py-2 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200';
-                    button.textContent = category.name;
-                    button.onclick = () => filterSites(category.id);
-                    categoriesContainer.appendChild(button);
-                });
-            } catch (error) {
-                console.error('加载分类失败:', error);
-            }
-        }
-
-        // 加载网站列表
-        async function loadSites() {
-            try {
-                const response = await fetch('/api/sites');
-                const sites = await response.json();
-                
-                const sitesGrid = document.getElementById('sites-grid');
-                sitesGrid.innerHTML = '';
-                
-                sites.forEach(site => {
-                    const card = document.createElement('div');
-                    card.className = 'site-card bg-white rounded-lg shadow-sm overflow-hidden';
-                    card.innerHTML = `
-                        <a href="${site.url}" target="_blank" class="block p-4">
-                            <div class="flex items-center mb-3">
-                                <img src="${site.icon || '/images/default-icon.png'}" alt="${site.name}" class="w-8 h-8 rounded-full mr-3">
-                                <h3 class="text-lg font-medium text-gray-900">${site.name}</h3>
-                            </div>
-                            <p class="text-sm text-gray-500 mb-3">${site.description || ''}</p>
-                            <div class="flex flex-wrap gap-2">
-                                ${site.categories.map(category => `
-                                    <span class="category-badge px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">
-                                        ${category.name}
-                                    </span>
-                                `).join('')}
-                                ${site.tags.map(tag => `
-                                    <span class="tag-badge px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
-                                        ${tag.name}
-                                    </span>
-                                `).join('')}
-                            </div>
+    <!-- Footer -->
+    <footer style="background-color: var(--bg-secondary); position: relative; padding-top: 100px;">
+        <div class="footer-wave"></div>
+        <div class="container mx-auto px-4 py-12 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-8 md:mb-0 text-center md:text-left">
+                    <a href="#" class="logo text-3xl">乔木精选推荐</a>
+                    <p class="mt-3 text-lg" style="color: var(--text-secondary);">精选AI与知识工具集</p>
+                    <p class="mt-2" style="color: var(--text-secondary);">更快、更智能地找到你需要的工具</p>
+                </div>
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="flex space-x-4 mb-4">
+                        <a href="https://github.com/joeseesun" target="_blank" class="social-icon" title="GitHub">
+                            <i class="fab fa-github"></i>
                         </a>
-                    `;
-                    sitesGrid.appendChild(card);
-                });
+                        <a href="https://twitter.com/vista8" target="_blank" class="social-icon" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="mailto:vista8@gmail.com" class="social-icon" title="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                        <div class="social-icon cursor-pointer" id="donateTrigger" title="联系作者">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                    </div>
+                    <div class="tooltip">
+                        <img src="https://pic.readnow.pro/2025/03/7b8ace4a97643e3ad0471cd0c26c02fb.png" alt="赞赏二维码" class="w-32 h-32 rounded-lg shadow-md">
+                        <span class="tooltip-text">打赏向阳乔木</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 pt-6 border-t text-center" style="border-color: var(--card-border);">
+                <p style="color: var(--text-secondary);">© 2025 向阳乔木. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 赞赏二维码模态框 -->
+    <div class="donation-modal" id="donationModal">
+        <div class="donation-content">
+            <div class="donation-close" id="donationClose">
+                <i class="fas fa-times"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">添加作者微信</h3>
+            <p style="color: var(--text-secondary);" class="mb-4">欢迎添加作者微信交流</p>
+            <img src="https://pic.readnow.pro/2025/03/03508452238484facfd20e858c2e16e1.png" alt="微信二维码" class="donation-qrcode">
+            <p style="color: var(--text-secondary);" class="text-sm">扫描二维码添加微信</p>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        // 全局数据存储
+        let allSites = [];
+        let allCategories = [];
+        let allTags = [];
+
+        // 从后端API获取数据并初始化页面
+        async function fetchDataAndRenderPage() {
+            try {
+                // 显示加载中状态
+                document.getElementById('pageLoader').classList.remove('hidden');
+
+                // 并行获取所有数据
+                const [sitesResponse, categoriesResponse, tagsResponse] = await Promise.all([
+                    fetch('/api/sites'),
+                    fetch('/api/categories'),
+                    fetch('/api/tags')
+                ]);
+
+                // 检查响应状态
+                if (!sitesResponse.ok || !categoriesResponse.ok || !tagsResponse.ok) {
+                    throw new Error('获取数据失败，请刷新页面重试');
+                }
+
+                // 解析响应数据
+                allSites = await sitesResponse.json();
+                allCategories = await categoriesResponse.json();
+                allTags = await tagsResponse.json();
+
+                console.log('加载的网站数:', allSites.length);
+                console.log('加载的分类数:', allCategories.length);
+                console.log('加载的标签数:', allTags.length);
+
+                // 渲染页面内容
+                renderCategories();
+                renderSitesByCategory();
+
+                // 初始化搜索和筛选功能
+                initSearchAndFilter();
+
+                // 隐藏加载动画并显示卡片
+                setTimeout(() => {
+                    document.getElementById('pageLoader').classList.add('hidden');
+                    showCards();
+                }, 800);
             } catch (error) {
-                console.error('加载网站列表失败:', error);
+                console.error('加载数据失败:', error);
+                // 显示错误信息
+                document.getElementById('pageLoader').classList.add('hidden');
+                alert('加载数据失败: ' + error.message);
             }
         }
 
-        // 过滤网站
-        function filterSites(categoryId = null) {
-            const searchText = document.getElementById('search-input').value.toLowerCase();
-            const cards = document.querySelectorAll('.site-card');
+        // 渲染分类选项卡
+        function renderCategories() {
+            const tabsContainer = document.querySelector('.category-tabs');
             
-            cards.forEach(card => {
-                const name = card.querySelector('h3').textContent.toLowerCase();
-                const description = card.querySelector('p').textContent.toLowerCase();
-                const categories = Array.from(card.querySelectorAll('.category-badge')).map(badge => badge.textContent.toLowerCase());
-                const tags = Array.from(card.querySelectorAll('.tag-badge')).map(badge => badge.textContent.toLowerCase());
+            // 清空现有的选项卡（保留"全部"选项卡）
+            tabsContainer.innerHTML = `
+                <div class="category-tab active" data-category="all">
+                    <i class="fas fa-th-large mr-2"></i>全部
+                </div>
+            `;
+            
+            // 将分类按网站数量排序
+            const sortedCategories = [...allCategories].sort((a, b) => b.siteCount - a.siteCount);
+            
+            // 只显示有网站的分类
+            const categoriesToShow = sortedCategories.filter(cat => cat.siteCount > 0);
+            
+            // 添加分类选项卡
+            categoriesToShow.forEach(category => {
+                // 分类图标映射
+                const iconMap = {
+                    'AI工具': 'fas fa-robot',
+                    '阅读与知识': 'fas fa-book-reader',
+                    '精选Newsletter': 'fas fa-newspaper',
+                    '生产力工具': 'fas fa-tools',
+                    '开发工具': 'fas fa-code'
+                };
                 
-                const matchesSearch = name.includes(searchText) || 
-                                    description.includes(searchText) ||
-                                    categories.some(cat => cat.includes(searchText)) ||
-                                    tags.some(tag => tag.includes(searchText));
+                // 获取图标或使用默认图标
+                const icon = iconMap[category.name] || 'fas fa-folder';
                 
-                const matchesCategory = !categoryId || 
-                                      Array.from(card.querySelectorAll('.category-badge'))
-                                          .some(badge => badge.dataset.categoryId === categoryId);
+                const tabHtml = `
+                    <div class="category-tab" data-category="${category.id}">
+                        <i class="${icon} mr-2"></i>${category.name}
+                    </div>
+                `;
+                tabsContainer.innerHTML += tabHtml;
+            });
+            
+            // 为新的选项卡添加点击事件
+            addTabClickEvents();
+        }
+
+        // 根据分类渲染网站卡片
+        function renderSitesByCategory() {
+            // 清空主内容区域
+            const mainContent = document.querySelector('main');
+            mainContent.innerHTML = '';
+            
+            // 将分类按网站数量排序
+            const sortedCategories = [...allCategories].sort((a, b) => b.siteCount - a.siteCount);
+            
+            // 只显示有网站的分类
+            const categoriesToShow = sortedCategories.filter(cat => cat.siteCount > 0);
+            
+            // 为每个分类创建一个区域
+            categoriesToShow.forEach(category => {
+                // 获取属于此分类的所有网站
+                const sitesInCategory = allSites.filter(site => 
+                    site.categories.some(cat => cat.id === category.id)
+                );
                 
-                card.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+                if (sitesInCategory.length === 0) return;
+                
+                // 创建分类区域
+                const sectionHtml = `
+                    <section id="category-${category.id}" class="mb-12 category-section" data-category="${category.id}">
+                        <h2 class="category-title text-2xl md:text-3xl font-bold">${category.name}</h2>
+                        <p class="text-lg mb-8" style="color: var(--text-secondary);">${category.description || '发现精选工具，提升您的体验'}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sites-container">
+                            <!-- 网站卡片会在这里动态添加 -->
+                        </div>
+                    </section>
+                `;
+                
+                mainContent.innerHTML += sectionHtml;
+                
+                // 为该分类添加网站卡片
+                const sitesContainer = document.querySelector(`#category-${category.id} .sites-container`);
+                renderSiteCards(sitesInCategory, sitesContainer);
             });
         }
 
-        // 搜索框输入事件
-        document.getElementById('search-input').addEventListener('input', filterSites);
+        // 渲染网站卡片
+        function renderSiteCards(sites, container) {
+            // 按显示顺序排序网站
+            const sortedSites = [...sites].sort((a, b) => a.displayOrder - b.displayOrder);
+            
+            sortedSites.forEach(site => {
+                // 将标签数组转换为标签类
+                const tagClasses = {
+                    'AI': 'tag-ai',
+                    '知识管理': 'tag-productivity',
+                    '阅读': 'tag-reading',
+                };
+                
+                // 生成标签HTML
+                const tagsHtml = site.tags.map(tag => {
+                    const tagClass = tagClasses[tag.name] || 'tag-productivity';
+                    return `<span class="tag ${tagClass}">${tag.name}</span>`;
+                }).join('');
+                
+                // 检查是否为热门或新品
+                const isHot = site.displayOrder < 3; // 假设前3个是热门
+                const isNew = new Date(site.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 一周内的新品
+                
+                // 热门标签
+                const hotLabelHtml = isHot ? 
+                    `<div class="hot-label" style="left: 12px; right: auto;">热门</div>` : 
+                    (isNew ? `<div class="hot-label" style="left: 12px; right: auto;">新品</div>` : '');
+                
+                // 生成卡片HTML
+                const cardHtml = `
+                    <a href="${site.url}" target="_blank" class="site-card" data-site-id="${site.id}" data-tags="${site.tags.map(t => t.name).join(' ')}">
+                        <div class="card-img-container">
+                            <img src="${site.screenshot}" alt="${site.name}" class="card-img" onerror="this.src='https://via.placeholder.com/400x225?text=无图片'">
+                            ${hotLabelHtml}
+                        </div>
+                        <div class="card-content">
+                            <div class="card-header">
+                                <h3 class="card-title">${site.name}</h3>
+                            </div>
+                            <p class="card-description">${site.description || '暂无描述'}</p>
+                            <div>
+                                ${tagsHtml}
+                            </div>
+                        </div>
+                    </a>
+                `;
+                
+                container.innerHTML += cardHtml;
+            });
+        }
 
-        // 页面加载时执行
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCategories();
-            loadSites();
+        // 为分类选项卡添加点击事件
+        function addTabClickEvents() {
+            const categoryTabs = document.querySelectorAll('.category-tab');
+            
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const category = tab.dataset.category;
+                    
+                    // 更新活动选项卡
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // 显示/隐藏分类区域
+                    const sections = document.querySelectorAll('.category-section');
+                    if (category === 'all') {
+                        sections.forEach(section => section.style.display = 'block');
+                    } else {
+                        sections.forEach(section => {
+                            if (section.dataset.category === category) {
+                                section.style.display = 'block';
+                            } else {
+                                section.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        // 初始化搜索和筛选功能
+        function initSearchAndFilter() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                // 获取所有网站卡片
+                const cards = document.querySelectorAll('.site-card');
+                
+                cards.forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const description = card.querySelector('.card-description').textContent.toLowerCase();
+                    const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
+                        card.style.display = 'flex';
+                        const section = card.closest('.category-section');
+                        if (section) {
+                            section.style.display = 'block';
+                        }
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // 检查每个分类是否有可见的卡片
+                const categorySections = document.querySelectorAll('.category-section');
+                categorySections.forEach(section => {
+                    const visibleCards = Array.from(section.querySelectorAll('.site-card')).some(card => card.style.display !== 'none');
+                    section.style.display = visibleCards ? 'block' : 'none';
+                });
+            });
+        }
+
+        // 显示卡片动画
+        function showCards() {
+            const cards = document.querySelectorAll('.site-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, 50 * index);
+            });
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', () => {
+            // 获取数据并渲染页面
+            fetchDataAndRenderPage();
+        });
+
+        // Theme Toggle
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        
+        // Check for saved theme preference or use OS preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            html.classList.remove('light');
+            html.classList.add('dark');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Mobile menu
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('overlay');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        });
+        
+        overlay.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+        
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // 赞赏模态框
+        const donationModal = document.getElementById('donationModal');
+        const donateTrigger = document.getElementById('donateTrigger');
+        const mobileDonateTrigger = document.getElementById('mobileDonateTrigger');
+        const donationClose = document.getElementById('donationClose');
+
+        function openDonationModal() {
+            donationModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDonationModal() {
+            donationModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        donateTrigger.addEventListener('click', openDonationModal);
+        mobileDonateTrigger.addEventListener('click', openDonationModal);
+        donationClose.addEventListener('click', closeDonationModal);
+        donationModal.addEventListener('click', (e) => {
+            if (e.target === donationModal) {
+                closeDonationModal();
+            }
         });
     </script>
 </body>
-</html> 
+</html>
+
