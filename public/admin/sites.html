@@ -644,6 +644,51 @@
             transition: all 0.2s ease;
             width: 100%;
         }
+
+        /* 额外的标签样式优化 - 更精确地匹配图中样式 */
+        .tagify__tag {
+            margin: 2px;
+            border-radius: 0;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            font-size: 0.9rem;
+            font-weight: normal;
+            border: none;
+            box-shadow: none;
+        }
+        
+        .tagify__tag:hover {
+            background-color: #e5e7eb;
+        }
+        
+        .tagify__tag__removeBtn {
+            order: 2;
+            margin-left: 3px;
+            margin-right: 0;
+            color: #9ca3af;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .tagify__tag__removeBtn:hover {
+            color: #6b7280;
+            background: transparent;
+            opacity: 1;
+        }
+        
+        .tagify__input {
+            color: #4b5563;
+        }
+        
+        /* 修复标签间距和布局 */
+        .tagify__tag > div {
+            display: flex;
+            align-items: center;
+        }
+        
+        .tagify__tag > div > * {
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -762,7 +807,8 @@
                 
                 <div class="form-group">
                     <label class="form-label" for="site-tags">标签</label>
-                    <input id="site-tags" class="form-input tagify-input" placeholder="输入标签名称，按回车或逗号添加">
+                    <input id="site-tags" class="form-input tagify-input" placeholder="输入标签，按空格或回车添加">
+                    <div class="text-xs text-gray-500 mt-1 hidden">标签用于精确描述网站特点，方便搜索</div>
                 </div>
                 
                 <div class="form-group">
