@@ -954,6 +954,17 @@
             margin-right: 0 !important;
             position: static !important;
             order: 2 !important;
+            cursor: pointer !important;
+        }
+        
+        .tagify__tag__removeBtn::after {
+            content: "×" !important;
+            color: #6b7280 !important;
+            font-size: 1.2em !important;
+        }
+        
+        .tagify__tag__removeBtn:hover::after {
+            color: #ef4444 !important;
         }
     </style>
 </head>
@@ -2763,6 +2774,14 @@
                     placeholder: "添加或选择标签",
                     delimiters: ", ",           // 用逗号或空格添加标签
                     trim: true,                 // 去除前后空格
+                    keepInvalidTags: false,     // 移除无效标签
+                    addTagOnBlur: true,         // 失去焦点时添加标签
+                    transformTag: function(tagData) {
+                        // 确保标签数据包含所有必要属性
+                        if (tagData.id) {
+                            tagData.__tagifyTagData = { id: tagData.id };
+                        }
+                    },
                     originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
                     dropdown: {
                         enabled: 1,             // 显示下拉菜单
@@ -2787,7 +2806,7 @@
                                     ${this.getAttributes(tagData)}>
                                     <div>
                                         <span class='tagify__tag__text'>${tagData.value}</span>
-                                        <x title='删除' class='tagify__tag__removeBtn' role='button' aria-label='删除标签'></x>
+                                        <span title='删除' class='tagify__tag__removeBtn' role='button' aria-label='删除标签'></span>
                                     </div>
                                 </tag>
                             `;
