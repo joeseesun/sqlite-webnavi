@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分类管理 - 网址导航系统</title>
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #1a1a1a;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background-color: #2d2d2d;
+        }
+        .nav-link.active {
+            background-color: #2d2d2d;
+            border-left: 4px solid #4f46e5;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            position: relative;
+            background-color: white;
+            margin: 50px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .close:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="p-4">
+            <h1 class="text-xl font-bold">网址导航系统</h1>
+        </div>
+        <nav class="mt-4">
+            <a href="/admin/index.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-home mr-3"></i>
+                仪表盘
+            </a>
+            <a href="/admin/sites.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-globe mr-3"></i>
+                网址管理
+            </a>
+            <a href="/admin/categories.html" class="nav-link active flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-folder mr-3"></i>
+                分类管理
+            </a>
+            <a href="/admin/tags.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-tags mr-3"></i>
+                标签管理
+            </a>
+            <button id="logout-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                退出登录
+            </button>
+        </nav>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 顶部栏 -->
+        <div class="bg-white shadow-sm rounded-lg p-4 mb-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">分类管理</h2>
+                <div class="flex items-center">
+                    <span class="text-gray-600 mr-4">
+                        <i class="fas fa-user mr-2"></i>
+                        <span id="username"></span>
+                    </span>
+                    <button id="add-category-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        添加分类
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分类列表 -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类名称</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">网站数量</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categories-list" class="bg-white divide-y divide-gray-200">
+                        <!-- 分类列表将通过 JavaScript 动态添加 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑分类模态框 -->
+    <div id="category-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title" class="text-2xl font-bold mb-4">添加分类</h2>
+            <form id="category-form" class="space-y-4">
+                <input type="hidden" id="category-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">分类名称</label>
+                    <input type="text" id="category-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">描述</label>
+                    <textarea id="category-description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" rows="3"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeModal()">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                window.location.href = '/admin/login.html';
+                return;
+            }
+            
+            fetch('/api/auth/check', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Token invalid');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('username').textContent = data.user.username;
+            })
+            .catch(error => {
+                console.error('认证失败:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/admin/login.html';
+            });
+        }
+
+        // 加载分类列表
+        async function loadCategories() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const categories = await response.json();
+                const tbody = document.getElementById('categories-list');
+                tbody.innerHTML = '';
+                
+                categories.forEach(category => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${category.name}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-500">${category.description || ''}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500">${category.siteCount || 0}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="editCategory('${category.id}')" class="text-blue-600 hover:text-blue-900 mr-3">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteCategory('${category.id}')" class="text-red-600 hover:text-red-900">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('加载分类列表失败:', error);
+            }
+        }
+
+        // 打开模态框
+        function openModal(title = '添加分类', resetForm = true) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('category-modal').style.display = 'block';
+            
+            // 只有在新增分类时才重置表单
+            if (resetForm) {
+                document.getElementById('category-form').reset();
+                document.getElementById('category-id').value = '';
+            }
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('category-modal').style.display = 'none';
+        }
+
+        // 编辑分类
+        async function editCategory(id) {
+            try {
+                console.log('开始编辑分类，ID:', id);
+                
+                // 先打开模态框，但不重置表单
+                openModal('编辑分类 (加载中...)', false);
+                
+                const token = localStorage.getItem('token');
+                
+                // 添加时间戳防止缓存
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/api/categories/${id}?_=${timestamp}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status} ${response.statusText}`);
+                }
+                
+                const category = await response.json();
+                console.log('获取到分类数据:', category);
+                
+                if (!category || !category.id) {
+                    throw new Error('API返回的分类数据无效');
+                }
+                
+                // 更新模态框标题和表单数据
+                document.getElementById('modal-title').textContent = '编辑分类';
+                document.getElementById('category-id').value = category.id;
+                document.getElementById('category-name').value = category.name || '';
+                document.getElementById('category-description').value = category.description || '';
+                
+                console.log('表单已填充:', {
+                    id: document.getElementById('category-id').value,
+                    name: document.getElementById('category-name').value,
+                    description: document.getElementById('category-description').value
+                });
+            } catch (error) {
+                console.error('加载分类详情失败:', error);
+                alert('加载分类详情失败: ' + error.message);
+                closeModal();
+            }
+        }
+
+        // 删除分类
+        async function deleteCategory(id) {
+            if (!confirm('确定要删除这个分类吗？')) {
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/categories/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    loadCategories();
+                } else {
+                    throw new Error('删除失败');
+                }
+            } catch (error) {
+                console.error('删除分类失败:', error);
+            }
+        }
+
+        // 处理表单提交
+        document.getElementById('category-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const categoryId = document.getElementById('category-id').value;
+            const data = {
+                name: document.getElementById('category-name').value,
+                description: document.getElementById('category-description').value
+            };
+            
+            console.log('提交分类表单:', {
+                isEdit: !!categoryId,
+                categoryId,
+                formData: data
+            });
+            
+            const url = categoryId ? `/api/categories/${categoryId}` : '/api/categories';
+            const method = categoryId ? 'PUT' : 'POST';
+            
+            try {
+                const token = localStorage.getItem('token');
+                console.log(`发送${method}请求到: ${url}`);
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `保存失败: ${response.status} ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('保存成功, 返回数据:', result);
+                
+                closeModal();
+                loadCategories();
+            } catch (error) {
+                console.error('保存分类失败:', error);
+                alert('保存分类失败: ' + error.message);
+            }
+        });
+
+        // 添加分类按钮点击事件
+        document.getElementById('add-category-btn').addEventListener('click', function() {
+            openModal('添加分类', true);
+        });
+
+        // 关闭按钮点击事件
+        document.querySelector('.close').addEventListener('click', closeModal);
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('category-modal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // 退出登录
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/admin/login.html';
+        });
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadCategories();
+        });
+    </script>
+</body>
+</html> 

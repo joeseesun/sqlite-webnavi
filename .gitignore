@@ -1,0 +1,65 @@
+# 依赖目录
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+
+# 环境配置
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 构建输出
+/dist
+/build
+/out
+
+# 缓存和临时文件
+.cache/
+.temp/
+.tmp/
+temp/
+tmp/
+*.tmp
+*.temp
+
+# 日志文件
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 编辑器和IDE文件
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.project
+.settings/
+.classpath
+.factorypath
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+
+# 上传文件和用户内容
+/uploads/
+/public/uploads/
+uploads/*
+test.png
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# 其他常见文件
+.DS_Store
+Thumbs.db 
