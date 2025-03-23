@@ -668,6 +668,8 @@
             color: #9ca3af;
             font-size: 1rem;
             opacity: 0.8;
+            position: relative;
+            display: inline-flex;
         }
         
         .tagify__tag__removeBtn:hover {
@@ -684,6 +686,7 @@
         .tagify__tag > div {
             display: flex;
             align-items: center;
+            flex-direction: row;
         }
         
         .tagify__tag > div > * {
@@ -936,6 +939,21 @@
         @keyframes rotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* 修复标签样式，确保删除按钮正确显示在右侧 */
+        .tagify__tag > div {
+            display: flex !important;
+            align-items: center !important;
+            flex-direction: row !important;
+            padding: 0.2em 0.5em 0.2em 0.5em !important;
+        }
+        
+        .tagify__tag__removeBtn {
+            margin-left: 5px !important;
+            margin-right: 0 !important;
+            position: static !important;
+            order: 2 !important;
         }
     </style>
 </head>
@@ -2767,9 +2785,9 @@
                                     tabIndex="-1"
                                     class="${isNew}"
                                     ${this.getAttributes(tagData)}>
-                                    <x title='删除' class='tagify__tag__removeBtn' role='button' aria-label='删除标签'></x>
                                     <div>
                                         <span class='tagify__tag__text'>${tagData.value}</span>
+                                        <x title='删除' class='tagify__tag__removeBtn' role='button' aria-label='删除标签'></x>
                                     </div>
                                 </tag>
                             `;
