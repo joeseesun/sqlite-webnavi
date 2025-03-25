@@ -125,6 +125,8 @@ async function initializeDatabase() {
         email TEXT,
         contact_qrcode TEXT,
         donation_qrcode TEXT,
+        hero_title TEXT,
+        hero_subtitle TEXT,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -143,7 +145,7 @@ async function initializeDatabase() {
     const settings = await db.get('SELECT * FROM site_settings LIMIT 1');
     if (!settings) {
       await db.run(
-        'INSERT INTO site_settings (id, site_name, site_description, footer_text, github_url, twitter_url, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO site_settings (id, site_name, site_description, footer_text, github_url, twitter_url, email, hero_title, hero_subtitle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
           uuidv4(), 
           '乔木精选推荐', 
@@ -151,7 +153,9 @@ async function initializeDatabase() {
           '© 2025 向阳乔木. 保留所有权利.',
           'https://github.com/joeseesun',
           'https://twitter.com/vista8',
-          'vista8@gmail.com'
+          'vista8@gmail.com',
+          '乔木精选推荐',
+          '发现最佳AI、阅读与知识管理工具，提升工作效率'
         ]
       );
       console.log('创建了默认网站设置');
@@ -1287,7 +1291,9 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
       footer_text, 
       github_url, 
       twitter_url, 
-      email 
+      email,
+      hero_title,
+      hero_subtitle
     } = req.body;
 
     // 验证必填字段
@@ -1369,7 +1375,9 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
         twitter_url = ?, 
         email = ?, 
         contact_qrcode = ?, 
-        donation_qrcode = ?, 
+        donation_qrcode = ?,
+        hero_title = ?,
+        hero_subtitle = ?, 
         updated_at = datetime('now') 
       WHERE id = ?`,
       [
@@ -1380,7 +1388,9 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
         twitter_url, 
         email, 
         contactQrcodePath, 
-        donationQrcodePath, 
+        donationQrcodePath,
+        hero_title,
+        hero_subtitle, 
         id
       ]
     );
