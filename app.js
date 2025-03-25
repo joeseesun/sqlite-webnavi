@@ -161,6 +161,15 @@ async function initializeDatabase() {
       console.log('创建了默认网站设置');
     }
 
+    // 在所有初始化完成后，执行数据库迁移
+    try {
+      const migrations = require('./migrations');
+      await migrations.runMigrations(db);
+    } catch (error) {
+      console.error('执行数据库迁移时出错:', error);
+      // 不阻止应用启动，即使迁移失败
+    }
+
     console.log('数据库初始化成功');
   } catch (error) {
     console.error('数据库初始化失败:', error);

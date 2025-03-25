@@ -210,3 +210,74 @@ MIT License
 - **标签关联问题修复**: 修复了在添加或编辑网站时，标签无法正确关联的问题。现在添加的标签会立即与网站关联，无需二次编辑。
 - **界面优化**: 提升了标签选择和管理的用户体验，增加了更多的日志记录以便于调试。
 - **数据加载优化**: 改进了前端数据加载逻辑，提高了页面响应速度。 
+
+## 开发规范
+
+### 数据库变更规范
+
+在开发过程中，当需要对数据库结构进行修改时，请遵循以下规范，避免因数据库架构与应用代码不同步导致的问题：
+
+#### 1. 数据库模式变更流程
+
+- **代码与数据库同步**: 当在应用代码中添加新的字段或功能时，必须同时更新数据库架构，确保两者保持同步。
+- **变更记录**: 所有数据库结构变更都应记录在项目的更新日志中，包括新增表、字段、索引等。
+- **测试验证**: 在实施数据库变更后，必须进行全面测试，验证相关功能是否正常工作。
+
+#### 2. 具体实施方法
+
+对于现有表添加新字段，有两种方法：
+
+1. **通过初始化代码添加**:
+   - 在 `app.js` 的 `initDatabase()` 函数中为新表和新字段添加创建语句
+   - 注意：这种方法仅适用于新安装的系统，对已存在的数据库无效
+
+2. **通过迁移脚本添加**:
+   - 创建迁移脚本 (例如 `migrations/add_hero_fields.js`)
+   - 使用 `ALTER TABLE` 语句添加新字段
+   - 在应用启动时或通过专门的命令执行迁移脚本
+
+示例迁移脚本:
+```javascript
+// migrations/add_hero_fields.js
+async function migrate(db) {
+  try {
+    // 检查字段是否已存在
+    const tableInfo = await db.all("PRAGMA table_info(site_settings)");
+    const heroTitleExists = tableInfo.some(col => col.name === 'hero_title');
+    const heroSubtitleExists = tableInfo.some(col => col.name === 'hero_subtitle');
+    
+    // 添加不存在的字段
+    if (!heroTitleExists) {
+      await db.run("ALTER TABLE site_settings ADD COLUMN hero_title TEXT;");
+      console.log("已添加 hero_title 字段");
+    }
+    
+    if (!heroSubtitleExists) {
+      await db.run("ALTER TABLE site_settings ADD COLUMN hero_subtitle TEXT;");
+      console.log("已添加 hero_subtitle 字段");
+    }
+    
+    console.log("迁移完成");
+  } catch (error) {
+    console.error("迁移失败:", error);
+    throw error;
+  }
+}
+
+module.exports = { migrate };
+```
+
+#### 3. 最佳实践
+
+- **架构检查**: 应用启动时自动检查数据库架构是否与预期一致，如不一致则进行更新或提醒管理员
+- **版本控制**: 为数据库添加版本号，在应用升级时根据版本差异自动执行必要的迁移脚本
+- **备份策略**: 在执行数据库架构变更前，确保已备份数据库以防止数据丢失
+- **预防性验证**: 在表单处理和API中增加健壮的字段检查，即使数据库字段缺失也能优雅降级而不是直接崩溃
+
+#### 4. 经验教训
+
+我们在实现网站设置的Hero标题和子标题功能时遇到了典型的数据库不同步问题：
+
+- **问题**: 虽然在表单中添加了Hero相关字段，并且在前端代码中实现了对应功能，但因数据库中缺少这些字段，导致数据无法保存和显示。
+- **解决方案**: 通过SQL命令手动添加缺失的字段，并设置合理的默认值。
+- **预防措施**: 实现自动化的数据库检查和迁移系统，确保代码与数据库架构始终同步。 
