@@ -946,9 +946,6 @@
             animation: pulse-border 2s infinite;
         }
 
-            }, 1000);
-        }
-
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
@@ -1256,6 +1253,89 @@
             opacity: 0.9;
             transform: translateY(-1px);
         }
+
+        /* 替换为轻量级几何装饰效果 */
+        .footer-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            z-index: 1;
+            background: linear-gradient(90deg, 
+                var(--primary) 0%, 
+                var(--primary-light) 50%, 
+                var(--primary) 100%);
+        }
+
+        .footer-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            overflow: hidden;
+        }
+
+        .footer-shape {
+            position: absolute;
+            background-color: var(--primary);
+            opacity: 0.05;
+            border-radius: 50%;
+        }
+
+        .shape-1 {
+            width: 120px;
+            height: 120px;
+            top: -60px;
+            left: 10%;
+        }
+
+        .shape-2 {
+            width: 80px;
+            height: 80px;
+            top: -20px;
+            left: 25%;
+        }
+
+        .shape-3 {
+            width: 160px;
+            height: 160px;
+            top: -100px;
+            right: 15%;
+        }
+
+        .shape-4 {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            right: 30%;
+        }
+
+        .shape-5 {
+            width: 100px;
+            height: 100px;
+            top: -50px;
+            left: 65%;
+        }
+
+        .shape-6 {
+            width: 40px;
+            height: 40px;
+            top: -10px;
+            left: 45%;
+        }
+
+        .shape-7 {
+            width: 80px;
+            height: 80px;
+            top: -40px;
+            left: 80%;
+        }
+
+        .dark .footer-shape {
+            opacity: 0.1;
+        }
     </style>
 </head>
 <body>
@@ -1381,11 +1461,16 @@
     </main>
 
     <!-- Footer -->
-    <footer style="background-color: var(--bg-secondary); position: relative; padding-top: 100px;">
-        <div class="footer-wave">
-            <div class="wave wave-1"></div>
-            <div class="wave wave-2"></div>
-            <div class="wave wave-3"></div>
+    <footer style="background-color: var(--bg-secondary); position: relative; padding-top: 60px;">
+        <div class="footer-decoration"></div>
+        <div class="footer-shapes">
+            <div class="footer-shape shape-1"></div>
+            <div class="footer-shape shape-2"></div>
+            <div class="footer-shape shape-3"></div>
+            <div class="footer-shape shape-4"></div>
+            <div class="footer-shape shape-5"></div>
+            <div class="footer-shape shape-6"></div>
+            <div class="footer-shape shape-7"></div>
         </div>
         <div class="container mx-auto px-4 py-12 relative z-10">
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -1963,25 +2048,14 @@
 
         // 添加粒子效果创建函数
         function createParticles() {
-            // 首先处理Hero部分的粒子
+            // 只处理Hero部分的粒子，移除底部粒子以减少资源消耗
             const heroContainer = document.getElementById('hero-particles');
             if (heroContainer) {
                 createParticlesInContainer(heroContainer, {
-                    count: 60, 
-                    colors: ['#2563eb', '#3b82f6', '#0ea5e9', '#38bdf8', '#f97316'],
-                    sizeRange: [10, 30],
-                    speedRange: [4, 8]
-                });
-            }
-            
-            // 处理底部的粒子容器
-            const footerContainer = document.getElementById('particles-container');
-            if (footerContainer) {
-                createParticlesInContainer(footerContainer, {
-                    count: 40,
-                    colors: ['#2563eb', '#0ea5e9', '#f97316', '#3b82f6', '#38bdf8'],
-                    sizeRange: [8, 25],
-                    speedRange: [5, 9]
+                    count: 30, // 减少粒子数量
+                    colors: ['#2563eb', '#3b82f6', '#0ea5e9'],
+                    sizeRange: [10, 25],
+                    speedRange: [4, 7]
                 });
             }
             
