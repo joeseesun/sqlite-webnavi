@@ -2435,7 +2435,46 @@
                 
                 // 设置选中的标签
                 console.log('网站的标签数据:', site.tags);
-                setSelectedTags(site.tags.map(t => t.id));
+                if (tagifyInstance) {
+                    // 首先清除所有现有标签
+                    tagifyInstance.removeAllTags();
+                    
+                    // 格式化标签数据以包含ID，确保正确的数据结构
+                    const formattedTags = site.tags.map(tag => ({
+                        value: tag.name,
+                        id: tag.id,
+                        // 添加一些额外的属性以确保标签正确显示和处理
+                        searchBy: tag.name.toLowerCase()
+                    }));
+                    
+                    console.log('格式化后的标签数据:', formattedTags);
+                    
+                    // 使用addTags方法添加格式化好的标签
+                    tagifyInstance.addTags(formattedTags);
+                    
+                    // 验证标签是否成功添加
+                    console.log('添加标签后Tagify的值:', tagifyInstance.value);
+                    
+                    // 确保所有标签都有ID属性
+                    setTimeout(() => {
+                        const currentTags = tagifyInstance.value;
+                        console.log('检查最终标签状态:', currentTags);
+                        let allHaveIds = true;
+                        
+                        for (const tag of currentTags) {
+                            if (!tag.id) {
+                                allHaveIds = false;
+                                console.error('发现没有ID的标签:', tag);
+                            }
+                        }
+                        
+                        if (allHaveIds) {
+                            console.log('所有标签都有正确的ID');
+                        } else {
+                            console.warn('警告: 部分标签ID缺失');
+                        }
+                    }, 500);
+                }
                 
                 // 更新模态框标题
                 document.getElementById('modal-title').textContent = `编辑网站: ${site.name}`;
