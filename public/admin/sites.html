@@ -3087,6 +3087,142 @@
         detectOS();
         setupPasteListeners();
         addAnimationStyles();
+
+        // ... existing code ...
+        async function createSite() {
+            setSubmitState(true, '正在创建网站...');
+            try {
+                const formData = getFormData();
+                
+                // 确保标签数据被正确收集和格式化
+                if (tagifyInstance) {
+                    console.log('收集标签数据');
+                    // 使用Tagify API直接获取标签值
+                    const tagifyValues = tagifyInstance.value;
+                    // 提取标签ID，确保每个标签都有ID
+                    const tagIds = tagifyValues
+                        .filter(tag => tag.id) // 只选择有ID的标签
+                        .map(tag => tag.id);   // 提取ID
+                    
+                    console.log('收集到的标签ID:', tagIds);
+                    // 将标签ID数组设置到formData中
+                    formData.set('tags', JSON.stringify(tagIds));
+                }
+                
+                console.log('提交数据:', {
+                    name: formData.get('name'),
+                    url: formData.get('url'),
+                    description: formData.get('description'),
+                    categories: formData.get('categories'),
+                    tags: formData.get('tags')
+                });
+                
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/sites', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || '添加网站失败');
+                }
+                
+                const newSite = await response.json();
+                console.log('新网站创建成功:', newSite);
+                
+                showToast('success', '添加网站成功');
+                resetForm();
+                closeModal();
+                loadSites();
+            } catch (error) {
+                console.error('添加网站失败:', error);
+                showToast('error', error.message || '添加网站失败');
+                setSubmitState(false);
+            }
+        }
+
+        function getFormData() {
+            const form = document.getElementById('site-form');
+            const formData = new FormData(form);
+            
+            // 处理分类多选
+            const categorySelect = document.getElementById('site-categories');
+            const selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
+            formData.set('categories', JSON.stringify(selectedCategories));
+            
+            // 处理标签 - 收集Tagify数据在createSite函数中进行
+            // 先移除原始标签字段以避免干扰，后面会重新设置
+            if (formData.has('tags')) {
+                formData.delete('tags');
+            }
+            
+            return formData;
+        }
+        // ... existing code ...
+
+        // 更新网站
+        async function updateSite() {
+            setSubmitState(true, '正在更新网站...');
+            try {
+                const siteId = document.getElementById('site-id').value;
+                const formData = getFormData();
+                
+                // 确保标签数据被正确收集和格式化
+                if (tagifyInstance) {
+                    console.log('收集标签数据 (更新)');
+                    // 使用Tagify API直接获取标签值
+                    const tagifyValues = tagifyInstance.value;
+                    // 提取标签ID，确保每个标签都有ID
+                    const tagIds = tagifyValues
+                        .filter(tag => tag.id) // 只选择有ID的标签
+                        .map(tag => tag.id);   // 提取ID
+                    
+                    console.log('更新时收集到的标签ID:', tagIds);
+                    // 将标签ID数组设置到formData中
+                    formData.set('tags', JSON.stringify(tagIds));
+                }
+                
+                console.log('更新提交数据:', {
+                    id: siteId,
+                    name: formData.get('name'),
+                    url: formData.get('url'),
+                    description: formData.get('description'),
+                    categories: formData.get('categories'),
+                    tags: formData.get('tags')
+                });
+                
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/sites/${siteId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || '更新网站失败');
+                }
+                
+                const updatedSite = await response.json();
+                console.log('网站更新成功:', updatedSite);
+                
+                showToast('success', '更新网站成功');
+                resetForm();
+                closeModal();
+                loadSites();
+            } catch (error) {
+                console.error('更新网站失败:', error);
+                showToast('error', error.message || '更新网站失败');
+                setSubmitState(false);
+            }
+        }
+        // ... existing code ...
     </script>
 </body>
 </html> 
