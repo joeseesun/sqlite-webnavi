@@ -114,6 +114,19 @@ async function initializeDatabase() {
         FOREIGN KEY (tagId) REFERENCES tags(id),
         PRIMARY KEY (siteId, tagId)
       );
+
+      CREATE TABLE IF NOT EXISTS site_settings (
+        id TEXT PRIMARY KEY,
+        site_name TEXT NOT NULL,
+        site_description TEXT,
+        footer_text TEXT,
+        github_url TEXT,
+        twitter_url TEXT,
+        email TEXT,
+        contact_qrcode TEXT,
+        donation_qrcode TEXT,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+      );
     `);
 
     // 检查是否有默认用户，如果没有则创建
@@ -124,6 +137,24 @@ async function initializeDatabase() {
         'INSERT INTO users (id, username, password, lastLogin) VALUES (?, ?, ?, ?)',
         [uuidv4(), 'joe', hashedPassword, new Date().toISOString()]
       );
+    }
+
+    // 检查是否有默认设置，如果没有则创建
+    const settings = await db.get('SELECT * FROM site_settings LIMIT 1');
+    if (!settings) {
+      await db.run(
+        'INSERT INTO site_settings (id, site_name, site_description, footer_text, github_url, twitter_url, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+          uuidv4(), 
+          '乔木精选推荐', 
+          '精选AI与知识工具集',
+          '© 2025 向阳乔木. 保留所有权利.',
+          'https://github.com/joeseesun',
+          'https://twitter.com/vista8',
+          'vista8@gmail.com'
+        ]
+      );
+      console.log('创建了默认网站设置');
     }
 
     console.log('数据库初始化成功');
@@ -1226,6 +1257,139 @@ app.delete('/api/tags/:id', authenticateToken, async (req, res) => {
     res.status(204).send();
   } catch (error) {
     console.error('删除标签失败:', error);
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
+// 网站设置相关路由
+app.get('/api/settings', async (req, res) => {
+  try {
+    const settings = await db.get('SELECT * FROM site_settings LIMIT 1');
+    if (!settings) {
+      return res.status(404).json({ error: '网站设置不存在' });
+    }
+    res.json(settings);
+  } catch (error) {
+    console.error('获取网站设置失败:', error);
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
+app.put('/api/settings/:id', authenticateToken, upload.fields([
+  { name: 'contact_qrcode', maxCount: 1 },
+  { name: 'donation_qrcode', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { 
+      site_name, 
+      site_description, 
+      footer_text, 
+      github_url, 
+      twitter_url, 
+      email 
+    } = req.body;
+
+    // 验证必填字段
+    if (!site_name) {
+      return res.status(400).json({ error: '网站名称不能为空' });
+    }
+
+    // 获取原有设置
+    const existingSettings = await db.get('SELECT * FROM site_settings WHERE id = ?', [id]);
+    if (!existingSettings) {
+      return res.status(404).json({ error: '网站设置不存在' });
+    }
+
+    // 处理二维码图片上传
+    let contactQrcodePath = existingSettings.contact_qrcode;
+    let donationQrcodePath = existingSettings.donation_qrcode;
+
+    // 处理联系二维码上传
+    if (req.files && req.files.contact_qrcode && req.files.contact_qrcode.length > 0) {
+      const file = req.files.contact_qrcode[0];
+      const fileExt = file.originalname.split('.').pop();
+      const fileName = `contact_qrcode_${Date.now()}.${fileExt}`;
+      const filePath = path.join(__dirname, 'public', 'uploads', 'qrcodes', fileName);
+      
+      // 确保目录存在
+      await fsPromises.mkdir(path.join(__dirname, 'public', 'uploads', 'qrcodes'), { recursive: true });
+      
+      // 写入文件
+      await fsPromises.writeFile(filePath, file.buffer);
+      
+      // 更新路径
+      contactQrcodePath = `/public/uploads/qrcodes/${fileName}`;
+      
+      // 如果有旧文件，尝试删除
+      if (existingSettings.contact_qrcode) {
+        try {
+          const oldPath = path.join(__dirname, existingSettings.contact_qrcode.replace(/^\//, ''));
+          await fsPromises.unlink(oldPath);
+        } catch (err) {
+          console.error('删除旧联系二维码失败:', err);
+        }
+      }
+    }
+
+    // 处理赞赏二维码上传
+    if (req.files && req.files.donation_qrcode && req.files.donation_qrcode.length > 0) {
+      const file = req.files.donation_qrcode[0];
+      const fileExt = file.originalname.split('.').pop();
+      const fileName = `donation_qrcode_${Date.now()}.${fileExt}`;
+      const filePath = path.join(__dirname, 'public', 'uploads', 'qrcodes', fileName);
+      
+      // 确保目录存在
+      await fsPromises.mkdir(path.join(__dirname, 'public', 'uploads', 'qrcodes'), { recursive: true });
+      
+      // 写入文件
+      await fsPromises.writeFile(filePath, file.buffer);
+      
+      // 更新路径
+      donationQrcodePath = `/public/uploads/qrcodes/${fileName}`;
+      
+      // 如果有旧文件，尝试删除
+      if (existingSettings.donation_qrcode) {
+        try {
+          const oldPath = path.join(__dirname, existingSettings.donation_qrcode.replace(/^\//, ''));
+          await fsPromises.unlink(oldPath);
+        } catch (err) {
+          console.error('删除旧赞赏二维码失败:', err);
+        }
+      }
+    }
+
+    // 更新设置
+    await db.run(
+      `UPDATE site_settings SET 
+        site_name = ?, 
+        site_description = ?, 
+        footer_text = ?, 
+        github_url = ?, 
+        twitter_url = ?, 
+        email = ?, 
+        contact_qrcode = ?, 
+        donation_qrcode = ?, 
+        updated_at = datetime('now') 
+      WHERE id = ?`,
+      [
+        site_name, 
+        site_description, 
+        footer_text, 
+        github_url, 
+        twitter_url, 
+        email, 
+        contactQrcodePath, 
+        donationQrcodePath, 
+        id
+      ]
+    );
+
+    // 获取更新后的设置
+    const updatedSettings = await db.get('SELECT * FROM site_settings WHERE id = ?', [id]);
+    res.json(updatedSettings);
+  } catch (error) {
+    console.error('更新网站设置失败:', error);
     res.status(500).json({ error: '服务器错误' });
   }
 });

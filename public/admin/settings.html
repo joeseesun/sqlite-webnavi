@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网站设置管理 - 管理后台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            padding-top: 20px;
+            background-color: #212529;
+            color: #fff;
+        }
+        .sidebar a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar a.active {
+            border-left: 3px solid #0d6efd;
+        }
+        .sidebar i {
+            margin-right: 10px;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .navbar {
+            margin-left: 250px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        .qrcode-container {
+            position: relative;
+            display: inline-block;
+        }
+        .overlay-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div class="col-md-2 sidebar d-none d-md-block">
+                <div class="text-center mb-4">
+                    <h4>管理后台</h4>
+                </div>
+                <a href="index.html"><i class="bi bi-house-door"></i> 首页</a>
+                <a href="sites.html"><i class="bi bi-link"></i> 网站管理</a>
+                <a href="categories.html"><i class="bi bi-folder"></i> 分类管理</a>
+                <a href="tags.html"><i class="bi bi-tags"></i> 标签管理</a>
+                <a href="settings.html" class="active"><i class="bi bi-gear"></i> 网站设置</a>
+                <div class="mt-5">
+                    <a href="#" id="logout-btn"><i class="bi bi-box-arrow-right"></i> 退出登录</a>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="col-md-10 content">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+                    <div class="container-fluid">
+                        <h4 class="mb-0">网站设置管理</h4>
+                        <button type="button" class="btn btn-sm btn-outline-secondary d-md-none" data-bs-toggle="collapse" data-bs-target="#mobileSidebar">
+                            <i class="bi bi-list"></i> 菜单
+                        </button>
+                    </div>
+                </nav>
+
+                <!-- 移动端侧边栏 -->
+                <div class="collapse d-md-none mb-3" id="mobileSidebar">
+                    <div class="list-group">
+                        <a href="index.html" class="list-group-item list-group-item-action"><i class="bi bi-house-door"></i> 首页</a>
+                        <a href="sites.html" class="list-group-item list-group-item-action"><i class="bi bi-link"></i> 网站管理</a>
+                        <a href="categories.html" class="list-group-item list-group-item-action"><i class="bi bi-folder"></i> 分类管理</a>
+                        <a href="tags.html" class="list-group-item list-group-item-action"><i class="bi bi-tags"></i> 标签管理</a>
+                        <a href="settings.html" class="list-group-item list-group-item-action active"><i class="bi bi-gear"></i> 网站设置</a>
+                        <a href="#" id="mobile-logout-btn" class="list-group-item list-group-item-action"><i class="bi bi-box-arrow-right"></i> 退出登录</a>
+                    </div>
+                </div>
+
+                <div class="alert alert-success alert-dismissible fade" role="alert" id="successAlert">
+                    <strong>成功!</strong> 网站设置已更新。
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="alert alert-danger alert-dismissible fade" role="alert" id="errorAlert">
+                    <strong>错误!</strong> <span id="errorMessage"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form id="settingsForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="siteName" class="form-label">网站名称 <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="siteName" name="site_name" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="siteDescription" class="form-label">网站描述</label>
+                                        <textarea class="form-control" id="siteDescription" name="site_description" rows="3"></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="footerText" class="form-label">底部文字</label>
+                                        <textarea class="form-control" id="footerText" name="footer_text" rows="3"></textarea>
+                                        <small class="form-text text-muted">可以使用HTML标签，如 &lt;a href="..."&gt;链接文字&lt;/a&gt;</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="githubUrl" class="form-label">GitHub链接</label>
+                                        <input type="url" class="form-control" id="githubUrl" name="github_url">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="twitterUrl" class="form-label">Twitter链接</label>
+                                        <input type="url" class="form-control" id="twitterUrl" name="twitter_url">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">联系邮箱</label>
+                                        <input type="email" class="form-control" id="email" name="email">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="contactQrcode" class="form-label">联系二维码</label>
+                                        <input type="file" class="form-control" id="contactQrcode" name="contact_qrcode" accept="image/*">
+                                        <small class="form-text text-muted">推荐尺寸: 300x300像素, 支持PNG/JPG格式</small>
+                                        <div class="qrcode-container" id="contactQrcodePreview" style="display:none;">
+                                            <img src="" alt="联系二维码预览" class="preview-image" id="contactQrcodeImg">
+                                            <button type="button" class="overlay-button" id="removeContactQrcode" title="移除二维码">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="donationQrcode" class="form-label">打赏二维码</label>
+                                        <input type="file" class="form-control" id="donationQrcode" name="donation_qrcode" accept="image/*">
+                                        <small class="form-text text-muted">推荐尺寸: 300x300像素, 支持PNG/JPG格式</small>
+                                        <div class="qrcode-container" id="donationQrcodePreview" style="display:none;">
+                                            <img src="" alt="打赏二维码预览" class="preview-image" id="donationQrcodeImg">
+                                            <button type="button" class="overlay-button" id="removeDonationQrcode" title="移除二维码">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary" id="saveBtn">
+                                    <i class="bi bi-save"></i> 保存设置
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+            }
+            return token;
+        }
+
+        // 注销功能
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('mobile-logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        });
+
+        // 显示错误或成功消息
+        function showAlert(type, message = '') {
+            const alert = document.getElementById(type + 'Alert');
+            if (type === 'error') {
+                document.getElementById('errorMessage').textContent = message;
+            }
+            alert.classList.add('show');
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        // 二维码预览功能
+        function handleFileSelect(fileInput, previewContainer, previewImg) {
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewContainer.style.display = 'inline-block';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+
+        // 移除二维码功能
+        function setupRemoveButton(removeBtn, fileInput, previewContainer) {
+            removeBtn.addEventListener('click', function() {
+                fileInput.value = '';
+                previewContainer.style.display = 'none';
+            });
+        }
+
+        // 获取设置数据
+        async function fetchSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                if (!response.ok) {
+                    throw new Error('获取设置失败');
+                }
+                const settings = await response.json();
+                populateForm(settings);
+            } catch (error) {
+                console.error('获取设置错误:', error);
+                showAlert('error', '无法加载网站设置，请刷新页面重试');
+            }
+        }
+
+        // 填充表单数据
+        function populateForm(settings) {
+            document.getElementById('siteName').value = settings.site_name || '';
+            document.getElementById('siteDescription').value = settings.site_description || '';
+            document.getElementById('footerText').value = settings.footer_text || '';
+            document.getElementById('githubUrl').value = settings.github_url || '';
+            document.getElementById('twitterUrl').value = settings.twitter_url || '';
+            document.getElementById('email').value = settings.email || '';
+
+            // 处理联系二维码
+            if (settings.contact_qrcode) {
+                document.getElementById('contactQrcodeImg').src = settings.contact_qrcode;
+                document.getElementById('contactQrcodePreview').style.display = 'inline-block';
+            }
+
+            // 处理打赏二维码
+            if (settings.donation_qrcode) {
+                document.getElementById('donationQrcodeImg').src = settings.donation_qrcode;
+                document.getElementById('donationQrcodePreview').style.display = 'inline-block';
+            }
+
+            // 保存设置ID用于更新
+            document.getElementById('settingsForm').dataset.id = settings.id;
+        }
+
+        // 提交表单
+        document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const token = checkAuth();
+            const settingsId = this.dataset.id;
+
+            if (!settingsId) {
+                showAlert('error', '设置ID不存在，请刷新页面重试');
+                return;
+            }
+
+            // 准备表单数据
+            const formData = new FormData(this);
+            
+            try {
+                // 显示保存按钮加载状态
+                const saveBtn = document.getElementById('saveBtn');
+                const originalBtnText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 保存中...';
+                saveBtn.disabled = true;
+
+                // 发送更新请求
+                const response = await fetch(`/api/settings/${settingsId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                // 恢复保存按钮状态
+                saveBtn.innerHTML = originalBtnText;
+                saveBtn.disabled = false;
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || '更新设置失败');
+                }
+
+                // 处理成功响应
+                const updatedSettings = await response.json();
+                populateForm(updatedSettings);
+                showAlert('success');
+            } catch (error) {
+                console.error('更新设置错误:', error);
+                showAlert('error', error.message);
+            }
+        });
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            fetchSettings();
+
+            // 设置二维码预览
+            handleFileSelect(
+                document.getElementById('contactQrcode'),
+                document.getElementById('contactQrcodePreview'),
+                document.getElementById('contactQrcodeImg')
+            );
+            
+            handleFileSelect(
+                document.getElementById('donationQrcode'),
+                document.getElementById('donationQrcodePreview'),
+                document.getElementById('donationQrcodeImg')
+            );
+
+            // 设置移除二维码按钮
+            setupRemoveButton(
+                document.getElementById('removeContactQrcode'),
+                document.getElementById('contactQrcode'),
+                document.getElementById('contactQrcodePreview')
+            );
+            
+            setupRemoveButton(
+                document.getElementById('removeDonationQrcode'),
+                document.getElementById('donationQrcode'),
+                document.getElementById('donationQrcodePreview')
+            );
+        });
+    </script>
+</body>
+</html> 

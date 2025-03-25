@@ -5,54 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>乔木精选推荐 | 精选AI与知识工具集</title>
     <meta name="description" content="发现最佳AI、阅读与知识管理工具，提升工作效率">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon/favicon.ico">
     <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
-            --secondary: #14b8a6;
-            --secondary-light: #2dd4bf;
-            --secondary-dark: #0d9488;
-            --secondary-gradient: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
-            --accent: #f59e0b;
-            --accent-light: #fbbf24;
-            --accent-dark: #d97706;
-            --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
+            /* 主色调：从紫色改为专业蓝色 */
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            
+            /* 次要色调：从青色改为浅蓝色 */
+            --secondary: #0ea5e9;
+            --secondary-light: #38bdf8;
+            --secondary-dark: #0284c7;
+            --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            
+            /* 强调色：稍微调整橙色 */
+            --accent: #f97316;
+            --accent-light: #fb923c;
+            --accent-dark: #ea580c;
+            --accent-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            
+            /* 文本颜色：加深主文本颜色 */
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            
+            /* 背景颜色：轻微调整 */
+            --bg-primary: #fafafa;
+            --bg-secondary: #f3f4f6;
+            
+            /* 卡片样式优化 */
             --card-bg: #ffffff;
-            --card-border: #e2e8f0;
-            --card-shadow: rgba(51, 65, 85, 0.1);
-            --nav-blur: rgba(255, 255, 255, 0.9);
+            --card-border: #e5e7eb;
+            --card-shadow: rgba(0, 0, 0, 0.08);
+            
+            /* 导航栏背景 */
+            --nav-blur: rgba(250, 250, 250, 0.9);
         }
 
+        /* 深色模式配色优化 */
         .dark {
-            --primary: #818cf8;
-            --primary-light: #a5b4fc;
-            --primary-dark: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #818cf8 0%, #a5b4fc 100%);
-            --secondary: #2dd4bf;
-            --secondary-light: #5eead4;
-            --secondary-dark: #14b8a6;
-            --secondary-gradient: linear-gradient(135deg, #2dd4bf 0%, #5eead4 100%);
-            --accent: #fbbf24;
-            --accent-light: #fcd34d;
-            --accent-dark: #f59e0b;
-            --accent-gradient: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --card-shadow: rgba(0, 0, 0, 0.3);
-            --nav-blur: rgba(15, 23, 42, 0.9);
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            
+            --secondary: #38bdf8;
+            --secondary-light: #7dd3fc;
+            --secondary-dark: #0ea5e9;
+            --secondary-gradient: linear-gradient(135deg, #38bdf8 0%, #7dd3fc 100%);
+            
+            --accent: #fb923c;
+            --accent-light: #fdba74;
+            --accent-dark: #f97316;
+            --accent-gradient: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+            
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            
+            --card-bg: #1f2937;
+            --card-border: #374151;
+            --card-shadow: rgba(0, 0, 0, 0.25);
+            
+            --nav-blur: rgba(17, 24, 39, 0.9);
         }
 
         body {
@@ -61,10 +86,13 @@
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
+            line-height: 1.6;
+            letter-spacing: 0.01em;
         }
 
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Noto Serif SC', serif;
+            letter-spacing: -0.01em;
         }
 
         .category-title {
@@ -78,30 +106,30 @@
             position: absolute;
             bottom: -8px;
             left: 0;
-            height: 4px;
-            width: 60px;
-            background: var(--primary-gradient);
-            border-radius: 4px;
+            height: 3px;
+            width: 50px;
+            background: var(--primary);
+            border-radius: 2px;
         }
 
         /* 美化的卡片样式 */
         .site-card {
             background-color: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 10px; /* 减小圆角 */
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); /* 平滑过渡 */
             height: 100%;
             display: block;
             position: relative;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px var(--card-shadow); /* 更精细的阴影 */
             border: 1px solid var(--card-border);
             text-decoration: none;
             color: inherit;
         }
 
         .site-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px var(--card-shadow);
+            transform: translateY(-6px); /* 减小上移距离 */
+            box-shadow: 0 12px 20px var(--card-shadow); /* 更精致的悬浮阴影 */
             border-color: var(--primary-light);
         }
 
@@ -127,58 +155,58 @@
         }
 
         .site-card:hover .card-img {
-            transform: scale(1.08);
+            transform: scale(1.05);
         }
 
         /* 美化的标签 */
         .tag {
-            padding: 0.3rem 0.8rem;
-            border-radius: 9999px;
+            padding: 0.25rem 0.7rem; /* 稍微紧凑 */
+            border-radius: 6px; /* 减小圆角 */
             font-size: 0.75rem;
             font-weight: 500;
             display: inline-block;
             margin-right: 0.5rem;
             margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* 更精细的阴影 */
         }
 
         .tag:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
         }
 
         .tag-ai {
-            background-color: rgba(99, 102, 241, 0.1);
+            background-color: rgba(37, 99, 235, 0.1);
             color: var(--primary);
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(37, 99, 235, 0.2);
         }
 
         .dark .tag-ai {
-            background-color: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            background-color: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .tag-productivity {
-            background-color: rgba(16, 185, 129, 0.1);
+            background-color: rgba(14, 165, 233, 0.1);
             color: var(--secondary);
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(14, 165, 233, 0.2);
         }
 
         .dark .tag-productivity {
-            background-color: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background-color: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
         .tag-reading {
-            background-color: rgba(245, 158, 11, 0.1);
+            background-color: rgba(249, 115, 22, 0.1);
             color: var(--accent);
-            border: 1px solid rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(249, 115, 22, 0.2);
         }
 
         .dark .tag-reading {
-            background-color: rgba(245, 158, 11, 0.15);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            background-color: rgba(251, 146, 60, 0.15);
+            border: 1px solid rgba(251, 146, 60, 0.3);
         }
 
         /* 美化的搜索框 */
@@ -190,18 +218,18 @@
 
         .search-box {
             background-color: var(--card-bg);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 1rem 1.5rem 1rem 3.5rem;
+            border: 1px solid var(--card-border); /* 添加边框 */
+            border-radius: 8px; /* 减小圆角 */
+            padding: 0.9rem 1.5rem 0.9rem 3.2rem;
             width: 100%;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.25s ease;
+            font-size: 1rem; /* 减小字号 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* 更精细的阴影 */
         }
 
         .search-box:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); /* 调整聚焦阴影 */
             outline: none;
         }
 
@@ -211,7 +239,7 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-secondary);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         /* 美化的分类标签 */
@@ -232,7 +260,7 @@
         .category-tab {
             white-space: nowrap;
             padding: 0.6rem 1.2rem;
-            border-radius: 9999px;
+            border-radius: 8px; /* 减小圆角 */
             font-weight: 600;
             font-size: 0.95rem;
             cursor: pointer;
@@ -245,14 +273,14 @@
 
         .category-tab:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
             color: var(--primary);
         }
 
         .category-tab.active {
-            background: var(--primary-gradient);
+            background: var(--primary);
             color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
         }
 
         /* 美化的导航栏 */
@@ -283,7 +311,7 @@
             height: 2px;
             bottom: 0;
             left: 0;
-            background: var(--primary-gradient);
+            background: var(--primary);
             transition: width 0.3s ease;
             border-radius: 2px;
         }
@@ -308,10 +336,10 @@
         .hamburger span {
             display: block;
             position: absolute;
-            height: 3px;
+            height: 2px; /* 更细的线条 */
             width: 100%;
             background: var(--text-primary);
-            border-radius: 3px;
+            border-radius: 2px;
             transition: .25s ease-in-out;
         }
 
@@ -320,15 +348,15 @@
         }
 
         .hamburger span:nth-child(2), .hamburger span:nth-child(3) {
-            top: 8px;
+            top: 9px;
         }
 
         .hamburger span:nth-child(4) {
-            top: 16px;
+            top: 18px;
         }
 
         .hamburger.active span:nth-child(1) {
-            top: 8px;
+            top: 9px;
             width: 0%;
             left: 50%;
         }
@@ -342,7 +370,7 @@
         }
 
         .hamburger.active span:nth-child(4) {
-            top: 8px;
+            top: 9px;
             width: 0%;
             left: 50%;
         }
@@ -388,10 +416,10 @@
         /* 主题切换按钮 */
         .theme-toggle {
             position: relative;
-            width: 56px;
-            height: 28px;
-            border-radius: 14px;
-            background: var(--primary-gradient);
+            width: 52px;
+            height: 26px;
+            border-radius: 13px;
+            background: var(--primary);
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -402,8 +430,8 @@
             position: absolute;
             top: 3px;
             left: 3px;
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             background-color: white;
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s;
@@ -411,11 +439,11 @@
         }
 
         .dark .theme-toggle {
-            background: var(--primary-gradient);
+            background: var(--primary);
         }
 
         .dark .theme-toggle::after {
-            transform: translateX(28px);
+            transform: translateX(26px);
             background-color: var(--bg-secondary);
         }
 
@@ -431,12 +459,12 @@
             right: auto;
             background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
             color: white;
-            padding: 0.3rem 0.8rem;
+            padding: 0.25rem 0.7rem;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: bold;
             z-index: 10;
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25);
             transform: translateY(0);
             animation: pulse 2s infinite;
         }
@@ -458,11 +486,11 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: var(--primary-gradient);
+            background: var(--primary);
             color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -471,7 +499,7 @@
             visibility: hidden;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 30;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
         .back-to-top.visible {
@@ -481,8 +509,8 @@
         }
 
         .back-to-top:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
         }
 
         @media (max-width: 768px) {
@@ -498,28 +526,90 @@
                 font-size: 0.7rem;
             }
             .back-to-top {
-                width: 45px;
-                height: 45px;
+                width: 42px;
+                height: 42px;
                 bottom: 20px;
                 right: 20px;
             }
         }
 
-        /* 波浪背景 */
+        /* 动态波浪背景 */
         .wave-bg {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 120px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%234f46e5" fill-opacity="0.1" d="M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-            background-size: cover;
-            background-repeat: no-repeat;
             z-index: -1;
+            overflow: hidden;
         }
 
-        .dark .wave-bg {
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%236366f1" fill-opacity="0.15" d="M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background-repeat: repeat-x;
+            animation: wave-animation 25s linear infinite;
+        }
+
+        .wave-1 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%232563eb' fill-opacity='0.08' d='M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 50% 100%;
+            z-index: 3;
+        }
+
+        .wave-2 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%230ea5e9' fill-opacity='0.06' d='M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 50% 100%;
+            animation-duration: 30s;
+            animation-delay: -5s;
+            opacity: 0.7;
+            z-index: 2;
+        }
+
+        .wave-3 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f97316' fill-opacity='0.03' d='M0,128L48,149.3C96,171,192,213,288,218.7C384,224,480,192,576,181.3C672,171,768,181,864,186.7C960,192,1056,192,1152,170.7C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 50% 100%;
+            animation-duration: 35s;
+            animation-delay: -2s;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .dark .wave-1 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%233b82f6' fill-opacity='0.15' d='M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        .dark .wave-2 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2338bdf8' fill-opacity='0.1' d='M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        .dark .wave-3 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23fb923c' fill-opacity='0.07' d='M0,128L48,149.3C96,171,192,213,288,218.7C384,224,480,192,576,181.3C672,171,768,181,864,186.7C960,192,1056,192,1152,170.7C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        @keyframes wave-animation {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Logo美化 - 改为纯黑/纯白 */
+        .logo {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+            font-size: 1.75rem;
+            color: #000000;
+            transition: color 0.3s ease;
+        }
+
+        .dark .logo {
+            color: #ffffff;
         }
 
         /* 鼠标悬停访问按钮效果 */
@@ -527,9 +617,9 @@
             display: inline-flex;
             align-items: center;
             padding: 0.4rem 0.8rem;
-            border-radius: 8px;
+            border-radius: 6px; /* 减小圆角 */
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease; /* 加快过渡速度 */
             background-color: transparent;
             color: var(--primary);
             border: 1px solid var(--primary-light);
@@ -539,7 +629,7 @@
             background-color: var(--primary);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3); /* 调整阴影颜色 */
         }
 
         .visit-btn i {
@@ -573,10 +663,10 @@
         }
         
         .loader-circle {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--primary-light);
-            border-top: 4px solid var(--primary);
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(37, 99, 235, 0.2);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
@@ -584,7 +674,7 @@
         
         .loader-text {
             color: var(--text-primary);
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 500;
         }
         
@@ -619,25 +709,14 @@
             padding: 4rem 0;
             background-color: var(--bg-secondary);
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 20%), 
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 20%);
+                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 20%), 
+                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 20%);
         }
 
         .dark .hero-section {
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 25%), 
-                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 25%);
-        }
-
-        /* Logo美化 */
-        .logo {
-            font-family: 'Noto Serif SC', serif;
-            font-weight: 700;
-            font-size: 1.75rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 6px rgba(99, 102, 241, 0.2);
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 25%), 
+                radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 25%);
         }
 
         /* 卡片内部信息布局优化 */
@@ -656,9 +735,10 @@
         }
 
         .card-title {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 0.25rem;
+            color: var(--text-primary);
         }
 
         .card-description {
@@ -676,15 +756,13 @@
             left: 0;
             width: 100%;
             height: 100px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="%23f3f4f6" fill-opacity="1" d="M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-            background-size: cover;
-            background-repeat: no-repeat;
+            overflow: hidden;
             transform: rotate(180deg);
             z-index: 1;
         }
 
-        .dark .footer-wave {
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="%231f2937" fill-opacity="1" d="M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        .footer-wave .wave {
+            animation-duration: 30s;
         }
 
         /* 社交图标美化 */
@@ -692,9 +770,9 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
             color: var(--text-secondary);
             background-color: var(--bg-secondary);
             transition: all 0.3s ease;
@@ -702,9 +780,9 @@
 
         .social-icon:hover {
             color: white;
-            background: var(--primary-gradient);
+            background: var(--primary);
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 5px 12px rgba(37, 99, 235, 0.25);
         }
 
         /* 赞赏模态框 */
@@ -732,7 +810,7 @@
 
         .donation-content {
             background-color: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 2rem;
             max-width: 400px;
             width: 90%;
@@ -903,7 +981,7 @@
         <div class="container mx-auto px-4">
             <div class="text-center">
                 <h1 class="text-4xl md:text-6xl font-bold mb-6 relative inline-block">
-                    <span style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">效率工具集锦</span>
+                    <span style="color: #000000;">效率工具集锦</span>
                 </h1>
                 <p class="text-lg md:text-xl mb-10" style="color: var(--text-secondary);">
                     发现最佳AI、阅读与知识管理工具，<span class="font-semibold" style="color: var(--primary);">提升工作效率</span>
@@ -920,7 +998,11 @@
                 </div>
             </div>
         </div>
-        <div class="wave-bg"></div>
+        <div class="wave-bg">
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+            <div class="wave wave-3"></div>
+        </div>
     </section>
 
     <!-- Category Tabs (Mobile Scrollable) -->
@@ -943,256 +1025,15 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
-        <!-- AI Tools Section -->
-        <section id="ai-tools" class="mb-12 category-section" data-category="ai-tools">
-            <h2 class="category-title text-2xl md:text-3xl font-bold">AI工具</h2>
-            <p class="text-lg mb-8" style="color: var(--text-secondary);">AI驱动的高效生产力工具，让您的工作更智能化</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Windsurf -->
-                <a href="https://codeium.com/windsurf" target="_blank" class="site-card" data-tags="ai coding development">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/bd80c6574a0cb508cc91ef7af0b2ede4.png" alt="Windsurf" class="card-img">
-                        <div class="hot-label" style="left: 12px; right: auto;">新品</div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">Windsurf</h3>
-                        </div>
-                        <p class="card-description">Codeium 推出的新一代 AI IDE，具备深度上下文理解、多文件编辑、智能命令建议等功能，让开发者保持心流状态。</p>
-                        <div>
-                            <span class="tag tag-ai">AI编程</span>
-                            <span class="tag tag-productivity">IDE</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Cursor -->
-                <a href="https://www.cursor.com/" target="_blank" class="site-card" data-tags="ai coding development">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/37b3f6674b3f3b0911ec5d7186409540.png" alt="Cursor" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">Cursor</h3>
-                        </div>
-                        <p class="card-description">Cursor是一款AI编程工具，支持Claude模型，提供了强大的代码补全和代码 review功能。</p>
-                        <div>
-                            <span class="tag tag-ai">AI编程</span>
-                            <span class="tag tag-productivity">开发工具</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Warp -->
-                <a href="https://www.warp.dev/" target="_blank" class="site-card" data-tags="ai terminal development">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/f51143140040d174c098c4dac967a6b3.png" alt="Warp" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">Warp</h3>
-                        </div>
-                        <p class="card-description">Warp是一款智能终端工具，内置AI功能和开发团队知识库，支持MacOS、Windows和Linux。</p>
-                        <div>
-                            <span class="tag tag-ai">AI助手</span>
-                            <span class="tag tag-productivity">终端工具</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Raycast AI -->
-                <a href="https://raycast.com/?via=joe-seesun" target="_blank" class="site-card" data-tags="ai productivity assistant mac">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/1f6a6452f3dd7832f943ae3280326407.png" alt="Raycast AI" class="card-img">
-                        <div class="hot-label" style="left: 12px; right: auto;">热门</div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">Raycast AI</h3>
-                        </div>
-                        <p class="card-description">Raycast AI是一款Mac生产力工具的AI功能集，提供快速AI问答、AI聊天窗口和自定义AI命令功能。</p>
-                        <div>
-                            <span class="tag tag-ai">AI助手</span>
-                            <span class="tag tag-productivity">效率工具</span>
-                            <span class="tag tag-productivity">Mac</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <!-- Reading Section -->
-        <section id="reading" class="mb-12 category-section" data-category="reading">
-            <h2 class="category-title text-2xl md:text-3xl font-bold">阅读与知识</h2>
-            <p class="text-lg mb-8" style="color: var(--text-secondary);">优质的阅读平台与知识工具，拓展视野、积累智慧</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Obsidian -->
-                <a href="https://obsidian.md/" target="_blank" class="site-card" data-tags="knowledge notes markdown">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/e8f1a884b08749b6d24c21b11aa1c3eb.png" alt="Obsidian" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">Obsidian</h3>
-                        </div>
-                        <p class="card-description">强大的知识管理工具，支持双向链接的个人知识库，让笔记形成知识网络。</p>
-                        <div>
-                            <span class="tag tag-productivity">知识管理</span>
-                            <span class="tag tag-reading">笔记</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 飞书 -->
-                <a href="https://www.feishu.cn/" target="_blank" class="site-card" data-tags="productivity collaboration">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/f51143140040d174c098c4dac967a6b3.png" alt="飞书" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">飞书</h3>
-                        </div>
-                        <p class="card-description">字节跳动出品的新一代办公套件，集文档、知识库、项目管理于一体。</p>
-                        <div>
-                            <span class="tag tag-productivity">知识管理</span>
-                            <span class="tag tag-productivity">协作</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- SumBuddy -->
-                <a href="https://sumbuddy.app/" target="_blank" class="site-card" data-tags="ai reading assistant">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/8de7116ef526ce37767a733169d76d4a.png" alt="SumBuddy" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">SumBuddy</h3>
-                        </div>
-                        <p class="card-description">SumBuddy是一个浏览器AI阅读助手，包含翻译、总结等常见AI操作。</p>
-                        <div>
-                            <span class="tag tag-ai">AI阅读</span>
-                            <span class="tag tag-reading">阅读助手</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 3分钟AI读书 -->
-                <a href="https://3min.top/?v=BETA" target="_blank" class="site-card" data-tags="ai reading book">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/12d24f1d8476565af9ba25ddeb86edcd.png" alt="3分钟AI读书" class="card-img">
-                        <div class="hot-label" style="left: 12px; right: auto;">热门</div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">3分钟AI读书</h3>
-                        </div>
-                        <p class="card-description">好友小明开发的AI辅助阅读工具，支持PDF、EPub电子书阅读，生成脑图，AI翻译，按章节总结，划线问AI等功能。</p>
-                        <div>
-                            <span class="tag tag-ai">AI阅读</span>
-                            <span class="tag tag-reading">电子书</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 微信读书 -->
-                <a href="https://weread.qq.com/" target="_blank" class="site-card" data-tags="reading books ebook">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/1f117450f5cdf352cf2b7895bd00821f.png" alt="微信读书" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">微信读书</h3>
-                        </div>
-                        <p class="card-description">微信读书是腾讯推出的基于微信关系链的官方阅读平台，支持iOS和Android系统。</p>
-                        <div>
-                            <span class="tag tag-reading">电子书</span>
-                            <span class="tag tag-reading">阅读平台</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <!-- Newsletter Section -->
-        <section id="newsletter" class="mb-12 category-section" data-category="newsletter">
-            <h2 class="category-title text-2xl md:text-3xl font-bold">精选Newsletter</h2>
-            <p class="text-lg mb-8" style="color: var(--text-secondary);">定期送达的精华内容，了解行业动态与深度洞察</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- 歸藏AIGC周刊 -->
-                <a href="https://www.xiaobot.net/p/guizangNews?refer=57b15ed3-a4b9-4f45-8137-7c0e49d84bbe" target="_blank" class="site-card" data-tags="newsletter ai news">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/46f974715d102189d80e45e2726e62e0.png" alt="歸藏AIGC周刊" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">歸藏AIGC周刊</h3>
-                        </div>
-                        <p class="card-description">歸藏AIGC周刊是国内最好的AI Newsletter，提供AI领域的最新信息和技术分享。</p>
-                        <div>
-                            <span class="tag tag-ai">AI资讯</span>
-                            <span class="tag tag-reading">周刊</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- AI项目商业解析 -->
-                <a href="https://www.xiaobot.net/p/aiyanjiu?refer=57b15ed3-a4b9-4f45-8137-7c0e49d84bbe" target="_blank" class="site-card" data-tags="newsletter ai business">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/e8f1a884b08749b6d24c21b11aa1c3eb.png" alt="AI项目商业解析" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">AI项目商业解析</h3>
-                        </div>
-                        <p class="card-description">AI项目商业解析是国内时间最早的AI商业分析newsletter。</p>
-                        <div>
-                            <span class="tag tag-ai">AI商业</span>
-                            <span class="tag tag-reading">分析</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 独立开发营销获客增长手册 -->
-                <a href="https://www.xiaobot.net/p/devgrowth?refer=57b15ed3-a4b9-4f45-8137-7c0e49d84bbe" target="_blank" class="site-card" data-tags="newsletter marketing indie">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/3f7c1606fb1594259c004d58d1bd113a.png" alt="独立开发营销获客增长手册" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">独立开发营销获客增长手册</h3>
-                        </div>
-                        <p class="card-description">独立开发营销获客增长手册是朋友yangyi倾囊相授的流量增长实战案例小报童账号。</p>
-                        <div>
-                            <span class="tag tag-productivity">独立开发</span>
-                            <span class="tag tag-reading">营销</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- 独立开发者成长指南 -->
-                <a href="https://www.xiaobot.net/p/developer-growth?refer=57b15ed3-a4b9-4f45-8137-7c0e49d84bbe" target="_blank" class="site-card" data-tags="newsletter indie development">
-                    <div class="card-img-container">
-                        <img src="https://pic.readnow.pro/2025/03/1f6a6452f3dd7832f943ae3280326407.png" alt="独立开发者成长指南" class="card-img">
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="card-title">独立开发者成长指南</h3>
-                        </div>
-                        <p class="card-description">分享独立开发者的成长经验、技术选型、项目管理等实用知识。</p>
-                        <div>
-                            <span class="tag tag-productivity">独立开发</span>
-                            <span class="tag tag-reading">成长</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </section>
     </main>
 
     <!-- Footer -->
     <footer style="background-color: var(--bg-secondary); position: relative; padding-top: 100px;">
-        <div class="footer-wave"></div>
+        <div class="footer-wave">
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+            <div class="wave wave-3"></div>
+        </div>
         <div class="container mx-auto px-4 py-12 relative z-10">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-8 md:mb-0 text-center md:text-left">
@@ -1250,6 +1091,7 @@
         let allSites = [];
         let allCategories = [];
         let allTags = [];
+        let siteSettings = null;
 
         // 从后端API获取数据并初始化页面
         async function fetchDataAndRenderPage() {
@@ -1258,14 +1100,15 @@
                 document.getElementById('pageLoader').classList.remove('hidden');
 
                 // 并行获取所有数据
-                const [sitesResponse, categoriesResponse, tagsResponse] = await Promise.all([
+                const [sitesResponse, categoriesResponse, tagsResponse, settingsResponse] = await Promise.all([
                     fetch('/api/sites'),
                     fetch('/api/categories'),
-                    fetch('/api/tags')
+                    fetch('/api/tags'),
+                    fetch('/api/settings')
                 ]);
 
                 // 检查响应状态
-                if (!sitesResponse.ok || !categoriesResponse.ok || !tagsResponse.ok) {
+                if (!sitesResponse.ok || !categoriesResponse.ok || !tagsResponse.ok || !settingsResponse.ok) {
                     throw new Error('获取数据失败，请刷新页面重试');
                 }
 
@@ -1273,10 +1116,15 @@
                 allSites = await sitesResponse.json();
                 allCategories = await categoriesResponse.json();
                 allTags = await tagsResponse.json();
+                siteSettings = await settingsResponse.json();
 
                 console.log('加载的网站数:', allSites.length);
                 console.log('加载的分类数:', allCategories.length);
                 console.log('加载的标签数:', allTags.length);
+                console.log('网站设置:', siteSettings);
+
+                // 应用网站设置
+                applySettings();
 
                 // 渲染页面内容
                 renderCategories();
@@ -1303,11 +1151,89 @@
                         <h2 class="text-2xl font-bold mb-2">数据加载失败</h2>
                         <p class="mb-4">很抱歉，加载数据时出现了问题: ${error.message}</p>
                         <button onclick="location.reload()" class="px-6 py-2 rounded-full transition-all" 
-                                style="background: var(--primary-gradient); color: white;">
+                                style="background: var(--primary); color: white;">
                             <i class="fas fa-redo mr-2"></i>重新加载
                         </button>
                     </div>
                 `;
+            }
+        }
+
+        // 应用网站设置到页面元素
+        function applySettings() {
+            if (!siteSettings) return;
+            
+            // 更新页面标题和描述
+            document.title = siteSettings.site_name || "精选AI与知识工具集";
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                metaDescription.content = siteSettings.site_description || "发现最佳AI、阅读与知识管理工具，提升工作效率";
+            }
+            
+            // 更新导航栏和移动菜单中的网站名称
+            const logoElements = document.querySelectorAll('.logo');
+            logoElements.forEach(el => {
+                el.textContent = siteSettings.site_name || "乔木精选推荐";
+            });
+            
+            // 更新Hero区域的标题和描述
+            const heroTitle = document.querySelector('.hero-section h1 span');
+            if (heroTitle) {
+                heroTitle.textContent = siteSettings.site_name || "效率工具集锦";
+            }
+            
+            // 更新页脚内容
+            const footerContent = document.querySelector('footer .mb-8.md\\:mb-0');
+            if (footerContent) {
+                footerContent.innerHTML = `
+                    <a href="#" class="logo text-3xl">${siteSettings.site_name || "乔木精选推荐"}</a>
+                    <p class="mt-3 text-lg" style="color: var(--text-secondary);">${siteSettings.site_description || "精选AI与知识工具集"}</p>
+                    <p class="mt-2" style="color: var(--text-secondary);">${siteSettings.footer_text || "更快、更智能地找到你需要的工具"}</p>
+                `;
+            }
+            
+            // 更新页脚版权信息
+            const footerCopyright = document.querySelector('footer .mt-10.pt-6.border-t p');
+            if (footerCopyright && siteSettings.footer_text) {
+                footerCopyright.innerHTML = siteSettings.footer_text;
+            }
+            
+            // 更新社交媒体链接
+            if (siteSettings.github_url) {
+                const githubLinks = document.querySelectorAll('a[title="GitHub"]');
+                githubLinks.forEach(link => {
+                    link.href = siteSettings.github_url;
+                });
+            }
+            
+            if (siteSettings.twitter_url) {
+                const twitterLinks = document.querySelectorAll('a[title="Twitter"]');
+                twitterLinks.forEach(link => {
+                    link.href = siteSettings.twitter_url;
+                });
+            }
+            
+            if (siteSettings.email) {
+                const emailLinks = document.querySelectorAll('a[title="Email"]');
+                emailLinks.forEach(link => {
+                    link.href = `mailto:${siteSettings.email}`;
+                });
+            }
+            
+            // 更新赞赏二维码
+            if (siteSettings.donation_qrcode) {
+                const donationQrcode = document.querySelector('.tooltip img');
+                if (donationQrcode) {
+                    donationQrcode.src = siteSettings.donation_qrcode;
+                }
+            }
+            
+            // 更新联系模态框二维码
+            if (siteSettings.contact_qrcode) {
+                const contactQrcode = document.querySelector('.donation-modal .donation-qrcode');
+                if (contactQrcode) {
+                    contactQrcode.src = siteSettings.contact_qrcode;
+                }
             }
         }
 
@@ -1553,6 +1479,24 @@
         window.addEventListener('load', () => {
             // 获取数据并渲染页面
             fetchDataAndRenderPage();
+            
+            // 添加返回顶部按钮的显示/隐藏逻辑
+            const backToTopButton = document.getElementById('backToTop');
+            
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('visible');
+                } else {
+                    backToTopButton.classList.remove('visible');
+                }
+            });
+            
+            backToTopButton.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
         });
 
         // Theme Toggle
@@ -1647,4 +1591,3 @@
     </script>
 </body>
 </html>
-
