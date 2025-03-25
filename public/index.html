@@ -1698,7 +1698,7 @@
                 // 生成标签HTML
                 const tagsHtml = site.tags.map(tag => {
                     const tagClass = tagClasses[tag.name] || 'tag-productivity';
-                    return `<span class="tag ${tagClass}">${tag.name}</span>`;
+                    return `<span class="tag ${tagClass}" data-tag="${tag.name}">${tag.name}</span>`;
                 }).join('');
                 
                 // 检查是否为热门或新品
@@ -1713,27 +1713,100 @@
                 // 生成占位图片URL
                 const placeholderUrl = generatePlaceholder(site.name);
                 
-                // 生成卡片HTML
+                // 生成卡片HTML（将<a>改为<div>）
                 const cardHtml = `
-                    <a href="${site.url}" target="_blank" class="site-card" data-site-id="${site.id}" data-tags="${site.tags.map(t => t.name).join(' ')}">
-                        <div class="card-img-container">
+                    <div class="site-card" data-site-id="${site.id}" data-tags="${site.tags.map(t => t.name).join(' ')}">
+                        <div class="card-img-container site-link" data-url="${site.url}">
                             <img src="${site.screenshot || placeholderUrl}" alt="${site.name}" class="card-img" 
                                  onerror="this.onerror=null; this.src='${placeholderUrl}';">
                             ${hotLabelHtml}
                         </div>
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title">${site.name}</h3>
+                                <h3 class="card-title site-link" data-url="${site.url}">${site.name}</h3>
                             </div>
-                            <p class="card-description">${site.description || '暂无描述'}</p>
-                            <div>
+                            <p class="card-description site-link" data-url="${site.url}">${site.description || '暂无描述'}</p>
+                            <div class="tag-container">
                                 ${tagsHtml}
                             </div>
                         </div>
-                    </a>
+                    </div>
                 `;
                 
                 container.innerHTML += cardHtml;
+            });
+            
+            // 在添加所有网站卡片后为元素添加事件处理
+            addCardEventListeners();
+        }
+
+        // 为卡片元素添加事件监听器
+        function addCardEventListeners() {
+            // 为所有网站链接元素添加点击事件
+            document.querySelectorAll('.site-link').forEach(element => {
+                element.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                });
+                // 添加指针样式，提示可点击
+                element.style.cursor = 'pointer';
+            });
+            
+            // 为所有标签添加点击事件
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡，避免触发卡片的点击事件
+                    const tagName = this.getAttribute('data-tag');
+                    if (tagName) {
+                        filterSitesByTag(tagName);
+                    }
+                });
+                // 添加指针样式，提示可点击
+                tag.style.cursor = 'pointer';
+            });
+        }
+
+        // 根据标签筛选网站
+        function filterSitesByTag(tagName) {
+            // 重置分类选项卡
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('.category-tab[data-category="all"]').classList.add('active');
+            
+            // 显示所有分类区域
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // 筛选卡片
+            const searchTerm = tagName.toLowerCase();
+            document.getElementById('searchInput').value = searchTerm; // 更新搜索框
+            
+            // 获取所有网站卡片
+            const cards = document.querySelectorAll('.site-card');
+            
+            cards.forEach(card => {
+                const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
+                
+                if (tags.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                    const section = card.closest('.category-section');
+                    if (section) {
+                        section.style.display = 'block';
+                    }
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 检查每个分类是否有可见的卡片
+            const categorySections = document.querySelectorAll('.category-section');
+            categorySections.forEach(section => {
+                const visibleCards = Array.from(section.querySelectorAll('.site-card')).some(card => card.style.display !== 'none');
+                section.style.display = visibleCards ? 'block' : 'none';
             });
         }
 
