@@ -319,3 +319,222 @@
     padding: 0 2px;
     margin: 0 -2px;
 }
+
+/* 网站卡片样式 */
+.site-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    height: 100%;
+    display: block;
+    position: relative;
+    box-shadow: 0 2px 8px var(--card-shadow);
+    border: 1px solid var(--card-border);
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.site-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 20px var(--card-shadow);
+    border-color: var(--primary-light);
+}
+
+.card-link {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-img-container {
+    position: relative;
+    overflow: hidden;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    background-color: #f9fafb;
+}
+
+.dark .card-img-container {
+    background-color: #374151;
+}
+
+.card-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.site-card:hover .card-img {
+    transform: scale(1.05);
+}
+
+.card-content {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
+    margin-bottom: 0.5rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.tag-container {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* 标签样式 */
+.tag {
+    padding: 0.25rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.tag-ai {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.dark .tag-ai {
+    background-color: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.tag-productivity {
+    background-color: rgba(14, 165, 233, 0.1);
+    color: var(--secondary);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.dark .tag-productivity {
+    background-color: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.tag-reading {
+    background-color: rgba(249, 115, 22, 0.1);
+    color: var(--accent);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.dark .tag-reading {
+    background-color: rgba(251, 146, 60, 0.15);
+    border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+/* 热门和新品标签 */
+.hot-label, .new-label {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hot-label {
+    background-color: var(--accent);
+    color: white;
+}
+
+.new-label {
+    background-color: var(--primary);
+    color: white;
+}
+
+/* 教程链接 */
+.tutorial-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    transition: all 0.25s ease;
+}
+
+.tutorial-link:hover {
+    background-color: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.tutorial-link i {
+    margin-right: 0.25rem;
+}
+
+/* 筛选状态 */
+#filter-status {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+}
+
+#clear-filter {
+    background-color: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+#clear-filter:hover {
+    background-color: var(--primary-dark);
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+    .search-box {
+        font-size: 14px;
+        padding: 10px 36px;
+    }
+    
+    .search-icon {
+        left: 10px;
+    }
+}

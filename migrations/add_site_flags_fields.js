@@ -9,62 +9,55 @@
  * - tutorial_url: 教程链接（文本）
  */
 
-async function migrate(db) {
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
+
+// 添加网站标记字段的迁移脚本
+async function migrate() {
   try {
-    console.log("开始升级sites表结构...");
-    
-    // 检查字段是否已存在
-    const tableInfo = await db.all("PRAGMA table_info(sites)");
-    const fields = tableInfo.map(col => col.name);
-    
-    // 添加is_hot字段
-    if (!fields.includes('is_hot')) {
-      console.log("添加is_hot字段...");
-      await db.run("ALTER TABLE sites ADD COLUMN is_hot BOOLEAN DEFAULT 0;");
-      console.log("✅ 已添加is_hot字段");
-    } else {
-      console.log("✅ is_hot字段已存在，无需添加");
-    }
-    
-    // 添加is_new字段
-    if (!fields.includes('is_new')) {
-      console.log("添加is_new字段...");
-      await db.run("ALTER TABLE sites ADD COLUMN is_new BOOLEAN DEFAULT 0;");
-      console.log("✅ 已添加is_new字段");
-    } else {
-      console.log("✅ is_new字段已存在，无需添加");
-    }
-    
-    // 添加hot_until字段
-    if (!fields.includes('hot_until')) {
-      console.log("添加hot_until字段...");
-      await db.run("ALTER TABLE sites ADD COLUMN hot_until TEXT DEFAULT NULL;");
-      console.log("✅ 已添加hot_until字段");
-    } else {
-      console.log("✅ hot_until字段已存在，无需添加");
-    }
-    
-    // 添加new_until字段
-    if (!fields.includes('new_until')) {
-      console.log("添加new_until字段...");
-      await db.run("ALTER TABLE sites ADD COLUMN new_until TEXT DEFAULT NULL;");
-      console.log("✅ 已添加new_until字段");
-    } else {
-      console.log("✅ new_until字段已存在，无需添加");
-    }
-    
-    // 添加tutorial_url字段
-    if (!fields.includes('tutorial_url')) {
-      console.log("添加tutorial_url字段...");
-      await db.run("ALTER TABLE sites ADD COLUMN tutorial_url TEXT DEFAULT NULL;");
-      console.log("✅ 已添加tutorial_url字段");
-    } else {
-      console.log("✅ tutorial_url字段已存在，无需添加");
-    }
-    
-    // 对于已有的数据进行初始化
-    // 根据已有逻辑设置默认值：前3个为热门，过去7天内添加的为最新
-    console.log("为已有数据设置默认标记...");
+    const db = await open({
+      filename: 'database.sqlite',
+      driver: sqlite3.Database
+    });
+
+    // 添加网站标记相关字段
+    console.log('添加 hot_until 字段...');
+    await db.run('ALTER TABLE sites ADD COLUMN hot_until DATETIME;');
+
+    console.log('添加 is_new 字段...');
+    await db.run('ALTER TABLE sites ADD COLUMN is_new INTEGER DEFAULT 0;');
+
+    console.log('添加 new_until 字段...');
+    await db.run('ALTER TABLE sites ADD COLUMN new_until DATETIME;');
+
+    console.log('添加 tutorial_url 字段...');
+    await db.run('ALTER TABLE sites ADD COLUMN tutorial_url TEXT;');
+
+    // 创建网站设置表
+    await db.run(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key TEXT NOT NULL,
+        value TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(key)
+      );
+    `);
+
+    // 插入默认设置
+    await db.run(`
+      INSERT OR IGNORE INTO site_settings (key, value) VALUES
+        ('site_title', '导航网站'),
+        ('site_description', '精选优质网站导航'),
+        ('site_keywords', 'AI工具,阅读,知识管理,Newsletter'),
+        ('site_footer', '© 2024 导航网站'),
+        ('theme', 'light'),
+        ('layout', 'grid');
+    `);
+
+    // 初始化标记
+    console.log('初始化热门和新品标记...');
     
     // 标记前3个为热门
     await db.run(`
@@ -77,7 +70,7 @@ async function migrate(db) {
         LIMIT 3
       )
     `);
-    
+
     // 标记7天内新增的为最新
     await db.run(`
       UPDATE sites 
@@ -85,13 +78,14 @@ async function migrate(db) {
           new_until = datetime('now', '+7 days')
       WHERE createdAt >= datetime('now', '-7 days')
     `);
-    
-    console.log("✅ 迁移完成");
-    return true;
+
+    console.log('迁移成功：添加了网站标记字段和设置表');
+    await db.close();
   } catch (error) {
-    console.error("❌ 迁移失败:", error);
+    console.error('迁移失败：', error);
     throw error;
   }
 }
 
-module.exports = { migrate }; 
+// 执行迁移
+migrate().catch(console.error); 

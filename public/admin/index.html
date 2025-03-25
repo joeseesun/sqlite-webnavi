@@ -276,7 +276,7 @@
                 
                 // 显示最近添加的网站
                 const recentSites = sites
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                     .slice(0, 5);
                 
                 const tbody = document.getElementById('recent-sites');
@@ -284,6 +284,15 @@
                 
                 recentSites.forEach(site => {
                     const tr = document.createElement('tr');
+                    // 格式化日期
+                    const date = new Date(site.created_at);
+                    const formattedDate = date.getFullYear() +
+                        '-' + String(date.getMonth() + 1).padStart(2, '0') +
+                        '-' + String(date.getDate()).padStart(2, '0') +
+                        ' ' + String(date.getHours()).padStart(2, '0') +
+                        ':' + String(date.getMinutes()).padStart(2, '0') +
+                        ':' + String(date.getSeconds()).padStart(2, '0');
+
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">${site.name}</div>
@@ -292,7 +301,7 @@
                             <div class="text-sm text-gray-500">${site.url}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            ${new Date(site.createdAt).toLocaleString()}
+                            ${formattedDate}
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -338,11 +347,21 @@
             const newPassword = document.getElementById('new-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
             
+            // 简化的密码验证规则
+            if (newPassword.length < 6) {
+                Swal.fire({
+                    title: '提示',
+                    text: '新密码长度至少需要6个字符',
+                    icon: 'warning'
+                });
+                return;
+            }
+            
             if (newPassword !== confirmPassword) {
                 Swal.fire({
-                    title: '错误',
+                    title: '提示',
                     text: '两次输入的新密码不一致',
-                    icon: 'error'
+                    icon: 'warning'
                 });
                 return;
             }
@@ -375,9 +394,9 @@
             } catch (error) {
                 console.error('修改密码失败:', error);
                 Swal.fire({
-                    title: '错误',
+                    title: '提示',
                     text: '修改密码失败，请检查当前密码是否正确',
-                    icon: 'error'
+                    icon: 'warning'
                 });
             }
         });

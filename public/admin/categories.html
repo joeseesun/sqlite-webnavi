@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -67,6 +68,23 @@
         }
         .close:hover {
             color: #666;
+        }
+        .sortable-ghost {
+            opacity: 0.5;
+            background-color: #f3f4f6;
+        }
+        
+        .sortable-chosen {
+            background-color: #f9fafb;
+        }
+        
+        .drag-handle {
+            cursor: move;
+            color: #9ca3af;
+        }
+        
+        .drag-handle:hover {
+            color: #6b7280;
         }
     </style>
 </head>
@@ -244,9 +262,15 @@
                 
                 categories.forEach(category => {
                     const tr = document.createElement('tr');
+                    tr.dataset.id = category.id;
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">${category.name}</div>
+                            <div class="flex items-center">
+                                <span class="drag-handle mr-3">
+                                    <i class="fas fa-grip-vertical"></i>
+                                </span>
+                                <div class="text-sm font-medium text-gray-900">${category.name}</div>
+                            </div>
                         </td>
                         <td class="px-6 py-4">
                             <div class="text-sm text-gray-500">${category.description || ''}</div>
@@ -265,8 +289,59 @@
                     `;
                     tbody.appendChild(tr);
                 });
+
+                // 初始化拖拽排序
+                if (!window.categoriesSortable) {
+                    window.categoriesSortable = new Sortable(tbody, {
+                        handle: '.drag-handle',
+                        animation: 150,
+                        onEnd: async function(evt) {
+                            const rows = Array.from(tbody.getElementsByTagName('tr'));
+                            const categoryIds = rows.map(row => row.dataset.id);
+                            
+                            try {
+                                const token = localStorage.getItem('token');
+                                const response = await fetch('/api/categories/reorder', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`,
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ categoryIds })
+                                });
+                                
+                                if (!response.ok) {
+                                    throw new Error('重新排序失败');
+                                }
+                                
+                                // 显示成功提示
+                                Swal.fire({
+                                    title: '排序已更新',
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                            } catch (error) {
+                                console.error('保存排序失败:', error);
+                                Swal.fire({
+                                    title: '保存排序失败',
+                                    text: error.message,
+                                    icon: 'error'
+                                });
+                                
+                                // 重新加载分类列表以恢复原始顺序
+                                loadCategories();
+                            }
+                        }
+                    });
+                }
             } catch (error) {
                 console.error('加载分类列表失败:', error);
+                Swal.fire({
+                    title: '加载失败',
+                    text: error.message,
+                    icon: 'error'
+                });
             }
         }
 
@@ -339,26 +414,59 @@
 
         // 删除分类
         async function deleteCategory(id) {
-            if (!confirm('确定要删除这个分类吗？')) {
-                return;
-            }
-            
             try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`/api/categories/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                const result = await Swal.fire({
+                    title: '确认删除',
+                    text: '确定要删除这个分类吗？删除后无法恢复！',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: '确定删除',
+                    cancelButtonText: '取消'
                 });
-                
-                if (response.ok) {
-                    loadCategories();
-                } else {
-                    throw new Error('删除失败');
+
+                if (result.isConfirmed) {
+                    // 显示加载状态
+                    Swal.fire({
+                        title: '正在删除...',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`/api/categories/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: '删除成功',
+                            text: '分类已成功删除',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        loadCategories();
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || '删除失败');
+                    }
                 }
             } catch (error) {
                 console.error('删除分类失败:', error);
+                await Swal.fire({
+                    title: '删除失败',
+                    text: error.message || '删除分类时发生错误',
+                    icon: 'error'
+                });
             }
         }
 
@@ -372,19 +480,22 @@
                 description: document.getElementById('category-description').value
             };
             
-            console.log('提交分类表单:', {
-                isEdit: !!categoryId,
-                categoryId,
-                formData: data
-            });
-            
             const url = categoryId ? `/api/categories/${categoryId}` : '/api/categories';
             const method = categoryId ? 'PUT' : 'POST';
             
             try {
+                // 显示加载状态
+                Swal.fire({
+                    title: '正在保存...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 const token = localStorage.getItem('token');
-                console.log(`发送${method}请求到: ${url}`);
-                
                 const response = await fetch(url, {
                     method: method,
                     headers: {
@@ -399,14 +510,23 @@
                     throw new Error(errorData.error || `保存失败: ${response.status} ${response.statusText}`);
                 }
                 
-                const result = await response.json();
-                console.log('保存成功, 返回数据:', result);
-                
+                await Swal.fire({
+                    title: '保存成功',
+                    text: categoryId ? '分类已更新' : '分类已创建',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
                 closeModal();
                 loadCategories();
             } catch (error) {
                 console.error('保存分类失败:', error);
-                alert('保存分类失败: ' + error.message);
+                await Swal.fire({
+                    title: '保存失败',
+                    text: error.message || '保存分类时发生错误',
+                    icon: 'error'
+                });
             }
         });
 

@@ -204,7 +204,7 @@
                     <label class="block text-sm font-medium text-gray-700">新密码</label>
                     <input type="password" id="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
                     <p class="mt-1 text-sm text-gray-500">
-                        密码必须至少包含8个字符，并且包含：大写字母、小写字母、数字和特殊字符(@$!%*?&)
+                        密码长度至少需要6个字符
                     </p>
                 </div>
                 <div>
@@ -494,11 +494,21 @@
             const newPassword = document.getElementById('new-password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
             
+            // 简化的密码验证规则
+            if (newPassword.length < 6) {
+                Swal.fire({
+                    title: '提示',
+                    text: '新密码长度至少需要6个字符',
+                    icon: 'warning'
+                });
+                return;
+            }
+            
             if (newPassword !== confirmPassword) {
                 Swal.fire({
-                    title: '错误',
+                    title: '提示',
                     text: '两次输入的新密码不一致',
-                    icon: 'error'
+                    icon: 'warning'
                 });
                 return;
             }
@@ -517,8 +527,10 @@
                     })
                 });
                 
+                const data = await response.json();
+                
                 if (!response.ok) {
-                    throw new Error('修改密码失败');
+                    throw new Error(data.error || '修改密码失败');
                 }
                 
                 Swal.fire({
@@ -528,12 +540,13 @@
                 });
                 
                 closeUserSettingsModal();
+                document.getElementById('change-password-form').reset();
             } catch (error) {
                 console.error('修改密码失败:', error);
                 Swal.fire({
-                    title: '错误',
-                    text: '修改密码失败，请检查当前密码是否正确',
-                    icon: 'error'
+                    title: '提示',
+                    text: error.message || '修改密码失败，请检查当前密码是否正确',
+                    icon: 'warning'
                 });
             }
         });

@@ -1,21 +1,67 @@
-# 依赖目录
+# Node.js
 node_modules/
 npm-debug.log
-yarn-error.log
 yarn-debug.log
-.pnpm-debug.log
+yarn-error.log
 
-# 环境配置
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# SQLite
+*.db-journal
+
+# Logs
+logs/
+*.log
+
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# Testing
+coverage/
+.coverage
+.tox/
+.pytest_cache/
+
+# Production
+/build
+/dist
+
+# Misc
+.DS_Store
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-
-# 构建输出
-/dist
-/build
-/out
 
 # 缓存和临时文件
 .cache/
@@ -26,40 +72,6 @@ tmp/
 *.tmp
 *.temp
 
-# 日志文件
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
 # 编辑器和IDE文件
-.idea/
-.vscode/
-*.swp
-*.swo
-.DS_Store
-.project
-.settings/
-.classpath
-.factorypath
-
-# 数据库文件
-*.db
-*.sqlite
-*.sqlite3
-*.sqlite-journal
-
-# 上传文件和用户内容
-/uploads/
-/public/uploads/
-uploads/*
-test.png
-*.png
-*.jpg
-*.jpeg
-*.gif
-
-# 其他常见文件
 .DS_Store
 Thumbs.db 

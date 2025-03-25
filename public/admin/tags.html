@@ -132,7 +132,6 @@
                     <thead>
                         <tr>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标签名称</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">网站数量</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
                         </tr>
@@ -155,10 +154,6 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">标签名称</label>
                     <input type="text" id="tag-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">描述</label>
-                    <textarea id="tag-description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" rows="3"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3">
                     <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeModal()">取消</button>
@@ -248,9 +243,6 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">${tag.name}</div>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm text-gray-500">${tag.description || ''}</div>
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-500">${tag.siteCount || 0}</div>
                         </td>
@@ -298,7 +290,6 @@
                 
                 document.getElementById('tag-id').value = tag.id;
                 document.getElementById('tag-name').value = tag.name;
-                document.getElementById('tag-description').value = tag.description || '';
                 
                 openModal(true);
             } catch (error) {
@@ -309,27 +300,58 @@
 
         // 删除标签
         async function deleteTag(id) {
-            if (!confirm('确定要删除这个标签吗？')) {
-                return;
-            }
+            const result = await Swal.fire({
+                title: '确认删除',
+                text: '确定要删除这个标签吗？删除后不可恢复。',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '确定删除',
+                cancelButtonText: '取消'
+            });
 
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`/api/tags/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
+            if (result.isConfirmed) {
+                try {
+                    // 显示加载提示
+                    Swal.fire({
+                        title: '正在删除...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`/api/tags/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: '删除成功',
+                            text: '标签已成功删除',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        await loadTags();
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || '删除失败');
                     }
-                });
-
-                if (response.ok) {
-                    loadTags();
-                } else {
-                    throw new Error('删除失败');
+                } catch (error) {
+                    console.error('删除标签失败:', error);
+                    Swal.fire({
+                        title: '删除失败',
+                        text: error.message || '删除标签失败，请稍后重试',
+                        icon: 'error'
+                    });
                 }
-            } catch (error) {
-                console.error('删除标签失败:', error);
-                alert('删除标签失败');
             }
         }
 
@@ -339,9 +361,29 @@
             
             const token = localStorage.getItem('token');
             const tagId = document.getElementById('tag-id').value;
+            const tagName = document.getElementById('tag-name').value.trim();
+            
+            // 验证标签名称
+            if (!tagName) {
+                Swal.fire({
+                    title: '错误',
+                    text: '标签名称不能为空',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            if (tagName.length > 50) {
+                Swal.fire({
+                    title: '错误',
+                    text: '标签名称不能超过50个字符',
+                    icon: 'error'
+                });
+                return;
+            }
+            
             const tagData = {
-                name: document.getElementById('tag-name').value,
-                description: document.getElementById('tag-description').value
+                name: tagName
             };
             
             try {
@@ -358,14 +400,24 @@
                 });
                 
                 if (response.ok) {
+                    Swal.fire({
+                        title: '成功',
+                        text: tagId ? '标签更新成功' : '标签创建成功',
+                        icon: 'success'
+                    });
                     closeModal();
                     loadTags();
                 } else {
-                    throw new Error('保存失败');
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || '保存失败');
                 }
             } catch (error) {
                 console.error('保存标签失败:', error);
-                alert('保存标签失败');
+                Swal.fire({
+                    title: '错误',
+                    text: error.message || '保存标签失败，请稍后重试',
+                    icon: 'error'
+                });
             }
         });
 

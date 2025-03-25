@@ -4,17 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>网址管理 - 网址导航系统</title>
-    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.17.8/dist/tagify.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@4.17.8/dist/tagify.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
     <style>
         body {
             font-family: 'Noto Sans SC', sans-serif;
@@ -48,930 +43,44 @@
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 1000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 20px;
         }
         .modal-content {
-            position: relative;
-            background-color: #fff;
-            margin: 20px auto;
+            background-color: #fefefe;
+            margin: 5% auto;
             padding: 20px;
             border-radius: 8px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .close {
             position: absolute;
             right: 20px;
-            top: 20px;
-            font-size: 24px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
             cursor: pointer;
-            color: #6b7280;
-            transition: color 0.2s;
-            z-index: 1100;
         }
         .close:hover {
-            color: #1f2937;
-        }
-        /* Select2 自定义样式 */
-        .select2-container {
-            width: 100% !important;
-            z-index: 1200;
-        }
-        .select2-container--default .select2-selection--multiple {
-            border-color: #D1D5DB;
-            border-radius: 0.375rem;
-        }
-        .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #3B82F6;
-            box-shadow: 0 0 0 1px #3B82F6;
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #E5E7EB;
-            border: none;
-            border-radius: 0.25rem;
-            padding: 2px 8px;
-            margin: 2px;
-        }
-        /* 修复关闭按钮位置 */
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            position: relative;
-            margin-right: 5px;
-            color: #6B7280;
-            top: 0;
-            font-weight: bold;
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-            background-color: transparent;
-            color: #ef4444;
-        }
-        .sortable-ghost {
-            background-color: #f3f4f6;
-            opacity: 0.5;
-        }
-        .drag-handle {
-            cursor: move;
-        }
-        .screenshot-preview {
-            max-width: 200px;
-            max-height: 150px;
-            object-fit: contain;
-        }
-        /* 添加新的样式 */
-        .form-loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-        .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .preview-container {
-            width: 100%;
-            height: 200px;
-            border: 2px dashed #d1d5db;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            position: relative;
-            overflow: hidden;
-            background-color: #f9fafb;
-            cursor: pointer;
-        }
-        .preview-container.has-image {
-            border-style: solid;
-        }
-        .preview-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .file-input-container {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-        .file-input-container input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .custom-file-button {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #4f46e5;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .custom-file-button:hover {
-            background-color: #4338ca;
-        }
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #374151;
-        }
-        .form-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .form-input:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
-            outline: none;
-        }
-        .error-message {
-            color: #dc2626;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-        .success-message {
-            color: #059669;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-        /* 修复按钮点击问题 */
-        #add-category-btn {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 12px;
-            border: 1px solid #4f46e5;
-            border-radius: 4px;
-            color: #4f46e5;
-            background: transparent;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            z-index: 1100;
-            position: relative;
-        }
-        #add-category-btn:hover {
-            background-color: #4f46e5;
-            color: white;
-        }
-        /* 修复Select2下拉框层级问题 */
-        .select2-dropdown {
-            z-index: 1200;
-        }
-        .paste-tip {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 12px;
-            color: #6b7280;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 4px 8px;
-            border-radius: 4px;
-            pointer-events: none;
-        }
-        .tag-input-container {
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-        .tags-input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
-        .tags-input:focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
-            outline: none;
-        }
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            min-height: 2.5rem;
-            margin-top: 0.5rem;
-        }
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            background-color: #f3f4f6;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            color: #374151;
-            transition: all 0.2s;
-        }
-        .tag.new-tag {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-        .tag:hover {
-            background-color: #e5e7eb;
-        }
-        .tag.new-tag:hover {
-            background-color: #bbf7d0;
-        }
-        .tag-text {
-            margin-right: 0.5rem;
-        }
-        .tag-close {
-            cursor: pointer;
-            color: #6b7280;
-            font-size: 0.75rem;
-            padding: 0.125rem;
-            border-radius: 9999px;
-            transition: all 0.2s;
-        }
-        .tag-close:hover {
-            color: #ef4444;
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-        .tags-suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: white;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            max-height: 12rem;
-            overflow-y: auto;
-            z-index: 1300;
-            margin-top: 0.25rem;
-            display: none;
-        }
-        .suggestion-item {
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-        }
-        .suggestion-item:hover {
-            background-color: #f3f4f6;
-        }
-        .suggestion-item i {
-            margin-right: 0.5rem;
-            font-size: 0.875rem;
-        }
-        .tagify {
-            width: 100%;
-            --tag-bg: #f0f9ff;
-            --tag-hover: #e0f2fe;
-            --tag-text-color: #0369a1;
-            --tags-border-color: #d1d5db;
-            --tags-hover-border-color: #4f46e5;
-            --tags-focus-border-color: #4f46e5;
-            --tag-border-radius: 4px;
-            --tag-pad: 0.25rem 0.5rem;
-            --tag-text-color--edit: #374151;
-            --tag-remove-bg: rgba(239, 68, 68, 0.1);
-            --tag-remove-btn-bg--hover: rgba(239, 68, 68, 0.3);
-            --tag-invalid-bg: #fee2e2;
-            min-height: 38px;
-            padding: 0 0.5rem;
-            border-radius: 0.375rem;
-        }
-        .tagify__tag--new {
-            background: #dcfce7 !important;
-            color: #166534 !important;
-        }
-        .tagify__dropdown {
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            z-index: 1300;
-        }
-        .tagify__dropdown__wrapper {
-            border-radius: 0.5rem;
-            max-height: 12rem;
-        }
-        .tagify__dropdown__item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-        }
-        .tagify__dropdown__item--create {
-            color: #166534;
-            background-color: #f0fdf4;
-        }
-        .tagify__dropdown__item--create:before {
-            content: '✨';
-            margin-right: 0.5rem;
-        }
-        .tagify__dropdown__item--exists:before {
-            content: '🏷️';
-            margin-right: 0.5rem;
-        }
-        .tagify-input {
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
-        .tagify--focus {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
-        }
-        /* 修复标签删除按钮位置 */
-        .tagify__tag__removeBtn {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 4px;
-            color: #6B7280;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            line-height: 16px;
-            top: 0;
-            transition: all 0.2s;
-        }
-        .tagify__tag__removeBtn:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
-        .tagify__tag > div {
-            display: flex;
-            align-items: center;
-        }
-        .tagify__tag__removeBtn + div {
-            margin-left: 0;
+            color: #666;
         }
         .preview-image {
-            max-width: 100%;
-            max-height: 100%;
+            max-width: 200px;
+            max-height: 200px;
             object-fit: contain;
         }
-        /* 标签样式定制 */
         .tagify {
-            --tags-focus-border-color: #d1d5db;
-            --tag-bg: #f3f4f6;
-            --tag-hover: #e5e7eb;
-            --tag-text-color: #374151;
-            --tag-border-radius: 2px;
-            --tag-pad: 0.25rem 0.5rem;
-            --tag-min-width: 30px;
-            --tag-inset-shadow: none;
-            background-color: #fff;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            padding: 0.35rem;
-            min-height: 38px;
-            transition: all 0.2s ease;
-        }
-
-        .tagify:hover {
-            border-color: #9ca3af;
-        }
-
-        .tagify--focus {
-            border-color: #6b7280;
-            box-shadow: 0 0 0 1px rgba(107, 114, 128, 0.1);
-        }
-
-        .tagify__tag {
-            margin: 2px;
-            border-radius: 2px;
-            transition: all 0.15s ease;
-            box-shadow: none;
-            background-color: #f3f4f6;
-        }
-
-        .tagify__tag__removeBtn {
-            color: #6b7280;
-            opacity: 0.7;
-            transition: all 0.2s ease;
-            border-radius: 0;
-            background: transparent;
-            margin-right: 0;
-            margin-left: 4px;
-            font-size: 1rem;
-        }
-
-        /* 处理中的标签样式 */
-        .processing-tag {
-            animation: pulse 1.5s infinite;
-            background-color: #f3f4f6 !important;
-            color: #6b7280 !important;
-            border: 1px dashed #9ca3af !important;
-        }
-        
-        /* 成功状态的标签样式 */
-        .success-tag {
-            background-color: #ecfdf5 !important;
-            color: #047857 !important;
-            border: 1px solid #10b981 !important;
-            transition: background-color 0.3s ease;
-        }
-        
-        /* 错误状态的标签样式 */
-        .error-tag {
-            background-color: #fef2f2 !important;
-            color: #b91c1c !important;
-            border: 1px solid #ef4444 !important;
-            animation: shake 0.5s ease-in-out;
-        }
-        
-        /* 标签加载脉动动画 */
-        @keyframes pulse {
-            0% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.6;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-        
-        /* 标签错误动画 */
-        @keyframes shake {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            20%, 60% {
-                transform: translateX(-5px);
-            }
-            40%, 80% {
-                transform: translateX(5px);
-            }
-        }
-        
-        /* 优化标签删除按钮 */
-        .tagify__tag__removeBtn {
-            color: #6b7280;
-            opacity: 0.7;
-            transition: all 0.2s ease;
-            border-radius: 0;
-            background: transparent;
-            margin-right: 0;
-            margin-left: 4px;
-            font-size: 1rem;
-        }
-        
-        .tagify__tag__removeBtn:hover {
-            color: #ef4444;
-            opacity: 1;
-            background: rgba(239,68,68,0.1);
-            transform: scale(1.1);
-        }
-        
-        /* 优化下拉菜单样式 */
-        .tagify__dropdown {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border: 1px solid #e5e7eb;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 999;
-        }
-        
-        .tagify__dropdown__wrapper {
-            max-height: 280px;
-            overflow: hidden;
-        }
-        
-        .tagify__dropdown__item {
-            padding: 8px 14px;
-            border-radius: 6px;
-            margin: 2px 4px;
-            color: #374151;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-        }
-        
-        .tagify__dropdown__item--active {
-            background: #eef2ff;
-            color: #4f46e5;
-        }
-        
-        .tagify__dropdown__item:hover {
-            background: #dbeafe;
-        }
-        
-        .tagify__dropdown__item--create {
-            color: #059669;
-        }
-        
-        .tagify__dropdown__item--exists {
-            color: #4f46e5;
-        }
-        
-        /* 设置标签输入区域的加载状态 */
-        .tagify--loading {
-            position: relative;
-        }
-        
-        .tagify--loading::after {
-            content: "";
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            width: 20px;
-            height: 20px;
-            margin-top: -10px;
-            border: 2px solid #e5e7eb;
-            border-top-color: #4f46e5;
-            border-radius: 50%;
-            animation: rotate 1s linear infinite;
-        }
-        
-        @keyframes rotate {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* 标签样式定制 - 更符合截图中的简洁风格 */
-        .tagify {
-            --tags-focus-border-color: #d1d5db;
-            --tag-bg: #f3f4f6;
-            --tag-hover: #e5e7eb;
-            --tag-text-color: #4b5563;
-            --tag-border-radius: 0px;
-            --tag-pad: 0.2rem 0.4rem;
-            --tag-min-width: 30px;
-            --tag-inset-shadow: none;
-            --tag-border: none;
-            --tag-remove-btn-color: #9ca3af;
-            background-color: #fff;
-            border: 1px solid #d1d5db;
-            border-radius: 2px;
-            padding: 0.35rem;
-            min-height: 36px;
-            transition: all 0.2s ease;
             width: 100%;
-        }
-
-        /* 额外的标签样式优化 - 更精确地匹配图中样式 */
-        .tagify__tag {
-            margin: 2px;
-            border-radius: 0;
-            background-color: #f3f4f6;
-            color: #4b5563;
-            font-size: 0.9rem;
-            font-weight: normal;
-            border: none;
-            box-shadow: none;
-        }
-        
-        .tagify__tag:hover {
-            background-color: #e5e7eb;
-        }
-        
-        .tagify__tag__removeBtn {
-            order: 2;
-            margin-left: 3px;
-            margin-right: 0;
-            color: #9ca3af;
-            font-size: 1rem;
-            opacity: 0.8;
-            position: relative;
-            display: inline-flex;
-        }
-        
-        .tagify__tag__removeBtn:hover {
-            color: #6b7280;
-            background: transparent;
-            opacity: 1;
-        }
-        
-        .tagify__input {
-            color: #4b5563;
-        }
-        
-        /* 修复标签间距和布局 */
-        .tagify__tag > div {
-            display: flex;
-            align-items: center;
-            flex-direction: row;
-        }
-        
-        .tagify__tag > div > * {
-            white-space: nowrap;
-        }
-
-        /* Tagify 现代风格定制 */
-        .tagify {
-            --tags-disabled-bg: #F1F5F9;
-            --tags-border-color: #CBD5E1;
-            --tags-hover-border-color: #94A3B8;
-            --tags-focus-border-color: #3B82F6;
-            --tag-bg: #F1F5F9;
-            --tag-hover: #E2E8F0;
-            --tag-text-color: #334155;
-            --tag-text-color--edit: #2563EB;
-            --tag-pad: 0.3em 0.5em;
-            --tag-inset-shadow-size: 1.35em;
-            --tag-border-radius: 3px;
-            --tag-remove-bg: #E2E8F0;
-            --tag-remove-btn-bg--hover: #CBD5E1;
-            
-            display: flex;
-            flex-wrap: wrap;
-            border: 1px solid #CBD5E1;
-            border-radius: 4px;
-            padding: 0.3em;
-            min-height: 40px;
-            line-height: normal;
-            cursor: text;
-            outline: none;
-            position: relative;
-            box-sizing: border-box;
-            transition: border 0.1s ease;
-            width: 100%;
-        }
-        
-        .tagify:hover {
-            border-color: #94A3B8;
-        }
-        
-        .tagify--focus {
-            border-color: #3B82F6;
-            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
-        }
-        
-        .tagify__tag {
-            display: inline-flex;
-            align-items: center;
-            margin: 2px;
-            position: relative;
-            z-index: 1;
-            cursor: default;
-            transition: .13s ease-out;
-            animation: .3s ease-out;
-        }
-        
-        .tagify__tag > div {
-            display: inline-flex;
-            align-items: center;
-            box-sizing: border-box;
             max-width: 100%;
-            padding: var(--tag-pad);
-            color: var(--tag-text-color);
-            background: var(--tag-bg);
-            border-radius: var(--tag-border-radius);
-        }
-        
-        .tagify__tag:hover {
-            transform: scale(1.05);
-        }
-        
-        .tagify__tag.tagify--noAnim {
-            animation: none;
-        }
-        
-        .tagify__tag.tagify--hide {
-            width: 0 !important;
-            padding-left: 0;
-            padding-right: 0;
-            margin-left: 0;
-            margin-right: 0;
-            opacity: 0;
-            transform: scale(0);
-            transition: .3s;
-            pointer-events: none;
-        }
-        
-        .tagify__tag.tagify--mark div::before {
-            animation: .3s ease-out;
-            animation: .4s ease-out 2 alternate;
-        }
-        
-        .tagify__tag.tagify--notAllowed:not(.tagify__tag--editable) div > span {
-            opacity: .5;
-        }
-        
-        .tagify__tag.tagify--notAllowed:not(.tagify__tag--editable) div::before {
-            box-shadow: 0 0 0 1.1em rgba(211, 148, 148, 0.5) inset !important;
-            transition: .2s;
-        }
-        
-        .tagify__tag.tagify--loading {
-            pointer-events: none;
-        }
-        
-        .tagify__tag.tagify--loading .tagify__tag__removeBtn {
-            display: none;
-        }
-        
-        .tagify__tag.tagify--loading::after {
-            content: "";
-            display: block;
-            position: absolute;
-            border-radius: 50%;
-            width: 0.5em;
-            height: 0.5em;
-            margin: -3px 0 0 -7px;
-            top: 50%;
-            right: 0.3em;
-            box-shadow: -3px 0 0 #3B82F6, 0px 3px 0 #3B82F6, 3px 0 0 #3B82F6, 0px -3px 0 #3B82F6;
-            animation: rotate 1s linear infinite;
-        }
-        
-        .tagify__tag--editable > div {
-            color: var(--tag-text-color--edit);
-        }
-        
-        .tagify__tag--editable > div::before {
-            box-shadow: 0 0 0 2px var(--tag-hover) inset !important;
-        }
-        
-        .tagify__tag__removeBtn {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.875em;
-            margin-inline-start: 0.3em;
-            margin-inline-end: -0.2em;
-            cursor: pointer;
-            overflow: hidden;
-            padding: 0.2em;
-            vertical-align: middle;
-            transition: .2s ease-out;
-            line-height: normal;
-        }
-        
-        .tagify__tag__removeBtn::after {
-            content: "×";
-            transition: .3s, color 0s;
-        }
-        
-        .tagify__tag__removeBtn:hover {
-            color: white;
-            background: #e53e3e;
-            border-radius: 50%;
-        }
-        
-        .tagify__input {
-            flex-grow: 1;
-            min-width: 110px;
-            margin: 2px;
-            padding: 0.3em 0.5em;
-            line-height: inherit;
-            position: relative;
-            white-space: pre-wrap;
-            color: inherit;
-            box-sizing: inherit;
-            max-width: 100%;
-        }
-        
-        .tagify__input:focus {
-            outline: none;
-        }
-        
-        .tagify__input:empty::before {
-            content: attr(data-placeholder);
-            color: #94A3B8;
-            width: auto;
-        }
-        
-        .tagify__input::before {
-            line-height: 1.5;
-            position: relative;
-            z-index: 1;
-            white-space: nowrap;
-        }
-        
-        .tagify--mix .tagify__input {
-            padding: 0;
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            line-height: 1.5;
-        }
-        
-        .tagify__dropdown {
             background: white;
-            border: 1px solid #CBD5E1;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border-radius: 4px;
-            max-height: 280px;
-            overflow: auto;
-            z-index: 9999;
-        }
-        
-        .tagify__dropdown__wrapper {
-            max-height: 260px;
-            overflow: auto;
-        }
-        
-        .tagify__dropdown__item {
-            padding: 0.6em 0.7em;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: 0.12s ease-out;
-            margin: 1px;
-        }
-        
-        .tagify__dropdown__item:hover {
-            background: #EFF6FF;
-            color: #2563EB;
-        }
-        
-        .tagify__dropdown__item--active {
-            background: #DBEAFE;
-            color: #2563EB;
-        }
-        
-        .tagify__dropdown__item--create {
-            color: #2563EB;
-            border-radius: 3px;
-        }
-        
-        .tagify__dropdown__item--create:hover {
-            background: rgba(37, 99, 235, 0.1);
-        }
-        
-        .tagify__dropdown__item--create strong {
-            font-weight: 600;
-        }
-        
-        .tagify__dropdown__item__count {
-            font-size: 0.75em;
-            color: #94A3B8;
-            margin-left: 0.5em;
-            opacity: 0.7;
-        }
-        
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 修复标签样式，确保删除按钮正确显示在右侧 */
-        .tagify__tag > div {
-            display: flex !important;
-            align-items: center !important;
-            flex-direction: row !important;
-            padding: 0.2em 0.5em 0.2em 0.5em !important;
-        }
-        
-        /* 移除可能导致冲突的样式 */
-        .tagify__tag__removeBtn {
-            margin-left: 5px !important;
-            margin-right: 0 !important;
-        }
-        
-        .tagify__tag__removeBtn::after {
-            content: "×" !important;
-            color: #6b7280 !important;
-            font-size: 1.2em !important;
-        }
-        
-        .tagify__tag__removeBtn:hover::after {
-            color: #ef4444 !important;
-        }
-
-        /* 添加多行文本截断样式 - 放在样式表部分 */
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
     </style>
 </head>
@@ -1006,6 +115,10 @@
                 <i class="fas fa-cog mr-3"></i>
                 网站设置
             </a>
+            <button id="user-settings-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white mt-auto">
+                <i class="fas fa-user-cog mr-3"></i>
+                用户设置
+            </button>
             <button id="logout-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white">
                 <i class="fas fa-sign-out-alt mr-3"></i>
                 退出登录
@@ -1018,2137 +131,200 @@
         <!-- 顶部栏 -->
         <div class="bg-white shadow-sm rounded-lg p-4 mb-6">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">网站管理</h2>
-                <button id="add-site-btn" onclick="openModal(false)" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                <h2 class="text-2xl font-bold text-gray-900">网址管理</h2>
+                <button id="add-site-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
                     <i class="fas fa-plus mr-2"></i>
-                    添加网站
+                    添加网址
                 </button>
             </div>
         </div>
 
-        <!-- 网站列表 -->
+        <!-- 网址列表 -->
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="min-w-full bg-white">
                     <thead>
-                        <tr>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">排序</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">网站截图</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">网站名称</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">URL</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标签</th>
-                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        <tr class="bg-gray-100">
+                            <th class="w-8"></th>
+                            <th class="w-48 px-4 py-2">截图</th>
+                            <th class="px-4 py-2">网站信息</th>
+                            <th class="px-4 py-2">分类</th>
+                            <th class="px-4 py-2">标签</th>
+                            <th class="px-4 py-2">状态</th>
+                            <th class="px-4 py-2">操作</th>
                         </tr>
                     </thead>
-                    <tbody id="sites-list" class="bg-white divide-y divide-gray-200">
-                        <!-- 网站列表将通过 JavaScript 动态添加 -->
+                    <tbody id="sites-table-body">
+                        <!-- 网站列表将通过JavaScript动态加载 -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- 添加/编辑网站模态框 -->
+    <!-- 添加/编辑网址模态框 -->
     <div id="site-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2 id="modal-title" class="text-2xl font-bold mb-4">添加网站</h2>
-            <form id="site-form" class="space-y-6">
+            <h2 id="modal-title" class="text-2xl font-bold mb-4">添加网址</h2>
+            <form id="site-form" class="space-y-4">
                 <input type="hidden" id="site-id">
-                <div class="form-group">
-                    <label class="form-label" for="site-name">
-                        网站名称
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" id="site-name" class="form-input" required
-                           placeholder="请输入网站名称">
-                    <div class="error-message" id="name-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="site-url">
-                        网站地址
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <input type="url" id="site-url" class="form-input" required
-                           placeholder="请输入完整的网站地址，例如：https://example.com">
-                    <div class="error-message" id="url-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="site-description">网站描述</label>
-                    <textarea id="site-description" class="form-input" rows="3"
-                              placeholder="请简要描述这个网站的主要功能和特点"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="site-is-hot" class="form-checkbox">
-                        <label class="form-label ml-2 mb-0" for="site-is-hot">
-                            标记为热门
-                            <span class="ml-1 text-xs px-2 py-1 bg-red-100 text-red-800 rounded-full">热门</span>
-                        </label>
-                    </div>
-                    <div id="hot-until-container" class="mt-2 hidden">
-                        <label class="form-label text-sm" for="site-hot-until">热门标记有效期</label>
-                        <input type="date" id="site-hot-until" class="form-input" 
-                               placeholder="留空表示永久有效">
-                        <div class="text-sm text-gray-500 mt-1">过期后自动取消热门标记，留空表示永久有效</div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="site-is-new" class="form-checkbox">
-                        <label class="form-label ml-2 mb-0" for="site-is-new">
-                            标记为最新
-                            <span class="ml-1 text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">新品</span>
-                        </label>
-                    </div>
-                    <div id="new-until-container" class="mt-2 hidden">
-                        <label class="form-label text-sm" for="site-new-until">最新标记有效期</label>
-                        <input type="date" id="site-new-until" class="form-input" 
-                               placeholder="留空表示永久有效">
-                        <div class="text-sm text-gray-500 mt-1">过期后自动取消最新标记，留空表示永久有效</div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="site-tutorial-url">教程链接</label>
-                    <input type="url" id="site-tutorial-url" class="form-input" 
-                           placeholder="请输入教程链接地址，例如：https://example.com/tutorial">
-                    <div class="text-sm text-gray-500 mt-1">如果您有此网站的使用教程，可以在此处添加教程链接</div>
-                </div>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label" for="site-categories">分类</label>
-                        <select id="site-categories" class="form-select" multiple>
-                            <!-- 分类选项将通过JavaScript动态添加 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">网站名称</label>
+                        <input type="text" id="site-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">网站地址</label>
+                        <input type="url" id="site-url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">网站描述</label>
+                    <textarea id="site-description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">分类</label>
+                        <select id="site-categories" multiple class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </select>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="site-tags">标签</label>
-                        <input id="site-tags" class="form-input">
-                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">标签</label>
+                        <input id="site-tags" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="screenshot">
                         网站截图
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <div class="preview-container" id="screenshot-preview-container">
-                        <i class="fas fa-image"></i>
-                        <img id="current-screenshot" class="hidden screenshot-preview">
-                        <div class="paste-tip" id="paste-tip">支持 Ctrl + V 粘贴截图</div>
-                </div>
-                    <div class="file-input-container">
-                        <button type="button" class="custom-file-button">
-                            <i class="fas fa-upload mr-2"></i>选择图片
-                        </button>
-                        <input type="file" id="site-screenshot" accept="image/*">
+                        </label>
+                    <div id="screenshotUploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                        <input type="file" id="screenshot" name="screenshot" accept="image/*" class="hidden">
+                        <div id="screenshotPreview" class="hidden mb-2">
+                            <img src="" alt="Screenshot preview" class="max-w-xs mx-auto">
                     </div>
-                    <div class="text-sm text-gray-500 mt-1">支持 jpg、png 格式，建议尺寸 1920x1080</div>
-                    <div class="error-message" id="screenshot-error"></div>
+                        <p class="text-gray-600">点击上传或粘贴截图</p>
+                        <p class="text-sm text-gray-500 mt-1">支持拖拽、粘贴和点击上传</p>
+                    </div>
                 </div>
-                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">教程地址</label>
+                        <input type="url" id="site-tutorial" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="site-is-hot" class="rounded border-gray-300 text-red-600 focus:ring-red-500">
+                            <label for="site-is-hot" class="ml-2 block text-sm text-gray-700">热门</label>
+                    </div>
+                        <input type="date" id="site-hot-until" class="ml-2 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="site-is-new" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                            <label for="site-is-new" class="ml-2 block text-sm text-gray-700">新品</label>
+                </div>
+                        <input type="date" id="site-new-until" class="ml-2 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                </div>
+                    </div>
                 <div class="flex justify-end space-x-3">
                     <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeModal()">取消</button>
-                    <button type="submit" id="submit-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center">
-                        <span class="loading-spinner mr-2"></span>
-                        <span class="button-text">保存</span>
-                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">保存</button>
+                </div>
+            </form>
+        </div>
+                </div>
+                
+    <!-- 用户设置模态框 -->
+    <div id="user-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-2xl font-bold mb-4">修改密码</h2>
+            <form id="change-password-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">当前密码</label>
+                    <input type="password" id="current-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">新密码</label>
+                    <input type="password" id="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">确认新密码</label>
+                    <input type="password" id="confirm-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeUserSettingsModal()">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">保存</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script>
         // 全局变量
+        let tagify;
         let categories = [];
         let tags = [];
-        let isEditing = false;
-        let currentSiteId = null;
-        let selectedTags = new Set();
-        let availableTags = [];
-        let tagifyInstance = null;
 
-        // 检查认证状态
-        async function checkAuth() {
+        // 检查登录状态
+        function checkAuth() {
             const token = localStorage.getItem('token');
+            
             if (!token) {
                 window.location.href = '/admin/login.html';
                 return;
             }
             
-            try {
-                const response = await fetch('/api/auth/check', {
+            fetch('/api/auth/check', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
-                });
-
+            })
+            .then(response => {
                 if (!response.ok) {
-                    throw new Error('认证失败');
+                    throw new Error('Token invalid');
                 }
-
-                const data = await response.json();
-                document.getElementById('username').textContent = data.user.username;
-            } catch (error) {
-                console.error('认证检查失败:', error);
+                return response.json();
+            })
+            .then(data => {
+                if (!data.authenticated) {
+                    throw new Error('Not authenticated');
+                }
+            })
+            .catch(error => {
+                console.error('认证失败:', error);
                 localStorage.removeItem('token');
+                localStorage.removeItem('user');
                 window.location.href = '/admin/login.html';
-            }
-        }
-
-        // 加载分类列表
-        function loadCategories() {
-            return new Promise(async (resolve, reject) => {
-            try {
-                    console.log('开始加载分类数据...');
-                const response = await fetch('/api/categories');
-                    if (!response.ok) {
-                        throw new Error(`加载分类失败: ${response.status} ${response.statusText}`);
-                    }
-                    categories = await response.json();
-                    console.log(`成功加载 ${categories.length} 个分类:`, categories);
-                    
-                    // 更新分类选择器
-                    updateCategorySelect();
-                    resolve(categories);
-                } catch (error) {
-                    console.error('加载分类失败:', error);
-                    reject(error);
-                }
             });
         }
 
-        // 更新分类选择框
-        function updateCategorySelect() {
-                const select = document.getElementById('site-categories');
-            if (!select) {
-                console.error('找不到分类选择元素');
-                return;
-            }
-            
-            console.log('更新分类选择器...');
-            // 清空原有选项
-                select.innerHTML = '';
-                
-            // 添加新选项
-                categories.forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category.id;
-                    option.textContent = category.name;
-                    select.appendChild(option);
+        // 加载分类列表
+        async function loadCategories() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
-            
-            console.log('分类选择器已更新');
+                    categories = await response.json();
+                
+                const select = document.getElementById('site-categories');
+                select.innerHTML = categories.map(category => 
+                    `<option value="${category.id}">${category.name}</option>`
+                ).join('');
+                } catch (error) {
+                console.error('加载分类列表失败:', error);
+            }
         }
 
         // 加载标签列表
         async function loadTags() {
-            return new Promise(async (resolve, reject) => {
-            try {
-                    console.log('开始加载标签数据...');
-                const response = await fetch('/api/tags');
-                    if (!response.ok) {
-                        throw new Error(`加载标签失败: ${response.status} ${response.statusText}`);
-                    }
-                    tags = await response.json();
-                    console.log(`成功加载 ${tags.length} 个标签:`, tags);
-                    
-                    // 更新Tagify白名单
-                    if (tagifyInstance) {
-                        tagifyInstance.settings.whitelist = tags.map(tag => ({
-                            value: tag.name,
-                            id: tag.id,
-                            isExists: true
-                        }));
-                        console.log('Tagify白名单已更新');
-                    }
-                    
-                    resolve(tags);
-                } catch (error) {
-                    console.error('加载标签失败:', error);
-                    reject(error);
-                }
-            });
-        }
-
-        // 初始化页面
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('DOM加载完成，开始初始化页面...');
-            
-            // 检查是否已登录
-            checkAuthentication();
-            
-            // 加载网站列表
-            loadSites();
-            
-            // 初始化分类和标签
-            try {
-                console.log('初始化分类和标签选择器...');
-                await Promise.all([loadCategories(), loadTags()]);
-                
-                // 开发测试：添加样例标签数据（如果没有标签）
-                if (tags.length === 0) {
-                    console.log('开发模式：添加样例标签数据');
-                    tags = [
-                        { id: 'dev1', name: '前端开发' },
-                        { id: 'dev2', name: '后端开发' },
-                        { id: 'dev3', name: 'UI设计' },
-                        { id: 'dev4', name: '工具' },
-                        { id: 'dev5', name: '资源' },
-                        { id: 'dev6', name: '学习' },
-                        { id: 'dev7', name: '娱乐' },
-                        { id: 'dev8', name: '社交' },
-                        { id: 'dev9', name: '生活' },
-                        { id: 'dev10', name: '购物' }
-                    ];
-                }
-                
-                console.log(`加载了 ${categories.length} 个分类和 ${tags.length} 个标签`);
-                
-                // 初始化Select2
-                console.log('初始化Select2...');
-                $('#site-categories').select2({
-                    placeholder: '选择分类',
-                    allowClear: true,
-                    width: '100%',
-                    dropdownParent: $('#site-modal')
-                });
-                
-                // 初始化Tagify
-                console.log('初始化Tagify...');
-                initializeTagify();
-                
-                console.log('分类和标签选择器初始化完成');
-            } catch (error) {
-                console.error('初始化分类和标签选择器失败:', error);
-                showToast('error', '初始化界面组件失败，请刷新页面重试');
-            }
-            
-            // 添加网站按钮点击事件
-            document.getElementById('add-site-btn').addEventListener('click', () => {
-                openModal(false);
-            });
-            
-            // 添加以下代码：检测操作系统和设置粘贴提示
-            detectOS();
-            
-            // 添加以下代码：添加动画样式
-            addAnimationStyles();
-            
-            // 文件上传和粘贴事件处理
-            setupPasteListeners();
-            
-            // 表单提交事件
-            document.getElementById('site-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                try {
-                    await submitForm();
-                } catch (error) {
-                    console.error('提交表单失败:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: '保存失败',
-                        text: error.message || '发生未知错误'
-                    });
-                }
-            });
-            
-            // 清除分类选择按钮点击事件
-            document.getElementById('clear-categories-btn').addEventListener('click', () => {
-                $('#site-categories').val([]).trigger('change');
-                showToast('info', '已清除所有分类选择');
-            });
-            
-            // 关闭模态框按钮
-            document.querySelectorAll('.close-modal').forEach(button => {
-                button.addEventListener('click', closeModal);
-            });
-            
-            // 移除冗余的事件监听器设置，由setupPasteListeners统一处理
-            // document.getElementById('site-screenshot').addEventListener('change', handleFileSelect);
-            // document.getElementById('site-screenshot-container').addEventListener('paste', handlePaste);
-            
-            // 初始化拖放排序
-            initializeSortable();
-            
-            console.log('页面初始化完成');
-        });
-
-        // 初始化Select2
-        function initializeSelect2() {
-            $('#site-categories').select2({
-                placeholder: '选择分类',
-                allowClear: true,
-                width: '100%'
-            });
-            
-            console.log('Select2初始化完成');
-            
-            // 初始化Tagify
-            initializeTagify();
-            
-            console.log('分类和标签初始化完成');
-        }
-
-        // 格式化标签选项
-        function formatTagOption(tag) {
-            if (!tag.id) {
-                return tag.text;
-            }
-            if (tag.isNew) {
-                return $(`<span><i class="fas fa-plus-circle text-green-500 mr-1"></i> 创建新标签: ${tag.text}</span>`);
-            }
-            return $(`<span><i class="fas fa-tag text-gray-400 mr-1"></i> ${tag.text}</span>`);
-        }
-
-        // 格式化已选标签
-        function formatTagSelection(tag) {
-            if (tag.isNew) {
-                return $(`<span><i class="fas fa-plus-circle text-green-500 mr-1"></i>${tag.text}</span>`);
-            }
-            return $(`<span><i class="fas fa-tag text-gray-400 mr-1"></i>${tag.text}</span>`);
-        }
-
-        // 更新已选标签显示
-        function updateSelectedTagsDisplay() {
-            const container = document.getElementById('selected-tags-container');
-            const selectedTags = $('#site-tags').select2('data');
-            
-            container.innerHTML = selectedTags.map(tag => `
-                <span class="inline-flex items-center px-2 py-1 rounded-full ${tag.isNew ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
-                    <i class="fas ${tag.isNew ? 'fa-plus-circle' : 'fa-tag'} mr-1 text-xs"></i>
-                    ${tag.text}
-                </span>
-            `).join('');
-        }
-
-        // 初始化事件监听器
-        function initializeEventListeners() {
-            console.log('开始初始化事件监听器...');
-            
-            // 添加粘贴事件监听
-            document.addEventListener('paste', handlePaste);
-            
-            // 点击预览区域触发文件选择
-            const previewContainer = document.getElementById('screenshot-preview-container');
-            if (previewContainer) {
-                previewContainer.addEventListener('click', function() {
-                    const screenshotInput = document.getElementById('site-screenshot');
-                    if (screenshotInput) screenshotInput.click();
-                });
-            }
-            
-            // 文件上传预览
-            const screenshotInput = document.getElementById('site-screenshot');
-            if (screenshotInput) {
-                screenshotInput.addEventListener('change', function(e) {
-                    handleFileSelect(e);
-                });
-            }
-
-            // 表单提交
-            const siteForm = document.getElementById('site-form');
-            if (siteForm) {
-                siteForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    await submitForm();
-                });
-            }
-
-            // 关闭按钮事件 - 确保每次打开模态框时重新注册
-            const modal = document.getElementById('site-modal');
-            if (modal) {
-                const closeBtn = modal.querySelector('.close');
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('关闭按钮被点击');
-                        closeModal();
-                    });
-                }
-            }
-
-            // 点击模态框外部关闭
-            window.addEventListener('click', (e) => {
-                const modal = document.getElementById('site-modal');
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
-
-            // ESC键关闭模态框
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeModal();
-                }
-            });
-
-            // 添加网站按钮 - 已通过内联onclick处理
-            // 新建分类按钮
-            const addCategoryBtn = document.getElementById('add-category-btn');
-            if (addCategoryBtn) {
-                addCategoryBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // 使用SweetAlert2提供更好的用户体验
-                    const { value: name } = await Swal.fire({
-                        title: '新建分类',
-                        input: 'text',
-                        inputLabel: '请输入分类名称',
-                        inputPlaceholder: '分类名称',
-                        showCancelButton: true,
-                        cancelButtonText: '取消',
-                        confirmButtonText: '创建',
-                        inputValidator: (value) => {
-                            if (!value) {
-                                return '请输入分类名称';
-                            }
-                        }
-                    });
-
-                    if (name) {
-                        try {
-                            const response = await fetch('/api/categories', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                },
-                                body: JSON.stringify({ name })
-                            });
-
-                            if (!response.ok) {
-                                throw await response.json();
-                            }
-
-                            const category = await response.json();
-                            categories.push(category);
-                            updateCategorySelect();
-                            showToast('success', `分类"${name}"创建成功`);
-
-                            // 选中新创建的分类
-                            const currentSelection = $('#site-categories').val() || [];
-                            $('#site-categories').val([...currentSelection, category.id]).trigger('change');
-            } catch (error) {
-                            console.error('创建分类失败:', error);
-                            showToast('error', error.error || '创建分类失败');
-                        }
-                    }
-                });
-            }
-
-            // 初始化Tagify
-            initializeTagify();
-
-            // 退出登录按钮
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
-                    Swal.fire({
-                        title: '确认退出',
-                        text: '您确定要退出登录吗？',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: '确定退出',
-                        cancelButtonText: '取消'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            localStorage.removeItem('token');
-                            localStorage.removeItem('user');
-                            window.location.href = '/admin/login.html';
-                        }
-                    });
-                });
-            }
-            
-            console.log('事件监听器初始化完成');
-            
-            // 热门标记复选框事件
-            const isHotCheckbox = document.getElementById('site-is-hot');
-            const hotUntilContainer = document.getElementById('hot-until-container');
-            if (isHotCheckbox && hotUntilContainer) {
-                isHotCheckbox.addEventListener('change', function() {
-                    hotUntilContainer.classList.toggle('hidden', !this.checked);
-                });
-            }
-            
-            // 最新标记复选框事件
-            const isNewCheckbox = document.getElementById('site-is-new');
-            const newUntilContainer = document.getElementById('new-until-container');
-            if (isNewCheckbox && newUntilContainer) {
-                isNewCheckbox.addEventListener('change', function() {
-                    newUntilContainer.classList.toggle('hidden', !this.checked);
-                });
-            }
-        }
-
-        // 文件选择事件处理
-        function handleFileSelect(e) {
-            try {
-                const files = e.target.files;
-                console.log('文件选择:', files.length, '个文件');
-                
-                if (files.length === 0) {
-                    return;
-                }
-                
-                const file = files[0];
-                console.log('选择的文件详情:');
-                console.log('- 名称:', file.name);
-                console.log('- 类型:', file.type);
-                console.log('- 大小:', file.size, '字节');
-                console.log('- 最后修改:', new Date(file.lastModified).toLocaleString());
-                
-                // 检查文件类型
-                if (!file.type.startsWith('image/')) {
-                    showError('screenshot', '请选择有效的图片文件');
-                    return;
-                }
-                
-                // 检查文件大小
-                if (file.size > 5 * 1024 * 1024) {
-                    showError('screenshot', '图片文件过大，请选择小于5MB的图片');
-                    return;
-                }
-                
-                // 显示预览
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewContainer = document.getElementById('screenshot-preview-container');
-                    const previewImage = document.createElement('img');
-                    previewImage.src = e.target.result;
-                    previewImage.className = 'preview-image';
-                    
-                    // 清除现有预览
-                    previewContainer.innerHTML = '';
-                    previewContainer.appendChild(previewImage);
-                    previewContainer.classList.add('has-image');
-                    
-                    console.log('图片预览已加载，尺寸: ' + previewImage.width + 'x' + previewImage.height);
-                };
-                reader.readAsDataURL(file);
-                
-                // 清除错误
-                clearError('screenshot');
-                
-                // 创建一个新的文件对象以确保有正确的文件名扩展名
-                const fileExt = file.name.split('.').pop();
-                const newFilename = `image_${Date.now()}.${fileExt}`;
-                const screenshotFile = new File([file], newFilename, { type: file.type });
-                console.log('创建了新的文件对象:', newFilename);
-                
-                // 更新文件输入
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(screenshotFile);
-                document.getElementById('site-screenshot').files = dataTransfer.files;
-                
-                console.log('文件输入已更新，现在有', document.getElementById('site-screenshot').files.length, '个文件');
-            } catch (error) {
-                console.error('文件选择错误:', error);
-                showError('screenshot', '处理文件时出错: ' + error.message);
-            }
-        }
-
-        // 处理图片粘贴
-        function handlePaste(e) {
-            try {
-                // 检查粘贴的内容是否包含图片
-                const items = e.clipboardData.items;
-                let imageItem = null;
-                
-                console.log('粘贴事件内容项数量:', items.length);
-                for (let i = 0; i < items.length; i++) {
-                    console.log(`粘贴项 ${i+1}: 类型=${items[i].type}, 种类=${items[i].kind}`);
-                    if (items[i].type.indexOf('image') !== -1) {
-                        imageItem = items[i];
-                        break;
-                    }
-                }
-                
-                if (!imageItem) {
-                    console.log('粘贴内容中没有图片数据');
-                    return; // 没有图片数据
-                }
-                
-                console.log('检测到粘贴的图片:', imageItem.type);
-                
-                // 获取图片文件
-                const file = imageItem.getAsFile();
-                if (!file) {
-                    console.error('无法获取粘贴的图片文件');
-                    showToast('error', '无法获取粘贴的图片数据');
-                    return;
-                }
-                
-                console.log('粘贴的文件信息:', {
-                    name: file.name || '(无名称)',
-                    type: file.type,
-                    size: file.size,
-                    lastModified: new Date(file.lastModified).toLocaleString()
-                });
-                
-                // 文件大小检查
-                if (file.size > 5 * 1024 * 1024) {
-                    showError('screenshot', '图片文件过大，请选择小于5MB的图片');
-                    return;
-                }
-                
-                // 创建带扩展名的File对象
-                let fileExt = 'png'; // 默认扩展名
-                if (file.type === 'image/jpeg') fileExt = 'jpg';
-                if (file.type === 'image/gif') fileExt = 'gif';
-                if (file.type === 'image/webp') fileExt = 'webp';
-                
-                // 创建新文件
-                const timestamp = Date.now();
-                const renamedFile = new File(
-                    [file], 
-                    `pasted_image_${timestamp}.${fileExt}`, 
-                    { type: file.type, lastModified: timestamp }
-                );
-                
-                console.log('创建的新文件对象:', {
-                    name: renamedFile.name,
-                    type: renamedFile.type,
-                    size: renamedFile.size
-                });
-                
-                // 更新文件输入
-                try {
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(renamedFile);
-                    document.getElementById('site-screenshot').files = dataTransfer.files;
-                    console.log('更新文件输入成功，包含', document.getElementById('site-screenshot').files.length, '个文件');
-                } catch (error) {
-                    console.error('更新文件输入失败:', error);
-                    // 兼容性处理，某些浏览器可能不支持DataTransfer
-                    // 提示用户可以尝试手动选择文件
-                    showToast('error', '粘贴图片失败，请尝试使用选择图片按钮');
-                    return;
-                }
-                
-                // 显示预览
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewContainer = document.getElementById('screenshot-preview-container');
-                    const previewImage = document.createElement('img');
-                    previewImage.src = e.target.result;
-                    previewImage.className = 'preview-image';
-                    
-                    // 清除现有预览
-                    previewContainer.innerHTML = '';
-                    previewContainer.appendChild(previewImage);
-                    previewContainer.classList.add('has-image');
-                    
-                    // 添加点击图片可放大预览的功能
-                    previewImage.onclick = function() {
-                        previewScreenshot(e.target.result);
-                    };
-                    
-                    console.log('粘贴图片预览已加载');
-                };
-                reader.readAsDataURL(renamedFile);
-                
-                // 显示成功消息
-                showToast('success', '截图已成功粘贴');
-                // 清除错误
-                clearError('screenshot');
-                
-                // 添加动画效果，提升用户体验
-                const container = document.getElementById('screenshot-preview-container');
-                container.classList.add('upload-success');
-                setTimeout(() => {
-                    container.classList.remove('upload-success');
-                }, 1000);
-                
-            } catch (error) {
-                console.error('处理粘贴事件时出错:', error);
-                showError('screenshot', '处理粘贴的图片时出错: ' + error.message);
-            }
-        }
-
-        // 显示错误信息
-        function showError(fieldId, message) {
-            const errorElement = document.getElementById(`${fieldId}-error`);
-            if (errorElement) {
-                errorElement.textContent = message;
-            }
-        }
-
-        // 清除特定字段的错误信息
-        function clearError(fieldId) {
-            const errorElement = document.getElementById(`${fieldId}-error`);
-            if (errorElement) {
-                errorElement.textContent = '';
-            }
-        }
-
-        // 清除所有错误信息
-        function clearErrors() {
-            const errorElements = document.querySelectorAll('.error-message');
-            errorElements.forEach(element => element.textContent = '');
-        }
-
-        // 处理表单错误
-        function handleFormError(error) {
-            if (error.error) {
-                // API 返回的错误
-                if (error.error.includes('URL')) {
-                    showError('url', error.error);
-                } else if (error.error.includes('名称')) {
-                    showError('name', error.error);
-                } else {
-                    showToast('error', error.error);
-                }
-            } else {
-                showToast('error', '操作失败，请稍后重试');
-            }
-        }
-
-        // 显示提示消息
-        function showToast(type, message) {
-            const bgColors = {
-                success: '#10b981',
-                error: '#ef4444',
-                info: '#3b82f6',
-                warning: '#f59e0b'
-            };
-            
-            const icons = {
-                success: '<i class="fas fa-check-circle mr-2"></i>',
-                error: '<i class="fas fa-exclamation-circle mr-2"></i>',
-                info: '<i class="fas fa-info-circle mr-2"></i>',
-                warning: '<i class="fas fa-exclamation-triangle mr-2"></i>'
-            };
-            
-            const toast = document.createElement('div');
-            toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-50 flex items-center transform translate-y-0 opacity-100 transition-all duration-300`;
-            toast.style.backgroundColor = bgColors[type] || bgColors.info;
-            toast.innerHTML = `${icons[type] || ''}${message}`;
-            document.body.appendChild(toast);
-            
-            // 添加动画
-            setTimeout(() => {
-                toast.style.transform = 'translateY(-10px)';
-            }, 10);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(10px)';
-                
-                // 移除元素
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 3000);
-        }
-
-        // 提交表单
-        async function submitForm() {
-            console.log('====== 开始提交表单 ======');
-            // 显示加载状态
-            const submitBtn = document.getElementById('submit-btn');
-            const spinner = submitBtn.querySelector('.loading-spinner');
-            const buttonText = submitBtn.querySelector('.button-text');
-            
-            submitBtn.disabled = true;
-            spinner.style.display = 'block';
-            buttonText.textContent = isEditing ? '保存中...' : '创建中...';
-            
-            try {
-                clearErrors();
-                
-                // 表单验证
-                const name = document.getElementById('site-name').value.trim();
-                const siteUrl = document.getElementById('site-url').value.trim();
-                const screenshotInput = document.getElementById('site-screenshot');
-                const screenshot = screenshotInput.files.length > 0 ? screenshotInput.files[0] : null;
-                const siteId = document.getElementById('site-id').value;
-                
-                console.log('表单数据详情:');
-                console.log('- 名称:', name);
-                console.log('- URL:', siteUrl);
-                console.log('- 描述:', document.getElementById('site-description').value);
-                console.log('- 是否编辑模式:', isEditing);
-                console.log('- 站点ID:', siteId || '新站点');
-                
-                if (screenshot) {
-                    console.log('- 截图文件:', screenshot.name);
-                    console.log('  - 类型:', screenshot.type);
-                    console.log('  - 大小:', screenshot.size, '字节');
-                    console.log('  - 最后修改:', screenshot.lastModified);
-                } else {
-                    console.log('- 截图文件: 未选择');
-                }
-                
-                let hasError = false;
-                
-                if (!name) {
-                    showError('name', '请输入网站名称');
-                    hasError = true;
-                }
-                
-                if (!siteUrl) {
-                    showError('url', '请输入网站地址');
-                    hasError = true;
-                } else {
-                    try {
-                        new URL(siteUrl);
-                    } catch (error) {
-                        showError('url', '请输入有效的网站地址，例如：https://example.com');
-                        hasError = true;
-                    }
-                }
-                
-                // 只在新建模式下检查截图是否必需
-                if (!isEditing && !screenshot) {
-                    showError('screenshot', '请上传网站截图');
-                    hasError = true;
-                    console.log('错误: 缺少网站截图');
-                }
-                
-                if (hasError) {
-                    console.log('表单验证失败, 中止提交');
-                    throw new Error('表单验证失败');
-                }
-                
-                console.log('表单验证通过, 准备提交数据');
-                
-                // 准备表单数据
-                const formData = new FormData();
-                
-                formData.append('name', name);
-                formData.append('url', siteUrl);
-                formData.append('description', document.getElementById('site-description').value);
-                
-                // 添加热门标记数据
-                formData.append('is_hot', document.getElementById('site-is-hot').checked ? '1' : '0');
-                const hotUntil = document.getElementById('site-hot-until').value;
-                if (hotUntil) {
-                    formData.append('hot_until', hotUntil);
-                }
-                
-                // 添加最新标记数据
-                formData.append('is_new', document.getElementById('site-is-new').checked ? '1' : '0');
-                const newUntil = document.getElementById('site-new-until').value;
-                if (newUntil) {
-                    formData.append('new_until', newUntil);
-                }
-                
-                // 添加教程链接
-                const tutorialUrl = document.getElementById('site-tutorial-url').value;
-                if (tutorialUrl) {
-                    formData.append('tutorial_url', tutorialUrl);
-                }
-                
-                const categories = $('#site-categories').val() || [];
-                console.log('选择的分类:', categories);
-                
-                // 检查categories是否为数组且包含有效值
-                if (categories.length > 0) {
-                    // 将分类数组转换为JSON字符串
-                    formData.append('categories', JSON.stringify(categories));
-                    console.log('添加到FormData的分类:', JSON.stringify(categories));
-                } else {
-                    // 如果没有选择分类，传递空数组
-                    formData.append('categories', JSON.stringify([]));
-                    console.log('没有选择分类，添加空数组');
-                }
-                
-                const selectedTagIds = getSelectedTagIds();
-                console.log('选择的标签:', selectedTagIds);
-                
-                // 将标签数组转换为JSON字符串
-                if (selectedTagIds.length > 0) {
-                    formData.append('tags', JSON.stringify(selectedTagIds));
-                    console.log('添加到FormData的标签:', JSON.stringify(selectedTagIds));
-                } else {
-                    formData.append('tags', JSON.stringify([]));
-                    console.log('没有选择标签，添加空数组');
-                }
-
-                // 确保正确处理文件上传 - 只在有新文件时添加到FormData
-                if (screenshot) {
-                    console.log('添加截图到FormData:');
-                    console.log('- 文件名:', screenshot.name);
-                    console.log('- 文件类型:', screenshot.type);
-                    console.log('- 文件大小:', screenshot.size, '字节');
-                    
-                    try {
-                        // 验证文件有效性
-                        if (screenshot.size === 0) {
-                            console.error('错误: 截图文件大小为0');
-                            throw new Error('截图文件无效 (空文件)');
-                        }
-                        
-                        // 使用Blob API重新创建文件，确保内容正确
-                        const blob = new Blob([screenshot], { type: screenshot.type });
-                        const newFile = new File([blob], screenshot.name, {
-                            type: screenshot.type,
-                            lastModified: Date.now()
-                        });
-                        
-                        // 添加到FormData
-                        formData.append('screenshot', newFile);
-                        
-                        // 验证FormData是否包含文件
-                        let hasScreenshot = false;
-                        let formDataDump = '';
-                        for (let [key, value] of formData.entries()) {
-                            if (value instanceof File) {
-                                formDataDump += `- ${key}: [File] ${value.name} (${value.type}, ${value.size} bytes)\n`;
-                                if (key === 'screenshot') {
-                                    hasScreenshot = true;
-                                    console.log('FormData包含截图文件验证通过:', {
-                                        name: value.name,
-                                        type: value.type,
-                                        size: value.size,
-                                        lastModified: new Date(value.lastModified).toLocaleString()
-                                    });
-                                }
-                            } else {
-                                formDataDump += `- ${key}: ${value}\n`;
-                            }
-                        }
-                        
-                        console.log('FormData完整内容:\n', formDataDump);
-                        
-                        if (!hasScreenshot && !isEditing) {
-                            console.error('严重错误: FormData中未找到截图文件');
-                            showError('screenshot', '文件处理错误，请重新选择图片');
-                            throw new Error('文件处理失败 - 表单中未包含文件');
-                        }
-                    } catch (fileError) {
-                        console.error('处理文件时出错:', fileError);
-                        showError('screenshot', '处理文件时出错: ' + fileError.message);
-                        throw fileError;
-                    }
-                } else if (!isEditing) {
-                    console.error('严重错误: 截图是必需的，但缺少');
-                    showError('screenshot', '请上传网站截图');
-                    throw new Error('缺少必要的截图文件');
-                } else {
-                    console.log('编辑模式: 没有新的截图文件，将使用原有截图');
-                }
-                
-                // 图标处理（如果有）
-                const iconInput = document.getElementById('site-icon');
-                if (iconInput && iconInput.files && iconInput.files.length > 0) {
-                    const icon = iconInput.files[0];
-                    console.log('添加图标到FormData:', icon.name);
-                    try {
-                        formData.append('icon', icon);
-                    } catch (iconError) {
-                        console.warn('添加图标时出错，但将继续提交:', iconError);
-                    }
-                }
-
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    console.log('未找到认证令牌, 需要重新登录');
-                    Swal.fire({
-                        icon: 'error',
-                        title: '未授权',
-                        text: '您需要先登录'
-                    });
-                    window.location.href = '/admin/login.html';
-                    return;
-                }
-
-                const apiUrl = isEditing ? `/api/sites/${siteId}` : '/api/sites';
-                const method = isEditing ? 'PUT' : 'POST';
-                console.log(`准备发送API请求: ${method} ${apiUrl}`);
-
-                // 显示进度提示
-                Swal.fire({
-                    title: isEditing ? '正在更新...' : '正在创建...',
-                    text: '请稍候',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // 发送请求
-                console.log('====== 开始发送API请求 ======');
-                let response;
-                try {
-                    console.log(`发送${method}请求到 ${apiUrl}`);
-                    console.log('表单内容预览:');
-                    for (const [key, value] of formData.entries()) {
-                        if (value instanceof File) {
-                            console.log(`- ${key}: [File] ${value.name} (${value.type}, ${value.size} bytes)`);
-                        } else {
-                            console.log(`- ${key}: ${value}`);
-                        }
-                    }
-                    console.log('使用的认证令牌:', token.substring(0, 10) + '...');
-                    
-                    response = await fetch(apiUrl, {
-                        method: method,
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                        },
-                        body: formData
-                    });
-                    console.log('API响应状态码:', response.status);
-                    console.log('API响应头:', {
-                        'content-type': response.headers.get('content-type'),
-                        'content-length': response.headers.get('content-length')
-                    });
-                    
-                    // 获取响应文本用于调试
-                    const responseText = await response.clone().text();
-                    console.log('API响应内容:', responseText);
-                    
-                } catch (fetchError) {
-                    console.error('网络请求失败详情:', fetchError);
-                    Swal.fire({
-                        icon: 'error',
-                        title: '请求失败',
-                        text: '网络请求失败，请检查网络连接: ' + fetchError.message
-                    });
-                    throw new Error('网络请求失败，请检查网络连接: ' + fetchError.message);
-                }
-                
-                if (response.status === 401) {
-                    console.log('认证失败 (401)');
-                    Swal.fire({
-                        icon: 'error',
-                        title: '会话已过期',
-                        text: '请重新登录'
-                    });
-                    window.location.href = '/admin/login.html';
-                    return;
-                }
-                
-                if (!response.ok) {
-                    const errorResponse = await response.text();
-                    console.log('API错误响应:', response.status, errorResponse);
-                    
-                    let errorMessage = '服务器错误';
-                    try {
-                        const errorJson = JSON.parse(errorResponse);
-                        errorMessage = errorJson.error || '未知错误';
-                        console.log('解析出的错误信息:', errorMessage);
-                    } catch (e) {
-                        console.log('无法解析错误JSON:', e.message);
-                    }
-                    
-                    Swal.fire({
-                        icon: 'error',
-                        title: '操作失败',
-                        text: errorMessage
-                    });
-                    
-                    throw new Error(errorMessage);
-                }
-                
-                // 解析响应结果
-                let result;
-                try {
-                    result = await response.json();
-                    console.log('API返回结果:', result);
-                } catch (jsonError) {
-                    console.error('解析返回结果失败:', jsonError);
-                    throw new Error('解析服务器响应失败');
-                }
-                
-                // 显示成功消息
-                Swal.fire({
-                    icon: 'success',
-                    title: isEditing ? '更新成功' : '创建成功',
-                    text: isEditing ? `网站 "${name}" 已成功更新` : `网站 "${name}" 已成功创建`,
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    console.log('关闭成功消息对话框');
-                    // 关闭模态框
-                    closeModal();
-                    
-                    // 完全刷新页面以确保显示最新数据
-                    console.log('准备刷新页面...');
-                    window.location.reload();
-                });
-                
-                return result;
-            } catch (error) {
-                console.error('提交表单失败:', error);
-                
-                Swal.close();
-                
-                if (error.message === '表单验证失败') {
-                    // 已经在验证环节显示了错误消息
-                    showToast('error', '请修正表单中的错误');
-                } else {
-                    // 处理API返回的错误
-                    handleFormError(error);
-                }
-                
-                throw error;
-            } finally {
-                // 恢复按钮状态
-                submitBtn.disabled = false;
-                spinner.style.display = 'none';
-                buttonText.textContent = isEditing ? '保存修改' : '保存';
-                console.log('表单提交过程结束');
-            }
-        }
-
-        // 加载网站列表
-        async function loadSites(retryCount = 0, forceRefresh = false) {
-                const tbody = document.getElementById('sites-list');
-            
-            // 显示加载状态
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="px-6 py-4 text-center">
-                        <div class="flex justify-center items-center space-x-2">
-                            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span>加载中...</span>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    window.location.href = '/admin/login.html';
-                    return;
-                }
-
-                // 强制刷新，忽略缓存
-                const timestamp = new Date().getTime();
-                const siteUrl = `/api/sites?_=${timestamp}`;
-                console.log('获取网站列表:', siteUrl);
-                
-                const response = await fetch(siteUrl, {
-                    method: 'GET', // 显式指定GET方法
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    },
-                    cache: 'no-store' // 确保不使用缓存
-                });
-                
-                if (!response.ok) {
-                    if (response.status === 401 || response.status === 403) {
-                        localStorage.removeItem('token');
-                        window.location.href = '/admin/login.html';
-                        return;
-                    }
-                    throw new Error('加载网站列表失败');
-                }
-                
-                const sites = await response.json();
-                console.log('加载的网站列表:', sites); // 添加日志便于调试
-                tbody.innerHTML = '';
-                
-                if (sites.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="7" class="px-6 py-8 text-center">
-                                <div class="text-gray-500 mb-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                    </svg>
-                                    <p class="text-lg font-medium">暂无网站数据</p>
-                                    <p class="text-sm text-gray-400 mt-1">点击右上角的"添加网站"按钮添加第一个网站</p>
-                                </div>
-                                <button onclick="openModal(false)" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    <i class="fas fa-plus mr-2"></i>
-                                    添加网站
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                sites.forEach((site, index) => {
-                    const tr = document.createElement('tr');
-                    tr.setAttribute('data-id', site.id);
-                    tr.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
-                    tr.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <span class="text-gray-500 mr-2">${index + 1}</span>
-                                <i class="fas fa-grip-vertical drag-handle text-gray-400 cursor-move"></i>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <img src="${site.screenshot}" alt="${site.name}" class="h-16 object-contain cursor-pointer hover:opacity-90 transition-opacity" onclick="previewScreenshot('${site.screenshot}')">
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900">${site.name}</div>
-                            <div class="text-sm text-gray-500 line-clamp-3 max-w-xs" title="${site.description || ''}">${site.description || ''}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="${site.url}" target="_blank" class="text-blue-600 hover:text-blue-900 flex items-center max-w-xs truncate">
-                                <span class="truncate">${site.url}</span>
-                                <i class="fas fa-external-link-alt ml-1 text-xs"></i>
-                            </a>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1 max-w-xs">
-                                ${(site.categories || []).map(category => 
-                                    `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                        ${category.name}
-                                    </span>`
-                                ).join('')}
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1 max-w-xs">
-                                ${(site.tags || []).map(tag => 
-                                    `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                        ${tag.name}
-                                    </span>`
-                                ).join('')}
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onclick="editSite('${site.id}')" class="text-blue-600 hover:text-blue-900 mr-3 transition-colors">
-                                <i class="fas fa-edit"></i> 编辑
-                            </button>
-                            <button onclick="deleteSite('${site.id}', '${site.name}')" class="text-red-600 hover:text-red-900 transition-colors">
-                                <i class="fas fa-trash"></i> 删除
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-                // 初始化拖拽排序
-                initSortable();
-            } catch (error) {
-                console.error('加载网站列表失败:', error);
-                if (retryCount < 3) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="7" class="px-6 py-4 text-center">
-                                <div class="text-amber-600 mb-2">
-                                    <i class="fas fa-circle-notch fa-spin mr-2"></i>
-                                    加载失败，正在重试 (${retryCount + 1}/3)...
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    setTimeout(() => loadSites(retryCount + 1, forceRefresh), 1500);
-                } else {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="7" class="px-6 py-4 text-center">
-                                <div class="text-red-600 mb-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <p class="text-lg font-medium">加载失败</p>
-                                    <p class="text-sm mt-1">无法获取网站列表数据，请检查网络连接</p>
-                                </div>
-                                <button onclick="loadSites()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
-                                    <i class="fas fa-sync-alt mr-2"></i>重试
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }
-            }
-        }
-
-        // 初始化拖拽排序
-        function initSortable() {
-            const tbody = document.getElementById('sites-list');
-            Sortable.create(tbody, {
-                handle: '.drag-handle',
-                animation: 150,
-                onEnd: async function(evt) {
-                    const token = localStorage.getItem('token');
-                    const rows = Array.from(tbody.getElementsByTagName('tr'));
-                    const siteIds = rows.map(row => row.getAttribute('data-id'));
-                    
-                    try {
-                        const response = await fetch('/api/sites/reorder', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ siteIds })
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('更新排序失败');
-                        }
-                        
-                        // 更新序号显示
-                        rows.forEach((row, index) => {
-                            const orderCell = row.querySelector('td:first-child span');
-                            orderCell.textContent = index + 1;
-                        });
-                    } catch (error) {
-                        console.error('更新排序失败:', error);
-                        alert('更新排序失败，请刷新页面重试');
-                        loadSites(); // 重新加载列表以恢复原始顺序
-                    }
-                }
-            });
-        }
-
-        // 预览截图
-        function previewScreenshot(screenshot) {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'block';
-            modal.innerHTML = `
-                <div class="modal-content" style="max-width: 90%; max-height: 90vh; overflow: auto;">
-                    <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-                    <img src="${screenshot}" alt="网站截图" style="width: 100%; height: auto;">
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        // 编辑网站
-        async function editSite(id) {
-            try {
-                // 打开模态框先，显示加载状态
-                openModal(true);
-                document.getElementById('modal-title').textContent = '编辑网站 (加载中...)';
-                
-                // 禁用表单控件
-                const formElements = document.querySelectorAll('#site-form input, #site-form select, #site-form textarea, #site-form button');
-                formElements.forEach(el => el.disabled = true);
-                
-                // 添加缓存破坏参数
-                const timestamp = new Date().getTime();
-                const response = await fetch(`/api/sites/${id}?_=${timestamp}`, {
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    },
-                    // 防止浏览器缓存的额外设置
-                    cache: 'no-store'
-                });
-                
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        throw new Error('网站不存在或已被删除');
-                    }
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || '加载网站详情失败');
-                }
-                
-                // 强制获取新数据
-                const site = await response.json();
-                console.log('加载的网站数据:', site); // 添加日志便于调试
-                
-                // 填充表单数据
-                document.getElementById('site-id').value = site.id;
-                document.getElementById('site-name').value = site.name;
-                document.getElementById('site-url').value = site.url;
-                document.getElementById('site-description').value = site.description || '';
-                
-                // 显示当前截图
-                const currentScreenshot = document.getElementById('current-screenshot');
-                const previewContainer = document.getElementById('screenshot-preview-container');
-                
-                if (site.screenshot) {
-                    // 修复：确保路径正确，移除开头的斜杠，如果路径已经是正确格式则不修改
-                    const screenshotPath = site.screenshot.startsWith('/') 
-                        ? site.screenshot 
-                        : `/${site.screenshot}`;
-                    
-                    console.log('截图路径:', screenshotPath);
-                    
-                    // 创建新的图片元素而不是使用现有的
-                    previewContainer.innerHTML = '';
-                    const img = document.createElement('img');
-                    img.id = 'current-screenshot';
-                    img.className = 'preview-image';
-                    img.src = `${screenshotPath}?t=${new Date().getTime()}`; // 加时间戳防止缓存
-                    img.alt = '网站截图';
-                    
-                    // 图片加载成功处理
-                    img.onload = function() {
-                        console.log('截图加载成功:', img.src);
-                        previewContainer.classList.add('has-image');
-                    };
-                    
-                    // 图片加载失败处理
-                    img.onerror = function() {
-                        console.error('截图加载失败:', img.src);
-                        previewContainer.classList.remove('has-image');
-                        previewContainer.innerHTML = '<i class="fas fa-image text-gray-400 text-5xl"></i>';
-                        previewContainer.innerHTML += '<p class="text-sm text-gray-500 mt-2">图片加载失败，点击上传新图片</p>';
-                    };
-                    
-                    previewContainer.appendChild(img);
-                } else {
-                    console.log('没有截图数据');
-                    previewContainer.classList.remove('has-image');
-                    previewContainer.innerHTML = '<i class="fas fa-image text-gray-400 text-5xl"></i>';
-                    previewContainer.innerHTML += '<p class="text-sm text-gray-500 mt-2">点击或拖拽上传截图</p>';
-                }
-                
-                // 设置选中的分类
-                console.log('网站的分类数据:', site.categories); 
-                const categoryIds = site.categories.map(c => c.id);
-                console.log('分类IDs:', categoryIds);
-                $('#site-categories').val(categoryIds).trigger('change');
-                console.log('Select2分类设置后的值:', $('#site-categories').val());
-                
-                // 设置选中的标签
-                console.log('网站的标签数据:', site.tags);
-                if (tagifyInstance) {
-                    // 首先清除所有现有标签
-                    tagifyInstance.removeAllTags();
-                    
-                    // 格式化标签数据以包含ID，确保正确的数据结构
-                    const formattedTags = site.tags.map(tag => ({
-                        value: tag.name,
-                        id: tag.id,
-                        // 添加一些额外的属性以确保标签正确显示和处理
-                        searchBy: tag.name.toLowerCase()
-                    }));
-                    
-                    console.log('格式化后的标签数据:', formattedTags);
-                    
-                    // 使用addTags方法添加格式化好的标签
-                    tagifyInstance.addTags(formattedTags);
-                    
-                    // 验证标签是否成功添加
-                    console.log('添加标签后Tagify的值:', tagifyInstance.value);
-                    
-                    // 确保所有标签都有ID属性
-                    setTimeout(() => {
-                        const currentTags = tagifyInstance.value;
-                        console.log('检查最终标签状态:', currentTags);
-                        let allHaveIds = true;
-                        
-                        for (const tag of currentTags) {
-                            if (!tag.id) {
-                                allHaveIds = false;
-                                console.error('发现没有ID的标签:', tag);
-                            }
-                        }
-                        
-                        if (allHaveIds) {
-                            console.log('所有标签都有正确的ID');
-                        } else {
-                            console.warn('警告: 部分标签ID缺失');
-                        }
-                    }, 500);
-                }
-                
-                // 更新模态框标题
-                document.getElementById('modal-title').textContent = `编辑网站: ${site.name}`;
-                
-                // 启用表单控件
-                formElements.forEach(el => el.disabled = false);
-                
-                // 表单提交按钮文本
-                document.querySelector('#submit-btn .button-text').textContent = '保存修改';
-                
-                // 填充热门标记
-                const isHotCheckbox = document.getElementById('site-is-hot');
-                const hotUntilInput = document.getElementById('site-hot-until');
-                const hotUntilContainer = document.getElementById('hot-until-container');
-                
-                if (isHotCheckbox && hotUntilInput && hotUntilContainer) {
-                    isHotCheckbox.checked = site.is_hot === 1;
-                    hotUntilContainer.classList.toggle('hidden', !isHotCheckbox.checked);
-                    
-                    if (site.hot_until) {
-                        // 将日期格式化为YYYY-MM-DD格式
-                        const date = new Date(site.hot_until);
-                        const year = date.getFullYear();
-                        const month = String(date.getMonth() + 1).padStart(2, '0');
-                        const day = String(date.getDate()).padStart(2, '0');
-                        hotUntilInput.value = `${year}-${month}-${day}`;
-                    } else {
-                        hotUntilInput.value = '';
-                    }
-                }
-                
-                // 填充最新标记
-                const isNewCheckbox = document.getElementById('site-is-new');
-                const newUntilInput = document.getElementById('site-new-until');
-                const newUntilContainer = document.getElementById('new-until-container');
-                
-                if (isNewCheckbox && newUntilInput && newUntilContainer) {
-                    isNewCheckbox.checked = site.is_new === 1;
-                    newUntilContainer.classList.toggle('hidden', !isNewCheckbox.checked);
-                    
-                    if (site.new_until) {
-                        // 将日期格式化为YYYY-MM-DD格式
-                        const date = new Date(site.new_until);
-                        const year = date.getFullYear();
-                        const month = String(date.getMonth() + 1).padStart(2, '0');
-                        const day = String(date.getDate()).padStart(2, '0');
-                        newUntilInput.value = `${year}-${month}-${day}`;
-                    } else {
-                        newUntilInput.value = '';
-                    }
-                }
-                
-                // 填充教程链接
-                const tutorialUrlInput = document.getElementById('site-tutorial-url');
-                if (tutorialUrlInput && site.tutorial_url) {
-                    tutorialUrlInput.value = site.tutorial_url;
-                }
-                
-            } catch (error) {
-                console.error('加载网站详情失败:', error);
-                showToast('error', error.message || '加载网站详情失败');
-                closeModal(); // 关闭模态框
-            }
-        }
-
-        // 删除网站
-        async function deleteSite(id, name) {
-            try {
-                // 使用SweetAlert2确认对话框
-                const result = await Swal.fire({
-                    title: '确认删除',
-                    text: `您确定要删除网站 "${name}" 吗？此操作不可恢复！`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: '是的，删除它！',
-                    cancelButtonText: '取消'
-                });
-
-                if (result.isConfirmed) {
-                    // 显示加载状态
-                    Swal.fire({
-                        title: '正在删除...',
-                        text: '请稍候',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    // 获取token
-                const token = localStorage.getItem('token');
-                    if (!token) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: '未授权',
-                            text: '您需要先登录'
-                        });
-                        window.location.href = '/admin/login.html';
-                        return;
-                    }
-
-                    // 发送删除请求
-                const response = await fetch(`/api/sites/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                    if (response.status === 401) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: '会话已过期',
-                            text: '请重新登录'
-                        });
-                        window.location.href = '/admin/login.html';
-                        return;
-                    }
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || '删除网站失败');
-                    }
-
-                    // 显示成功消息
-                    Swal.fire({
-                        icon: 'success',
-                        title: '删除成功',
-                        text: `网站 "${name}" 已成功删除`
-                    });
-
-                    // 重新加载网站列表
-                    loadSites();
-                }
-            } catch (error) {
-                console.error('删除网站出错:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: '删除失败',
-                    text: error.message || '删除网站时发生错误，请稍后重试'
-                });
-            }
-        }
-
-        // 打开模态框
-        function openModal(isEdit = false) {
-            console.log('openModal函数被调用，isEdit =', isEdit);
-            const modal = document.getElementById('site-modal');
-            if (!modal) {
-                console.error('无法找到模态框元素 site-modal');
-                alert('系统错误：无法找到模态框元素');
-                return;
-            }
-            
-            try {
-                // 显示模态框
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden'; // 防止背景滚动
-                isEditing = isEdit;
-                
-                // 清除所有错误提示
-                clearErrors();
-                
-                // 重置表单
-                if (!isEdit) {
-                    const form = document.getElementById('site-form');
-                    if (form) form.reset();
-                    
-                    const siteIdField = document.getElementById('site-id');
-                    if (siteIdField) siteIdField.value = '';
-                    
-                    // 清除截图预览
-                    const previewContainer = document.getElementById('screenshot-preview-container');
-                    if (previewContainer) {
-                        previewContainer.innerHTML = '<i class="fas fa-image text-gray-400 text-5xl"></i>';
-                        previewContainer.innerHTML += '<p class="text-sm text-gray-500 mt-2">点击或拖拽上传截图</p>';
-                        previewContainer.classList.remove('has-image');
-                    }
-                    
-                    // 重置分类选择
-                    $('#site-categories').val([]).trigger('change');
-                    
-                    // 重置标签
-                    if (tagifyInstance) tagifyInstance.removeAllTags();
-                }
-                
-                // 确保关闭按钮有事件监听器
-                const closeButton = modal.querySelector('.close');
-                if (closeButton) {
-                    // 移除可能存在的旧事件监听器
-                    const newCloseButton = closeButton.cloneNode(true);
-                    closeButton.parentNode.replaceChild(newCloseButton, closeButton);
-                    
-                    // 添加新的点击事件
-                    newCloseButton.addEventListener('click', function(e) {
-            e.preventDefault();
-                        e.stopPropagation();
-                        console.log('关闭按钮被点击');
-                        closeModal();
-                    });
-                }
-                
-                // 表单标题
-                const modalTitle = document.getElementById('modal-title');
-                if (modalTitle) {
-                    modalTitle.textContent = isEdit ? '编辑网站' : '添加新网站';
-                }
-                
-                // 表单提交按钮文本
-                const submitBtn = document.querySelector('#submit-btn .button-text');
-                if (submitBtn) {
-                    submitBtn.textContent = isEdit ? '保存修改' : '添加网站';
-                }
-            } catch (error) {
-                console.error('打开模态框错误:', error);
-                alert('打开表单时出错: ' + error.message);
-            }
-        }
-
-        // 关闭模态框
-        function closeModal() {
-            console.log('closeModal函数被调用');
-            const modal = document.getElementById('site-modal');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto'; // 恢复背景滚动
-            }
-            // 重置编辑状态
-            isEditing = false;
-            currentSiteId = null;
-            document.getElementById('site-form').reset();
-        }
-
-        // 获取所有选中的标签ID
-        function getSelectedTagIds() {
-            if (!tagifyInstance || !tagifyInstance.value) {
-                console.log('Tagify实例不存在或没有值');
-                return [];
-            }
-            
-            console.log('原始Tagify值:', tagifyInstance.value);
-            const tagIds = tagifyInstance.value
-                .map(tag => {
-                    // 优先尝试data-id属性
-                    let id = null;
-                    
-                    if (tag.__tagifyTagData && tag.__tagifyTagData.id) {
-                        id = tag.__tagifyTagData.id;
-                    } else if (tag.id) {
-                        id = tag.id;
-                    } else if (tag.getAttribute && tag.getAttribute('data-id')) {
-                        id = tag.getAttribute('data-id');
-                    } else if (tag.element && tag.element.getAttribute && tag.element.getAttribute('data-id')) {
-                        id = tag.element.getAttribute('data-id');
-                    } else {
-                        // 在DOM中查找对应标签元素
-                        const tagElement = document.querySelector(`tag[value="${tag.value}"]`);
-                        if (tagElement) {
-                            id = tagElement.getAttribute('data-id');
-                        }
-                    }
-                    
-                    console.log(`标签 "${tag.value}" ID:`, id);
-                    return id;
-                })
-                .filter(Boolean);
-            
-            console.log('最终选择的标签IDs:', tagIds);
-            return tagIds;
-        }
-
-        // 设置选中的标签
-        function setSelectedTags(tagIds = []) {
-            if (!tagifyInstance) return;
-            
-            console.log('设置选中的标签, IDs:', tagIds);
-            
-            // 清除现有标签
-            tagifyInstance.removeAllTags();
-            
-            // 添加选中的标签
-            const selectedTags = tags
-                .filter(tag => tagIds.includes(tag.id))
-                .map(tag => ({
-                    value: tag.name,
-                    id: tag.id,
-                    __tagifyTagData: { id: tag.id }
-                }));
-            
-            console.log('准备添加的标签对象:', selectedTags);    
-            tagifyInstance.addTags(selectedTags);
-            
-            // 确保所有标签都设置了data-id属性
-            setTimeout(() => {
-                const tagElements = document.querySelectorAll('.tagify__tag');
-                console.log('找到', tagElements.length, '个标签元素');
-                
-                tagElements.forEach((el, i) => {
-                    const tagData = selectedTags[i];
-                    if (tagData && tagData.id) {
-                        console.log(`设置标签 "${tagData.value}" 的data-id属性为 ${tagData.id}`);
-                        el.setAttribute('data-id', tagData.id);
-                    }
-                });
-            }, 100);
-        }
-
-        // 检查用户是否已登录
-        async function checkAuthentication() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.log('未找到认证令牌，重定向到登录页面');
-                window.location.href = '/admin/login.html';
-                return;
-            }
-            
-            try {
-                console.log('验证认证令牌...');
-                const response = await fetch('/api/auth/check', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('认证失败');
-                }
-                
-                const result = await response.json();
-                console.log('认证结果:', result);
-                
-                if (!result.authenticated) {
-                    throw new Error('未认证');
-                }
-                
-                console.log('认证成功');
-            } catch (error) {
-                console.error('认证失败:', error);
-            localStorage.removeItem('token');
-                Swal.fire({
-                    icon: 'error',
-                    title: '会话已过期',
-                    text: '请重新登录'
-                }).then(() => {
-            window.location.href = '/admin/login.html';
-        });
-            }
-        }
-
-        // 初始化Tagify
-        function initializeTagify() {
-            console.log('开始初始化Tagify...');
-            const input = document.getElementById('site-tags');
-            
-            if (!input) {
-                console.error('找不到标签输入元素');
-                return;
-            }
-            
-            // 显示加载状态
-            input.setAttribute('placeholder', '正在加载标签数据...');
-            input.disabled = true;
-            
-            if (tagifyInstance) {
-                console.log('销毁旧的Tagify实例');
-                tagifyInstance.destroy();
-            }
-            
-            // 获取所有标签作为白名单
-            fetchTags().then(allTags => {
-                input.disabled = false;
-                input.setAttribute('placeholder', '添加或选择标签');
-                
-                console.log('创建新的Tagify实例');
-                tagifyInstance = new Tagify(input, {
-                    enforceWhitelist: false,    // 允许用户创建新标签
-                    editTags: false,            // 禁用标签编辑
-                    maxTags: 20,                // 最多20个标签
-                    backspace: true,            // 按退格键删除最后一个标签
-                    placeholder: "添加或选择标签",
-                    delimiters: ", ",           // 用逗号或空格添加标签
-                    trim: true,                 // 去除前后空格
-                    keepInvalidTags: false,     // 移除无效标签
-                    duplicates: false,          // 不允许重复标签
-                    callbacks: {
-                        beforeRemoveTag: (tagElms) => { 
-                            console.log("即将删除标签", tagElms); 
-                            return true; // 返回true允许删除
-                        }
-                    },
-                    transformTag: function(tagData) {
-                        // 确保标签数据包含所有必要属性
-                        if (tagData.id) {
-                            tagData.__tagifyTagData = { id: tagData.id };
-                        }
-                    },
-                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
-                    dropdown: {
-                        enabled: 1,             // 显示下拉菜单
-                        maxItems: 20,           // 下拉菜单最多显示20个项目
-                        classname: "tags-dropdown",
-                        position: "all",        // 下拉菜单在输入框下方
-                        closeOnSelect: false,    // 选择后不关闭下拉菜单
-                        highlightFirst: true,   // 默认高亮第一个选项
-                        searchKeys: ["value", "searchBy"],  // 搜索这些属性
-                        fuzzySearch: true       // 启用模糊搜索
-                    },
-                    templates: {
-                        // 自定义标签模板
-                        tag: function(tagData) {
-                            const isNew = tagData.isNew ? ' tagify__tag--new' : '';
-                            return `
-                                <tag title="${tagData.value}"
-                                    contenteditable='false'
-                                    spellcheck='false'
-                                    tabIndex="-1"
-                                    class="${isNew}"
-                                    ${this.getAttributes(tagData)}>
-                                    <x title='删除' class='tagify__tag__removeBtn' role='button' aria-label='删除标签'></x>
-                                    <div>
-                                        <span class='tagify__tag__text'>${tagData.value}</span>
-                                    </div>
-                                </tag>
-                            `;
-                        },
-                        // 自定义下拉项模板
-                        dropdownItem: function(tagData) {
-                            const isInWhitelist = tagData.whitelist || false;
-                            const isNew = !tagData.whitelist;
-                            return `
-                                <div ${this.getAttributes(tagData)}
-                                    class='tagify__dropdown__item ${isNew ? 'tagify__dropdown__item--create' : ''}'
-                                    tabindex="0"
-                                    role="option">
-                                    ${isNew ? `<strong>+&nbsp;</strong>` : ''}
-                                    <span>${tagData.value}</span>
-                                    ${isInWhitelist ? `<span class="tagify__dropdown__item__count">${tagData.count || ''}</span>` : ''}
-                                </div>
-                            `;
-                        }
-                    }
-                });
-                
-                console.log('Tagify实例创建完成');
-                
-                // 设置白名单（已有标签列表）
-                if (allTags && allTags.length > 0) {
-                    console.log(`为Tagify设置 ${allTags.length} 个标签的白名单`);
-                    // 为每个标签添加出现次数属性
-                    tagifyInstance.settings.whitelist = allTags.map(tag => ({
-                        value: tag.name,
-                        id: tag.id,
-                        whitelist: true,
-                        count: tag.count || (Math.floor(Math.random() * 10) + 1), // 真实情况下应该是实际使用次数
-                        searchBy: tag.name.toLowerCase() // 用于搜索的属性
-                    }));
-                    
-                    // 预先载入白名单以提高交互速度
-                    tagifyInstance.loading(false);
-                }
-                
-                // 添加事件处理
-                // 添加标签事件
-                tagifyInstance.on('add', async function(e) {
-                    console.log('Tagify添加标签事件:', e.detail);
-                    const tagValue = e.detail.data.value;
-                    
-                    // 查找是否已有此标签
-                    const existingTag = allTags.find(t => 
-                        t.name.toLowerCase() === tagValue.toLowerCase()
-                    );
-                    
-                    if (existingTag) {
-                        console.log('使用已存在的标签:', existingTag);
-                        // 更新当前标签的id
-                        e.detail.tag.setAttribute('data-id', existingTag.id);
-                        // 保存ID到内部数据
-                        if (e.detail.data) {
-                            e.detail.data.id = existingTag.id;
-                        }
-                    } else {
-                        console.log('创建新标签:', tagValue);
-                        // 创建新标签，显示加载状态
-                        e.detail.tag.classList.add('tagify--loading');
-                        
-                        try {
-                            const token = localStorage.getItem('token');
-                            const response = await fetch('/api/tags', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${token}`
-                                },
-                                body: JSON.stringify({ name: tagValue })
-                            });
-                            
-                            if (!response.ok) {
-                                throw new Error(`创建标签失败: ${response.status} ${response.statusText}`);
-                            }
-                            
-                            const newTag = await response.json();
-                            console.log('新标签创建成功:', newTag);
-                            
-                            // 移除加载状态
-                            e.detail.tag.classList.remove('tagify--loading');
-                            
-                            // 更新当前标签的id
-                            e.detail.tag.setAttribute('data-id', newTag.id);
-                            
-                            // 保存ID到内部数据
-                            if (e.detail.data) {
-                                e.detail.data.id = newTag.id;
-                            }
-                            
-                            // 关键修复：更新Tagify内部的value数组
-                            // 查找内部数据中的这个标签并更新ID
-                            const tagIndex = tagifyInstance.value.findIndex(t => 
-                                t.value === tagValue && (!t.id || t.id === undefined)
-                            );
-
-                            if (tagIndex >= 0) {
-                                console.log(`在Tagify内部数据的索引 ${tagIndex} 处更新标签ID为 ${newTag.id}`);
-                                tagifyInstance.value[tagIndex].id = newTag.id;
-                                console.log('更新后的Tagify值:', JSON.stringify(tagifyInstance.value));
-                            } else {
-                                console.warn('无法在Tagify内部数据中找到匹配的标签进行更新');
-                            }
-                            
-                            // 添加到标签列表
-                            allTags.push(newTag);
-                            
-                            // 更新白名单
-                            tagifyInstance.settings.whitelist.push({
-                                value: newTag.name,
-                                id: newTag.id,
-                                whitelist: true,
-                                count: 1
-                            });
-                            
-                            console.log('标签列表已更新');
-                        } catch (error) {
-                            console.error('创建标签失败:', error);
-                            // 移除加载状态
-                            e.detail.tag.classList.remove('tagify--loading');
-                            // 从Tagify中移除这个标签
-                            tagifyInstance.removeTags(e.detail.tag);
-                            showToast('error', '创建标签失败');
-                        }
-                    }
-                });
-                
-                // 移除标签事件
-                tagifyInstance.on('remove', function(e) {
-                    console.log('Tagify移除标签事件:', e.detail);
-                });
-                
-                // 编辑标签事件(如果启用了编辑功能)
-                tagifyInstance.on('edit', function(e) {
-                    console.log('Tagify编辑标签事件:', e.detail);
-                });
-                
-                // 无效标签事件
-                tagifyInstance.on('invalid', function(e) {
-                    console.log('无效的标签:', e.detail);
-                    showToast('warning', `无效的标签: ${e.detail.value}`);
-                });
-                
-                // 下拉菜单选择事件
-                tagifyInstance.on('dropdown:select', function(e) {
-                    console.log('从下拉菜单选择:', e.detail);
-                });
-                
-                console.log('Tagify事件处理程序已设置');
-                
-            }).catch(error => {
-                console.error('获取标签失败:', error);
-                input.disabled = false;
-                input.setAttribute('placeholder', '添加标签');
-                showToast('error', '加载标签数据失败');
-                
-                // 即使标签加载失败，也创建一个基本的Tagify实例
-                tagifyInstance = new Tagify(input, {
-                    maxTags: 20,
-                    delimiters: ", "
-                });
-            });
-        }
-        
-        // 获取所有标签
-        async function fetchTags() {
             try {
                 const token = localStorage.getItem('token');
                 const response = await fetch('/api/tags', {
@@ -3156,256 +332,603 @@
                         'Authorization': `Bearer ${token}`
                     }
                 });
+                    tags = await response.json();
+                
+                // 初始化Tagify
+                const input = document.getElementById('site-tags');
+                tagify = new Tagify(input, {
+                    whitelist: tags.map(tag => tag.name),
+                    dropdown: {
+                        maxItems: 20,
+                        classname: "tags-look",
+                        enabled: 0,
+                        closeOnSelect: false
+                    }
+                });
+                } catch (error) {
+                console.error('加载标签列表失败:', error);
+            }
+        }
+            
+            // 加载网站列表
+        async function loadSites() {
+            try {
+                const response = await fetch('/api/sites');
+                const sites = await response.json();
+                const tableBody = document.getElementById('sites-table-body');
+                tableBody.innerHTML = '';
+                
+                sites.forEach(site => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b hover:bg-gray-50 cursor-move';
+                    tr.dataset.id = site.id;
+                    
+                    // 修改截图显示逻辑，直接使用数据库中的路径
+                    const screenshotUrl = site.screenshot || '';
+                    
+                    tr.innerHTML = `
+                        <td class="px-2 py-2 text-center">
+                            <i class="fas fa-grip-vertical text-gray-400"></i>
+                        </td>
+                        <td class="px-4 py-2">
+                            ${screenshotUrl ? 
+                                `<img src="${screenshotUrl}" alt="${site.name}" class="w-32 h-20 object-cover rounded">` :
+                                '<div class="w-32 h-20 bg-gray-200 rounded flex items-center justify-center">无截图</div>'
+                            }
+                        </td>
+                        <td class="px-4 py-2">
+                            <div class="font-semibold">${site.name}</div>
+                            <div class="text-sm text-gray-600">${site.url}</div>
+                            <div class="text-sm text-gray-500">${site.description || ''}</div>
+                        </td>
+                        <td class="px-4 py-2">
+                            ${site.categories.map(cat => 
+                                `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">${cat.name}</span>`
+                            ).join(' ')}
+                        </td>
+                        <td class="px-4 py-2">
+                            ${site.tags.map(tag => 
+                                `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">${tag.name}</span>`
+                            ).join(' ')}
+                        </td>
+                        <td class="px-4 py-2">
+                            <div class="flex space-x-4">
+                                ${site.is_hot ? '<span class="text-red-500"><i class="fas fa-fire"></i> 热门</span>' : ''}
+                                ${site.is_new ? '<span class="text-green-500"><i class="fas fa-star"></i> 新品</span>' : ''}
+                            </div>
+                        </td>
+                        <td class="px-4 py-2">
+                            <button onclick="editSite(${site.id})" class="text-blue-600 hover:text-blue-800 mr-2">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteSite(${site.id})" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(tr);
+                });
+
+                // 初始化排序功能
+                new Sortable(document.querySelector('#sites-table-body'), {
+                    handle: '.fa-grip-vertical',
+                    animation: 150,
+                    onEnd: async function(evt) {
+                        try {
+                            // 显示加载提示
+                    Swal.fire({
+                                title: '正在保存排序...',
+                                allowOutsideClick: false,
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            // 获取所有行的ID
+                            const rows = Array.from(document.querySelectorAll('#sites-table-body tr'));
+                            const siteIds = rows.map(row => row.dataset.id);
+
+                            // 调用后端API更新排序
+                            const response = await fetch('/api/sites/reorder', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                },
+                                body: JSON.stringify({ siteIds })
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('更新排序失败');
+                            }
+
+                            // 显示成功提示
+                            Swal.fire({
+                                icon: 'success',
+                                title: '排序已保存',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            // 重新加载网站列表以更新顺序
+                            await loadSites();
+            } catch (error) {
+                            console.error('更新排序失败:', error);
+                            
+                            // 显示错误提示
+                    Swal.fire({
+                                icon: 'error',
+                                title: '保存失败',
+                                text: '排序更新失败，将重新加载页面恢复原始顺序',
+                                showConfirmButton: true
+                            }).then(() => {
+                                // 重新加载页面以恢复原始顺序
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('加载网站列表失败:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '加载失败',
+                    text: '获取网站列表失败，请稍后重试'
+                });
+            }
+        }
+
+        // 打开模态框
+        function openModal(isEdit = false) {
+            document.getElementById('modal-title').textContent = isEdit ? '编辑网址' : '添加网址';
+            document.getElementById('site-modal').style.display = 'block';
+            if (!isEdit) {
+                document.getElementById('site-form').reset();
+                document.getElementById('site-id').value = '';
+                // 清除截图预览
+                const screenshotPreview = document.getElementById('screenshotPreview');
+                screenshotPreview.innerHTML = '<img src="" alt="Screenshot preview" class="max-w-xs mx-auto">';
+                screenshotPreview.classList.add('hidden');
+                // 清除文件输入
+                document.getElementById('screenshot').value = '';
+                // 清除标签
+                tagify.removeAllTags();
+            }
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('site-modal').style.display = 'none';
+        }
+
+        // 修改图片预览处理函数
+        function handleScreenshotFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                const screenshotPreview = document.getElementById('screenshotPreview');
+                const previewImg = screenshotPreview.querySelector('img') || document.createElement('img');
+                
+                reader.onload = (e) => {
+                    previewImg.src = e.target.result;
+                    previewImg.alt = 'Screenshot preview';
+                    previewImg.className = 'max-w-xs mx-auto';
+                    if (!screenshotPreview.contains(previewImg)) {
+                        screenshotPreview.appendChild(previewImg);
+                    }
+                    screenshotPreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+                
+                // 创建新的 FileList
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                document.getElementById('screenshot').files = dataTransfer.files;
+            }
+        }
+
+        // 修改拖拽区域的事件处理
+        const screenshotUploadArea = document.getElementById('screenshotUploadArea');
+        const screenshotInput = document.getElementById('screenshot');
+        const screenshotPreview = document.getElementById('screenshotPreview');
+
+        // 点击上传
+        screenshotUploadArea.addEventListener('click', () => {
+            screenshotInput.click();
+        });
+
+        // 文件选择处理
+        screenshotInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleScreenshotFile(file);
+            }
+        });
+
+        // 拖拽处理
+        screenshotUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            screenshotUploadArea.classList.add('border-blue-500');
+        });
+
+        screenshotUploadArea.addEventListener('dragleave', () => {
+            screenshotUploadArea.classList.remove('border-blue-500');
+        });
+
+        screenshotUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            screenshotUploadArea.classList.remove('border-blue-500');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleScreenshotFile(file);
+            }
+        });
+
+        // 粘贴处理
+        document.addEventListener('paste', (e) => {
+            const items = e.clipboardData.items;
+            for (let item of items) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    handleScreenshotFile(file);
+                    break;
+                }
+            }
+        });
+
+        // 编辑网站
+        async function editSite(siteId) {
+            try {
+                // 显示加载提示
+                Swal.fire({
+                    title: '加载中...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // 获取网站详情
+                const response = await fetch(`/api/sites/${siteId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
                 
                 if (!response.ok) {
-                    throw new Error(`获取标签失败: ${response.status} ${response.statusText}`);
+                    throw new Error('加载网站详情失败');
                 }
+
+                const site = await response.json();
+                console.log('网站详情:', site); // 添加调试日志
                 
-                const tags = await response.json();
-                console.log(`成功获取 ${tags.length} 个标签`);
-                return tags;
+                // 填充表单
+                document.getElementById('site-id').value = site.id;
+                document.getElementById('site-name').value = site.name;
+                document.getElementById('site-url').value = site.url;
+                document.getElementById('site-description').value = site.description || '';
+                document.getElementById('site-tutorial').value = site.tutorial_url || '';
+                document.getElementById('site-is-hot').checked = site.is_hot === 1;
+                document.getElementById('site-is-new').checked = site.is_new === 1;
+                document.getElementById('site-hot-until').value = site.hot_until || '';
+                document.getElementById('site-new-until').value = site.new_until || '';
+
+                // 显示现有截图
+                const screenshotPreview = document.getElementById('screenshotPreview');
+                const previewImg = screenshotPreview.querySelector('img') || document.createElement('img');
+                if (site.screenshot) {
+                    previewImg.src = site.screenshot;
+                    previewImg.alt = site.name;
+                    previewImg.className = 'max-w-xs mx-auto';
+                    if (!screenshotPreview.contains(previewImg)) {
+                        screenshotPreview.appendChild(previewImg);
+                    }
+                    screenshotPreview.classList.remove('hidden');
+                        } else {
+                    screenshotPreview.classList.add('hidden');
+                }
+
+                // 设置分类
+                const categorySelect = document.getElementById('site-categories');
+                const selectedCategoryIds = site.categories.map(cat => cat.id.toString()); // 转换为字符串
+                console.log('已选分类:', selectedCategoryIds); // 添加调试日志
+                
+                // 遍历所有选项设置选中状态
+                Array.from(categorySelect.options).forEach(option => {
+                    option.selected = selectedCategoryIds.includes(option.value);
+                    console.log(`分类选项 ${option.value} (${option.text}) 选中状态:`, option.selected); // 添加调试日志
+                });
+
+                // 设置标签
+                tagify.removeAllTags();
+                if (site.tags && site.tags.length > 0) {
+                    tagify.addTags(site.tags.map(tag => tag.name));
+                }
+
+                // 关闭加载提示并显示模态框
+                Swal.close();
+                openModal(true);
             } catch (error) {
-                console.error('获取标签失败:', error);
-                showToast('error', '获取标签失败');
-                return [];
+                console.error('加载网站详情失败:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '错误',
+                    text: error.message
+                });
             }
-        }
-        
-        // 获取选中的标签ID
-        function getSelectedTagIds() {
-            if (!tagifyInstance) {
-                console.error('Tagify实例不存在');
-                return [];
-            }
-            
-            // 获取Tagify的值
-            const tagifyValues = tagifyInstance.value;
-            if (!tagifyValues || !tagifyValues.length) {
-                console.log('没有选择标签');
-                return [];
-            }
-            
-            // 从Tagify值中提取ID
-            const tagIds = tagifyValues
-                .filter(tag => tag.id)  // 只选择有ID的标签
-                .map(tag => tag.id);    // 提取ID
-                
-            console.log('选中的标签ID:', tagIds);
-            return tagIds;
         }
 
-        // 检测操作系统，为Mac用户显示Command+V提示
-        function detectOS() {
-            const userAgent = window.navigator.userAgent;
-            const isMac = userAgent.indexOf("Mac") !== -1;
-            const pasteTip = document.getElementById('paste-tip');
-            
-            if (pasteTip) {
-                if (isMac) {
-                    pasteTip.textContent = '支持 Command + V 粘贴截图';
-                } else {
-                    pasteTip.textContent = '支持 Ctrl + V 粘贴截图';
-                }
-            }
-        }
-        
-        // 增强粘贴事件监听
-        function setupPasteListeners() {
-            // 为整个表单区域添加粘贴事件监听
-            const siteForm = document.getElementById('site-form');
-            const previewContainer = document.getElementById('screenshot-preview-container');
-            
-            // 为预览容器添加粘贴提示和点击事件
-            if (previewContainer) {
-                // 添加点击事件提示用户可以粘贴
-                previewContainer.addEventListener('click', function() {
-                    const isMac = navigator.userAgent.indexOf("Mac") !== -1;
-                    showToast('info', `请使用 ${isMac ? 'Command + V' : 'Ctrl + V'} 粘贴截图`);
+        // 删除网站
+        async function deleteSite(id) {
+                const result = await Swal.fire({
+                    title: '确认删除',
+                text: '确定要删除这个网站吗？',
+                    icon: 'warning',
+                    showCancelButton: true,
+                confirmButtonText: '确定删除',
+                    cancelButtonText: '取消'
                 });
-                
-                // 添加粘贴事件监听
-                previewContainer.addEventListener('paste', handlePaste);
-            }
-            
-            // 为整个表单添加粘贴事件，使用户无论聚焦在哪个区域都能粘贴
-            if (siteForm) {
-                siteForm.addEventListener('paste', handlePaste);
-            }
-            
-            // 为document添加粘贴事件，确保全局都能粘贴
-            document.addEventListener('paste', function(e) {
-                // 只有当模态框显示时才处理全局粘贴事件
-                const modal = document.getElementById('site-modal');
-                if (modal && modal.classList.contains('active')) {
-                    handlePaste(e);
-                }
-            });
-        }
-        
-        // 添加CSS动画样式
-        function addAnimationStyles() {
-            const style = document.createElement('style');
-            style.textContent = `
-                .paste-tip {
-                    color: #6B7280;
-                    font-size: 0.9rem;
-                    margin-top: 8px;
-                    text-align: center;
-                }
-                
-                .upload-success {
-                    animation: pulse 1s;
-                }
-                
-                @keyframes pulse {
-                    0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-                    70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
-                    100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        // 初始化
-        detectOS();
-        setupPasteListeners();
-        addAnimationStyles();
 
-        // ... existing code ...
-        async function createSite() {
-            setSubmitState(true, '正在创建网站...');
-            try {
-                const formData = getFormData();
-                
-                // 确保标签数据被正确收集和格式化
-                if (tagifyInstance) {
-                    console.log('收集标签数据');
-                    // 使用Tagify API直接获取标签值
-                    const tagifyValues = tagifyInstance.value;
-                    // 提取标签ID，确保每个标签都有ID
-                    const tagIds = tagifyValues
-                        .filter(tag => tag.id) // 只选择有ID的标签
-                        .map(tag => tag.id);   // 提取ID
-                    
-                    console.log('收集到的标签ID:', tagIds);
-                    // 将标签ID数组设置到formData中
-                    formData.set('tags', JSON.stringify(tagIds));
-                }
-                
-                console.log('提交数据:', {
-                    name: formData.get('name'),
-                    url: formData.get('url'),
-                    description: formData.get('description'),
-                    categories: formData.get('categories'),
-                    tags: formData.get('tags')
-                });
-                
+                if (result.isConfirmed) {
+                try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('/api/sites', {
-                    method: 'POST',
+                const response = await fetch(`/api/sites/${id}`, {
+                    method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
+                    }
                 });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || '添加网站失败');
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: '成功',
+                            text: '网站删除成功',
+                            icon: 'success'
+                        });
+                    loadSites();
+                    } else {
+                        throw new Error('删除失败');
                 }
-                
-                const newSite = await response.json();
-                console.log('新网站创建成功:', newSite);
-                
-                showToast('success', '添加网站成功');
-                resetForm();
-                closeModal();
-                loadSites();
             } catch (error) {
-                console.error('添加网站失败:', error);
-                showToast('error', error.message || '添加网站失败');
-                setSubmitState(false);
+                    console.error('删除网站失败:', error);
+                Swal.fire({
+                        title: '错误',
+                        text: '删除网站失败',
+                        icon: 'error'
+                });
             }
         }
+        }
 
-        function getFormData() {
-            const form = document.getElementById('site-form');
-            const formData = new FormData(form);
+        // 修改表单提交函数
+        async function submitForm(e) {
+            e.preventDefault();
             
-            // 处理分类多选
+            const formData = new FormData();
+            const currentSiteId = document.getElementById('site-id').value;
+            const name = document.getElementById('site-name').value;
+            const url = document.getElementById('site-url').value;
+            const description = document.getElementById('site-description').value;
+            const tutorial = document.getElementById('site-tutorial').value;
+            const isHot = document.getElementById('site-is-hot').checked;
+            const isNew = document.getElementById('site-is-new').checked;
+            const hotUntil = document.getElementById('site-hot-until').value;
+            const newUntil = document.getElementById('site-new-until').value;
+            
+            // 修改获取分类的方式
             const categorySelect = document.getElementById('site-categories');
             const selectedCategories = Array.from(categorySelect.selectedOptions).map(option => option.value);
-            formData.set('categories', JSON.stringify(selectedCategories));
+            console.log('提交的分类:', selectedCategories); // 添加调试日志
             
-            // 处理标签 - 收集Tagify数据在createSite函数中进行
-            // 先移除原始标签字段以避免干扰，后面会重新设置
-            if (formData.has('tags')) {
-                formData.delete('tags');
+            const tags = tagify.value.map(tag => tag.value);
+            
+            // 验证必填字段
+            if (!name || !url) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '请填写必填字段',
+                    text: '网站名称和地址为必填项'
+                });
+                return;
             }
-            
-            return formData;
-        }
-        // ... existing code ...
 
-        // 更新网站
-        async function updateSite() {
-            setSubmitState(true, '正在更新网站...');
+            // 单独验证分类
+            if (!selectedCategories || selectedCategories.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '请选择分类',
+                    text: '至少选择一个分类'
+                });
+                return;
+            }
+            
+            // 如果是新建网站且没有上传截图，显示错误
+            if (!currentSiteId && !document.getElementById('screenshot').files[0]) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '请上传网站截图',
+                    text: '新建网站时必须上传截图'
+                });
+                return;
+            }
+            
+            // 构建FormData
+            formData.append('name', name);
+            formData.append('url', url);
+            formData.append('description', description);
+            formData.append('tutorial_url', tutorial);
+            formData.append('is_hot', isHot ? '1' : '0');
+            formData.append('is_new', isNew ? '1' : '0');
+            formData.append('hot_until', hotUntil);
+            formData.append('new_until', newUntil);
+            formData.append('categories', JSON.stringify(selectedCategories));
+            formData.append('tags', JSON.stringify(tags));
+            
+            // 添加截图文件（如果有）
+            const screenshotFile = document.getElementById('screenshot').files[0];
+            if (screenshotFile) {
+                formData.append('screenshot', screenshotFile);
+            }
+            
             try {
-                const siteId = document.getElementById('site-id').value;
-                const formData = getFormData();
-                
-                // 确保标签数据被正确收集和格式化
-                if (tagifyInstance) {
-                    console.log('收集标签数据 (更新)');
-                    // 使用Tagify API直接获取标签值
-                    const tagifyValues = tagifyInstance.value;
-                    // 提取标签ID，确保每个标签都有ID
-                    const tagIds = tagifyValues
-                        .filter(tag => tag.id) // 只选择有ID的标签
-                        .map(tag => tag.id);   // 提取ID
-                    
-                    console.log('更新时收集到的标签ID:', tagIds);
-                    // 将标签ID数组设置到formData中
-                    formData.set('tags', JSON.stringify(tagIds));
-                }
-                
-                console.log('更新提交数据:', {
-                    id: siteId,
-                    name: formData.get('name'),
-                    url: formData.get('url'),
-                    description: formData.get('description'),
-                    categories: formData.get('categories'),
-                    tags: formData.get('tags')
+                const loadingPrompt = Swal.fire({
+                    title: '保存中...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
                 });
                 
-                const token = localStorage.getItem('token');
-                const response = await fetch(`/api/sites/${siteId}`, {
-                    method: 'PUT',
+                const response = await fetch(currentSiteId ? `/api/sites/${currentSiteId}` : '/api/sites', {
+                    method: currentSiteId ? 'PUT' : 'POST',
+                    body: formData,
                     headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
                 });
                 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || '更新网站失败');
+                loadingPrompt.close();
+                
+                if (response.ok) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '保存成功',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    closeModal();
+                    loadSites();
+                } else {
+                    const error = await response.text();
+                    throw new Error(error);
                 }
-                
-                const updatedSite = await response.json();
-                console.log('网站更新成功:', updatedSite);
-                
-                showToast('success', '更新网站成功');
-                resetForm();
-                closeModal();
-                loadSites();
             } catch (error) {
-                console.error('更新网站失败:', error);
-                showToast('error', error.message || '更新网站失败');
-                setSubmitState(false);
+                console.error('保存失败:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '保存失败',
+                    text: error.message || '请稍后重试'
+        });
             }
         }
-        // ... existing code ...
+
+        // 绑定表单提交事件
+        document.getElementById('site-form').addEventListener('submit', submitForm);
+
+        // 用户设置相关函数
+        function openUserSettingsModal() {
+            document.getElementById('user-settings-modal').style.display = 'block';
+        }
+
+        function closeUserSettingsModal() {
+            document.getElementById('user-settings-modal').style.display = 'none';
+            document.getElementById('change-password-form').reset();
+        }
+
+        // 修改密码表单提交
+        document.getElementById('change-password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                Swal.fire({
+                    title: '错误',
+                    text: '两次输入的新密码不一致',
+                    icon: 'error'
+                });
+                return;
+            }
+                        
+                        try {
+                            const token = localStorage.getItem('token');
+                const response = await fetch('/api/auth/change-password', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                            });
+                            
+                            if (!response.ok) {
+                    throw new Error('修改密码失败');
+                }
+                
+                Swal.fire({
+                    title: '成功',
+                    text: '密码修改成功',
+                    icon: 'success'
+                });
+                
+                closeUserSettingsModal();
+                        } catch (error) {
+                console.error('修改密码失败:', error);
+                Swal.fire({
+                    title: '错误',
+                    text: '修改密码失败，请检查当前密码是否正确',
+                    icon: 'error'
+                });
+            }
+        });
+
+        // 用户设置按钮点击事件
+        document.getElementById('user-settings-btn').addEventListener('click', openUserSettingsModal);
+
+        // 关闭按钮点击事件
+        document.querySelector('#user-settings-modal .close').addEventListener('click', closeUserSettingsModal);
+        document.querySelector('#site-modal .close').addEventListener('click', closeModal);
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const userSettingsModal = document.getElementById('user-settings-modal');
+            const siteModal = document.getElementById('site-modal');
+            if (e.target === userSettingsModal) {
+                closeUserSettingsModal();
+            }
+            if (e.target === siteModal) {
+                closeModal();
+            }
+        });
+
+        // 退出登录
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            Swal.fire({
+                title: '确认退出',
+                text: '您确定要退出登录吗？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '确定退出',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/admin/login.html';
+                }
+            });
+        });
+
+        // 添加网站按钮点击事件
+        document.getElementById('add-site-btn').addEventListener('click', function() {
+            openModal();
+        });
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadCategories();
+            loadTags();
+                loadSites();
+        });
     </script>
 </body>
 </html> 

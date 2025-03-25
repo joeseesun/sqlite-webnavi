@@ -20,39 +20,33 @@ const app = express();
 const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// 配置 multer 用于文件上传
+// 文件上传配置
 const upload = multer({
-  storage: multer.memoryStorage(), // 使用内存存储，而不是磁盘存储
-  fileFilter: (req, file, cb) => {
-    // 只允许上传图片
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('只允许上传图片文件'));
+    storage: multer.memoryStorage(),
+    fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith('image/')) {
+            return cb(new Error('只能上传图片文件'), false);
+        }
+        cb(null, true);
+    },
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB
     }
-  },
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 限制5MB
-  }
 });
 
 // 中间件配置
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
-// 确保公共上传目录可访问
-app.use('/public/uploads', express.static(path.join(__dirname, 'public/uploads')));
-// 确保截图和图标可以通过绝对路径访问
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
+// 确保上传目录可访问
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // 确保上传目录存在
 app.use(async (req, res, next) => {
   try {
-    // 确保上传目录存在
-    await fsPromises.mkdir('public/uploads/screenshots', { recursive: true });
-    await fsPromises.mkdir('public/uploads/icons', { recursive: true });
+    await fsPromises.mkdir(path.join(__dirname, 'public/uploads/screenshots'), { recursive: true });
+    await fsPromises.mkdir(path.join(__dirname, 'public/uploads/icons'), { recursive: true });
     next();
   } catch (error) {
     console.error('创建上传目录失败:', error);
@@ -70,13 +64,46 @@ async function initializeDB() {
       driver: sqlite3.Database
     });
 
-    // 执行数据库初始化 SQL
-    const initSQL = await readFile(join(__dirname, 'database.sql'), 'utf8');
-    await db.exec(initSQL);
+    // 检查是否已经初始化过数据库
+    const hasInitialized = await db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='sites'");
+    
+    if (!hasInitialized) {
+      console.log('首次运行，初始化数据库...');
+      // 执行数据库初始化 SQL
+      const initSQL = await readFile(join(__dirname, 'database.sql'), 'utf8');
+      // 分割SQL语句并逐个执行
+      const statements = initSQL.split(';').filter(stmt => stmt.trim());
+      for (const statement of statements) {
+        if (statement.trim()) {
+          await db.exec(statement + ';');
+        }
+      }
+    }
+
+    // 检查sites表是否存在 displayOrder 列
+    const sitesTableInfo = await db.all("PRAGMA table_info(sites)");
+    const hasSitesDisplayOrder = sitesTableInfo.some(col => col.name === 'displayOrder');
+    
+    // 如果不存在，添加 displayOrder 列
+    if (!hasSitesDisplayOrder) {
+      await db.run('ALTER TABLE sites ADD COLUMN displayOrder INTEGER DEFAULT 0');
+    }
+
+    // 检查categories表是否存在 display_order 列
+    const categoriesTableInfo = await db.all("PRAGMA table_info(categories)");
+    const hasCategoriesDisplayOrder = categoriesTableInfo.some(col => col.name === 'display_order');
+    
+    // 如果不存在，添加 display_order 列
+    if (!hasCategoriesDisplayOrder) {
+      await db.run('ALTER TABLE categories ADD COLUMN display_order INTEGER DEFAULT 0');
+      // 初始化现有分类的display_order
+      await db.run('UPDATE categories SET display_order = rowid WHERE display_order IS NULL');
+    }
+
     console.log('数据库初始化成功');
   } catch (error) {
     console.error('数据库初始化失败:', error);
-    process.exit(1);
+    throw error;
   }
 }
 
@@ -103,20 +130,18 @@ app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const user = await db.get('SELECT * FROM users WHERE username = ?', [username]);
+    const user = await db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password]);
     
     if (!user) {
       return res.status(401).json({ error: '用户名或密码错误' });
     }
 
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(401).json({ error: '用户名或密码错误' });
-    }
-
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
-    
-    await db.run('UPDATE users SET lastLogin = ? WHERE id = ?', [new Date().toISOString(), user.id]);
+    // 在token中包含完整的用户信息
+    const token = jwt.sign({ 
+      id: user.id, 
+      username: user.username,
+      role: user.role
+    }, JWT_SECRET, { expiresIn: '24h' });
     
     res.json({ token });
   } catch (error) {
@@ -133,7 +158,7 @@ app.get('/api/auth/check', authenticateToken, (req, res) => {
 // 修改密码路由
 app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
   const { current_password, new_password } = req.body;
-  const userId = req.user.id;
+  const username = req.user.username;
 
   try {
     // 验证必填字段
@@ -141,25 +166,19 @@ app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: '当前密码和新密码都是必填项' });
     }
 
-    // 获取用户信息
-    const user = await db.get('SELECT * FROM users WHERE id = ?', [userId]);
+    // 获取用户信息并验证当前密码
+    const user = await db.get('SELECT * FROM users WHERE username = ?', [username]);
     if (!user) {
       return res.status(404).json({ error: '用户不存在' });
     }
 
     // 验证当前密码
-    const validPassword = await bcrypt.compare(current_password, user.password);
-    if (!validPassword) {
+    if (current_password !== user.password) {
       return res.status(401).json({ error: '当前密码错误' });
     }
 
-    // 生成新密码的哈希值
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(new_password, salt);
-
     // 更新密码
-    await db.run('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, userId]);
-
+    await db.run('UPDATE users SET password = ? WHERE username = ?', [new_password, username]);
     res.json({ message: '密码修改成功' });
   } catch (error) {
     console.error('修改密码失败:', error);
@@ -180,15 +199,21 @@ app.get('/api/sites', async (req, res) => {
       LEFT JOIN site_tags st ON s.id = st.siteId
       LEFT JOIN tags t ON st.tagId = t.id
       GROUP BY s.id
-      ORDER BY s.displayOrder ASC, s.createdAt DESC
+      ORDER BY s.displayOrder ASC, s.created_at DESC
     `);
 
     // 处理 JSON 字符串
     sites.forEach(site => {
+      // 确保截图路径以 / 开头
+      if (site.screenshot && !site.screenshot.startsWith('/')) {
+        site.screenshot = '/' + site.screenshot;
+      }
+      
       site.categories = site.categories ? site.categories.split(',').map(cat => {
         const [id, name] = cat.split(':');
         return id && name ? { id, name } : null;
       }).filter(Boolean) : [];
+      
       site.tags = site.tags ? site.tags.split(',').map(tag => {
         const [id, name] = tag.split(':');
         return id && name ? { id, name } : null;
@@ -214,7 +239,6 @@ app.get('/api/sites/:id', async (req, res) => {
       LEFT JOIN site_tags st ON s.id = st.siteId
       LEFT JOIN tags t ON st.tagId = t.id
       WHERE s.id = ?
-      GROUP BY s.id
     `, [req.params.id]);
 
     if (!site) {
@@ -222,11 +246,19 @@ app.get('/api/sites/:id', async (req, res) => {
     }
 
     // 处理 JSON 字符串
+    // 确保截图路径以 / 开头
+    if (site.screenshot && !site.screenshot.startsWith('/')) {
+      site.screenshot = '/' + site.screenshot;
+    }
+    
     site.categories = site.categories ? site.categories.split(',').map(cat => {
+      if (!cat) return null;
       const [id, name] = cat.split(':');
       return id && name ? { id, name } : null;
     }).filter(Boolean) : [];
+    
     site.tags = site.tags ? site.tags.split(',').map(tag => {
+      if (!tag) return null;
       const [id, name] = tag.split(':');
       return id && name ? { id, name } : null;
     }).filter(Boolean) : [];
@@ -234,7 +266,7 @@ app.get('/api/sites/:id', async (req, res) => {
     res.json(site);
   } catch (error) {
     console.error('获取网站详情失败:', error);
-    res.status(500).json({ error: '服务器错误' });
+    res.status(500).json({ error: '获取网站详情失败: ' + error.message });
   }
 });
 
@@ -242,345 +274,133 @@ app.post('/api/sites', authenticateToken, upload.fields([
   { name: 'screenshot', maxCount: 1 },
   { name: 'icon', maxCount: 1 }
 ]), async (req, res) => {
-  console.log('\n\n--------------------------------');
-  console.log('接收到添加网站请求 - 时间:', new Date().toISOString());
-  console.log('请求体:', JSON.stringify(req.body, null, 2));
-  
-  // 检查 req.files 是否存在
-  if (!req.files) {
-    console.log('警告: req.files 不存在!');
-    req.files = {};
-  }
-  
-  // 安全地记录文件信息
-  const fileInfo = [];
-  if (req.files && Object.keys(req.files).length > 0) {
-    for (const [key, files] of Object.entries(req.files)) {
-      if (Array.isArray(files) && files.length > 0) {
-        const file = files[0];
-        fileInfo.push(`${key}: ${file.originalname} (${file.mimetype}, ${file.size} bytes)`);
-      }
-    }
-  }
-  console.log('文件:', fileInfo.length > 0 ? fileInfo.join(', ') : '没有文件');
-  
-  // 记录截图文件详情
-  if (req.files && req.files.screenshot && Array.isArray(req.files.screenshot) && req.files.screenshot.length > 0) {
-    const file = req.files.screenshot[0];
-    console.log('截图文件详细信息:', {
-      fieldname: file.fieldname,
-      originalname: file.originalname,
-      encoding: file.encoding,
-      mimetype: file.mimetype,
-      size: file.size,
-      buffer: file.buffer ? `${file.buffer.length} bytes` : '无buffer'
-    });
-  } else {
-    console.log('警告: 没有接收到截图文件!');
-  }
-  
-  console.log('请求头:', {
-    'content-type': req.headers['content-type'],
-    'content-length': req.headers['content-length'],
-    'authorization': req.headers['authorization'] ? '已提供' : '未提供'
-  });
-
   try {
-    // 解析表单数据
-    const { name, url, description, categories, tags } = req.body;
-    const is_hot = req.body.is_hot === '1';
-    const is_new = req.body.is_new === '1';
-    const hot_until = req.body.hot_until || null;
-    const new_until = req.body.new_until || null;
-    const tutorial_url = req.body.tutorial_url || null;
-    
-    console.log('验证字段:', { 
-      name: name || '空', 
-      url: url || '空',
-      description: description || '空',
-      categoriesLength: categories.length,
-      tagsLength: tags.length
-    });
-    
-    if (!name || !url) {
-      console.log('失败: 缺少必填字段', { name: !!name, url: !!url });
-      return res.status(400).json({ error: '名称和URL是必填字段' });
+    // 验证必需字段
+    if (!req.body.name || !req.body.url) {
+      throw new Error('网站名称和地址不能为空');
     }
     
     // 验证URL格式
     try {
-      new URL(url);
-      console.log('URL格式验证通过');
+      new URL(req.body.url);
     } catch (error) {
-      console.log('失败: URL格式无效:', url);
-      return res.status(400).json({ error: 'URL格式无效' });
+      throw new Error('无效的网站地址');
     }
     
-    // 验证教程URL格式（如果有）
-    if (tutorial_url) {
-      try {
-        new URL(tutorial_url);
-        console.log('教程URL格式验证通过');
-      } catch (error) {
-        console.log('失败: 教程URL格式无效:', tutorial_url);
-        return res.status(400).json({ error: '教程URL格式无效' });
-      }
+    // 验证文件上传
+    if (!req.files || !req.files.screenshot) {
+      throw new Error('请上传网站截图');
     }
     
-    // 检查截图是否已上传 - 安全地检查文件是否存在
-    const hasScreenshot = req.files && 
-                         req.files.screenshot && 
-                         Array.isArray(req.files.screenshot) && 
-                         req.files.screenshot.length > 0;
+    // 开始事务
+    await db.run('BEGIN TRANSACTION');
     
-    if (!hasScreenshot) {
-      console.log('失败: 缺少截图文件');
-      return res.status(400).json({ error: '截图是必需的' });
-    }
-    
-    console.log('截图文件检查通过');
-    
-    // 处理截图上传
     try {
-      const screenshotFile = req.files.screenshot[0];
-      const fileExt = screenshotFile.originalname.split('.').pop();
-      const screenshotFilename = `screenshot-${Date.now()}-${Math.floor(Math.random() * 1000000000)}.${fileExt}`;
-      const screenshotPath = path.join(__dirname, 'public', 'uploads', 'screenshots', screenshotFilename);
+      // 插入站点基本信息
+      const result = await db.run(
+        `INSERT INTO sites (
+          name, url, description, screenshot, icon, 
+          is_hot, hot_until, is_new, new_until, tutorial_url, 
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime("now"), datetime("now"))`,
+        [
+          req.body.name,
+          req.body.url,
+          req.body.description || '',
+          req.files.screenshot ? `/uploads/screenshots/${req.files.screenshot[0].filename}` : null,
+          req.files.icon ? `/uploads/icons/${req.files.icon[0].filename}` : null,
+          req.body.is_hot === '1' ? 1 : 0,
+          req.body.hot_until || null,
+          req.body.is_new === '1' ? 1 : 0,
+          req.body.new_until || null,
+          req.body.tutorial_url || null
+        ]
+      );
       
-      console.log('准备保存截图:');
-      console.log(' - 源文件大小:', screenshotFile.size, '字节');
-      console.log(' - 目标路径:', screenshotPath);
+      const siteId = result.lastID;
       
-      // 确保上传目录存在
-      try {
-        await fsPromises.mkdir(path.join(__dirname, 'public', 'uploads', 'screenshots'), { recursive: true });
-      } catch (mkdirError) {
-        if (mkdirError.code !== 'EEXIST') {
-          console.error('创建上传目录失败:', mkdirError);
-          throw new Error('创建上传目录失败: ' + mkdirError.message);
+      // 处理分类
+      if (req.body.categories) {
+        const categories = JSON.parse(req.body.categories);
+        for (const categoryId of categories) {
+          await db.run(
+            'INSERT INTO site_categories (siteId, categoryId) VALUES (?, ?)',
+            [siteId, categoryId]
+          );
         }
       }
       
-      try {
-        await fsPromises.writeFile(screenshotPath, screenshotFile.buffer);
-        console.log('截图保存成功');
-        
-        // 验证文件是否已保存成功
-        const stats = await fsPromises.stat(screenshotPath);
-        console.log(' - 已保存文件大小:', stats.size, '字节');
-        console.log(' - 文件已存在:', stats.isFile() ? '是' : '否');
-      } catch (writeError) {
-        console.error('截图保存失败:', writeError);
-        throw new Error('截图保存失败: ' + writeError.message);
-      }
-      
-      // 处理图标上传（如果有）
-      let iconFilename = null;
-      const hasIcon = req.files && 
-                     req.files.icon && 
-                     Array.isArray(req.files.icon) && 
-                     req.files.icon.length > 0;
-                     
-      if (hasIcon) {
-        const iconFile = req.files.icon[0];
-        const iconExt = iconFile.originalname.split('.').pop();
-        iconFilename = `icon-${Date.now()}-${Math.floor(Math.random() * 1000000000)}.${iconExt}`;
-        const iconPath = path.join(__dirname, 'public', 'uploads', 'icons', iconFilename);
-        
-        console.log('准备保存图标:');
-        console.log(' - 目标路径:', iconPath);
-        
-        // 确保上传目录存在
-        try {
-          await fsPromises.mkdir(path.join(__dirname, 'public', 'uploads', 'icons'), { recursive: true });
-        } catch (mkdirError) {
-          if (mkdirError.code !== 'EEXIST') {
-            console.error('创建图标上传目录失败:', mkdirError);
-          }
-        }
-        
-        try {
-          await fsPromises.writeFile(iconPath, iconFile.buffer);
-          console.log('图标保存成功');
-        } catch (writeError) {
-          console.error('图标保存失败:', writeError);
-          throw new Error('图标保存失败: ' + writeError.message);
-        }
-      } else {
-        console.log('未提供图标文件，跳过图标上传');
-      }
-      
-      // 解析分类和标签
-      let parsedCategories = [];
-      let parsedTags = [];
-      
-      try {
-        parsedCategories = JSON.parse(categories);
-        console.log('解析分类成功:', parsedCategories);
-      } catch (e) {
-        console.log('分类解析错误:', e.message);
-        parsedCategories = [];
-      }
-      
-      try {
-        parsedTags = JSON.parse(tags);
-        console.log('解析标签成功:', parsedTags);
-      } catch (e) {
-        console.log('标签解析错误:', e.message);
-        parsedTags = [];
-      }
-      
-      // 开始数据库事务
-      console.log('开始数据库事务...');
-      await db.run('BEGIN TRANSACTION');
-      
-      // 获取最大的displayOrder
-      const maxOrderRow = await db.get('SELECT MAX(displayOrder) as maxOrder FROM sites');
-      const newOrder = maxOrderRow.maxOrder !== null ? maxOrderRow.maxOrder + 1 : 0;
-      console.log('新网站的排序:', newOrder);
-      
-      try {
-        // 插入网站信息
-        const siteId = uuidv4();
-        console.log('准备插入网站信息:');
-        console.log(' - ID:', siteId);
-        console.log(' - 名称:', name);
-        console.log(' - URL:', url);
-        console.log(' - 截图路径:', `/public/uploads/screenshots/${screenshotFilename}`);
-        
-        const insertQuery = `INSERT INTO sites (
-            id, name, url, description, icon, screenshot, 
-            displayOrder, is_hot, is_new, hot_until, new_until, 
-            tutorial_url, createdAt, updatedAt
-          ) VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-            datetime("now"), datetime("now")
-          )`;
-        const insertParams = [
-          siteId, 
-          name, 
-          url, 
-          description, 
-          iconFilename ? `/public/uploads/icons/${iconFilename}` : null, 
-          `/public/uploads/screenshots/${screenshotFilename}`, 
-          newOrder,
-          is_hot ? 1 : 0,
-          is_new ? 1 : 0,
-          hot_until,
-          new_until,
-          tutorial_url
-        ];
-        
-        console.log('SQL:', insertQuery);
-        console.log('参数:', insertParams);
-        
-        await db.run(insertQuery, insertParams);
-        console.log('网站信息已插入数据库');
-        
-        // 处理分类关联
-        if (parsedCategories && parsedCategories.length > 0) {
-          for (const categoryId of parsedCategories) {
-            await db.run(
-              'INSERT INTO site_categories (siteId, categoryId) VALUES (?, ?)',
-              [siteId, categoryId]
+      // 处理标签
+      if (req.body.tags) {
+        const tagNames = Array.isArray(req.body.tags) ? req.body.tags : JSON.parse(req.body.tags);
+        for (const tagName of tagNames) {
+          let tagId;
+          
+          // 检查标签是否存在
+          const existingTag = await db.get('SELECT id FROM tags WHERE name = ?', [tagName]);
+          
+          if (existingTag) {
+            tagId = existingTag.id;
+          } else {
+            // 创建新标签
+            const result = await db.run(
+              'INSERT INTO tags (name, created_at, updated_at) VALUES (?, datetime("now"), datetime("now"))',
+              [tagName]
             );
+            tagId = result.lastID;
           }
-          console.log('分类关联已创建:', parsedCategories);
+          
+          // 添加标签关联
+          await db.run(
+            'INSERT INTO site_tags (siteId, tagId) VALUES (?, ?)',
+            [siteId, tagId]
+          );
         }
-        
-        // 处理标签关联
-        if (parsedTags && parsedTags.length > 0) {
-          for (const tagId of parsedTags) {
-            await db.run(
-              'INSERT INTO site_tags (siteId, tagId) VALUES (?, ?)',
-              [siteId, tagId]
-            );
-          }
-          console.log('标签关联已创建:', parsedTags);
-        }
-        
-        // 提交事务
-        console.log('提交数据库事务');
-        await db.run('COMMIT');
-        
-        // 获取完整的网站数据（包括分类和标签）
-        const site = await db.get(`
-          SELECT 
-            s.id, s.name, s.url, s.description, 
-            s.icon, s.screenshot, s.displayOrder, 
-            s.createdAt, s.updatedAt,
-            (SELECT GROUP_CONCAT(c.id || ':' || c.name, ',')
-             FROM categories c
-             JOIN site_categories sc ON c.id = sc.categoryId
-             WHERE sc.siteId = s.id) as categories,
-            (SELECT GROUP_CONCAT(t.id || ':' || t.name, ',')
-             FROM tags t
-             JOIN site_tags st ON t.id = st.tagId
-             WHERE st.siteId = s.id) as tags
-          FROM sites s
-          WHERE s.id = ?
-        `, [siteId]);
-        
-        // 格式化分类和标签
-        let formattedSite = { ...site };
-        
-        if (site.categories) {
-          formattedSite.categories = site.categories.split(',').map(cat => {
-            const [id, name] = cat.split(':');
-            return { id, name };
-          });
-        } else {
-          formattedSite.categories = [];
-        }
-        
-        if (site.tags) {
-          formattedSite.tags = site.tags.split(',').map(tag => {
-            const [id, name] = tag.split(':');
-            return { id, name };
-          });
-        } else {
-          formattedSite.tags = [];
-        }
-        
-        console.log('返回最终网站数据:', formattedSite);
-        
-        // 返回创建的网站信息
-        res.status(201).json(formattedSite);
-      } catch (error) {
-        // 发生错误时回滚事务
-        console.error('数据库操作失败，正在回滚:', error);
-        await db.run('ROLLBACK');
-        
-        // 删除已上传的文件
-        try {
-          if (screenshotFilename) {
-            const screenshotPath = path.join(__dirname, 'public', 'uploads', 'screenshots', screenshotFilename);
-            await fsPromises.unlink(screenshotPath);
-            console.log('已删除截图文件:', screenshotPath);
-          }
-          if (iconFilename) {
-            const iconPath = path.join(__dirname, 'public', 'uploads', 'icons', iconFilename);
-            await fsPromises.unlink(iconPath);
-            console.log('已删除图标文件:', iconPath);
-          }
-        } catch (e) {
-          console.error('删除文件失败:', e);
-        }
-        
-        throw error;
       }
-    } catch (fileError) {
-      console.error('文件处理失败:', fileError);
-      throw new Error('文件处理失败: ' + fileError.message);
+      
+      // 提交事务
+      await db.run('COMMIT');
+      
+      // 返回新创建的站点
+      const newSite = await db.get(`
+        SELECT s.*, 
+               COALESCE(GROUP_CONCAT(DISTINCT c.id || ':' || c.name), '') as categories,
+               COALESCE(GROUP_CONCAT(DISTINCT t.id || ':' || t.name), '') as tags
+        FROM sites s
+        LEFT JOIN site_categories sc ON s.id = sc.siteId
+        LEFT JOIN categories c ON sc.categoryId = c.id
+        LEFT JOIN site_tags st ON s.id = st.siteId
+        LEFT JOIN tags t ON st.tagId = t.id
+        WHERE s.id = ?
+        GROUP BY s.id
+      `, [siteId]);
+      
+      // 处理返回数据
+      if (newSite) {
+        newSite.categories = newSite.categories ? newSite.categories.split(',').map(cat => {
+          const [id, name] = cat.split(':');
+          return id && name ? { id, name } : null;
+        }).filter(Boolean) : [];
+        
+        newSite.tags = newSite.tags ? newSite.tags.split(',').map(tag => {
+          const [id, name] = tag.split(':');
+          return id && name ? { id, name } : null;
+        }).filter(Boolean) : [];
+      }
+      
+      res.status(201).json(newSite);
+    } catch (error) {
+      // 回滚事务
+      await db.run('ROLLBACK');
+      throw error;
     }
   } catch (error) {
-    console.error('添加网站失败:', error);
-    res.status(500).json({ error: '添加网站失败: ' + error.message });
+    console.error('创建网站失败:', error);
+    res.status(500).json({ error: '创建网站失败: ' + error.message });
   }
 });
 
 app.put('/api/sites/:id', authenticateToken, upload.fields([
-  { name: 'icon', maxCount: 1 },
   { name: 'screenshot', maxCount: 1 }
 ]), async (req, res) => {
   const { id } = req.params;
@@ -589,154 +409,48 @@ app.put('/api/sites/:id', authenticateToken, upload.fields([
     is_hot, is_new, hot_until, new_until, tutorial_url 
   } = req.body;
   
-  console.log('\n\n--------------------------------');
-  console.log('接收到更新网站请求 - 时间:', new Date().toISOString());
-  console.log('网站ID:', id);
-  console.log('请求体:', JSON.stringify(req.body, null, 2));
-  
-  // 安全地记录文件信息
-  const fileInfo = [];
-  if (req.files && Object.keys(req.files).length > 0) {
-    for (const [key, files] of Object.entries(req.files)) {
-      if (Array.isArray(files) && files.length > 0) {
-        const file = files[0];
-        fileInfo.push(`${key}: ${file.originalname} (${file.mimetype}, ${file.size} bytes)`);
-      }
-    }
-  }
-  console.log('文件:', fileInfo.length > 0 ? fileInfo.join(', ') : '没有文件');
-  
-  // 记录截图文件详情
-  if (req.files && req.files.screenshot && Array.isArray(req.files.screenshot) && req.files.screenshot.length > 0) {
-    const file = req.files.screenshot[0];
-    console.log('截图文件详细信息:', {
-      fieldname: file.fieldname,
-      originalname: file.originalname,
-      encoding: file.encoding,
-      mimetype: file.mimetype,
-      size: file.size,
-      buffer: file.buffer ? `${file.buffer.length} bytes` : '无buffer'
-    });
-  }
-  
-  console.log('请求头:', {
-    'content-type': req.headers['content-type'],
-    'content-length': req.headers['content-length'],
-    'authorization': req.headers['authorization'] ? '已提供' : '未提供'
-  });
-  
-  if (!name || !url) {
-    return res.status(400).json({ error: '网站名称和URL不能为空' });
-  }
-
-  // 验证URL格式
   try {
-    new URL(url);
-    console.log('URL格式验证通过');
-  } catch (error) {
-    console.log('失败: URL格式无效:', url);
-    return res.status(400).json({ error: 'URL格式无效' });
-  }
-
-  // 验证教程URL格式（如果有）
-  if (tutorial_url) {
-    try {
-      new URL(tutorial_url);
-      console.log('教程URL格式验证通过');
-    } catch (error) {
-      console.log('失败: 教程URL格式无效:', tutorial_url);
-      return res.status(400).json({ error: '教程URL格式无效' });
+    if (!name || !url) {
+      return res.status(400).json({ error: '网站名称和URL不能为空' });
     }
-  }
 
-  try {
-    const now = new Date().toISOString();
-    
     // 获取原有网站信息
     const oldSite = await db.get('SELECT icon, screenshot FROM sites WHERE id = ?', [id]);
     if (!oldSite) {
-      console.log('失败: 网站不存在, ID:', id);
       return res.status(404).json({ error: '网站不存在' });
     }
     
-    console.log('原有网站信息:', oldSite);
-
     // 处理上传的文件
-    let screenshotPath = null;
-    let iconPath = null;
+    let screenshotPath = oldSite.screenshot;  // 默认保持原有路径
     
-    // 处理截图上传（如果有）
-    if (req.files && req.files.screenshot && Array.isArray(req.files.screenshot) && req.files.screenshot.length > 0) {
+    // 处理截图上传
+    if (req.files?.screenshot?.[0]) {
+      const screenshotFile = req.files.screenshot[0];
+      const fileExt = path.extname(screenshotFile.originalname);
+      const screenshotFilename = `screenshot-${Date.now()}${fileExt}`;
+      const relativePath = '/uploads/screenshots/' + screenshotFilename;
+      const absolutePath = path.join(__dirname, 'public', relativePath);
+      
       try {
-        const screenshotFile = req.files.screenshot[0];
-        const fileExt = screenshotFile.originalname.split('.').pop();
-        const screenshotFilename = `screenshot-${Date.now()}-${Math.floor(Math.random() * 1000000000)}.${fileExt}`;
-        screenshotPath = path.join('public', 'uploads', 'screenshots', screenshotFilename);
-        const fullScreenshotPath = path.join(__dirname, screenshotPath);
+        // 确保目录存在
+        await fsPromises.mkdir(path.join(__dirname, 'public/uploads/screenshots'), { recursive: true });
         
-        console.log('准备保存新截图:');
-        console.log(' - 源文件大小:', screenshotFile.size, '字节');
-        console.log(' - 目标路径:', fullScreenshotPath);
+        // 保存文件
+        await fsPromises.writeFile(absolutePath, screenshotFile.buffer);
+        screenshotPath = relativePath;
         
-        // 确保上传目录存在
-        try {
-          await fsPromises.mkdir(path.join(__dirname, 'public', 'uploads', 'screenshots'), { recursive: true });
-        } catch (mkdirError) {
-          if (mkdirError.code !== 'EEXIST') {
-            console.error('创建上传目录失败:', mkdirError);
-            throw new Error('创建上传目录失败: ' + mkdirError.message);
-          }
+        // 删除旧截图
+        if (oldSite.screenshot) {
+          const oldPath = path.join(__dirname, 'public', oldSite.screenshot.replace(/^\//, ''));
+          await fsPromises.unlink(oldPath).catch(console.error);
         }
-        
-        // 写入文件
-        await fsPromises.writeFile(fullScreenshotPath, screenshotFile.buffer);
-        console.log('新截图保存成功');
-        
-        // 更新路径为相对路径
-        screenshotPath = '/' + screenshotPath.replace(/\\/g, '/');
-      } catch (fileError) {
-        console.error('截图保存失败:', fileError);
-        throw new Error('截图保存失败: ' + fileError.message);
-      }
-    }
-    
-    // 处理图标上传（如果有）
-    if (req.files && req.files.icon && Array.isArray(req.files.icon) && req.files.icon.length > 0) {
-      try {
-        const iconFile = req.files.icon[0];
-        const fileExt = iconFile.originalname.split('.').pop();
-        const iconFilename = `icon-${Date.now()}-${Math.floor(Math.random() * 1000000000)}.${fileExt}`;
-        iconPath = path.join('public', 'uploads', 'icons', iconFilename);
-        const fullIconPath = path.join(__dirname, iconPath);
-        
-        console.log('准备保存新图标:');
-        console.log(' - 源文件大小:', iconFile.size, '字节');
-        console.log(' - 目标路径:', fullIconPath);
-        
-        // 确保上传目录存在
-        try {
-          await fsPromises.mkdir(path.join(__dirname, 'public', 'uploads', 'icons'), { recursive: true });
-        } catch (mkdirError) {
-          if (mkdirError.code !== 'EEXIST') {
-            console.error('创建图标上传目录失败:', mkdirError);
-            throw new Error('创建图标上传目录失败: ' + mkdirError.message);
-          }
-        }
-        
-        // 写入文件
-        await fsPromises.writeFile(fullIconPath, iconFile.buffer);
-        console.log('新图标保存成功');
-        
-        // 更新路径为相对路径
-        iconPath = '/' + iconPath.replace(/\\/g, '/');
-      } catch (fileError) {
-        console.error('图标保存失败:', fileError);
-        throw new Error('图标保存失败: ' + fileError.message);
+      } catch (error) {
+        console.error('保存截图失败:', error);
+        throw new Error('保存截图失败: ' + error.message);
       }
     }
 
     // 开始事务
-    console.log('开始数据库事务...');
     await db.run('BEGIN TRANSACTION');
 
     try {
@@ -751,145 +465,102 @@ app.put('/api/sites/:id', authenticateToken, upload.fields([
           hot_until = ?, 
           new_until = ?, 
           tutorial_url = ?, 
-          updatedAt = datetime("now")
+          screenshot = ?,
+          updated_at = datetime('now')
+        WHERE id = ?
       `;
-      let params = [
+      
+      await db.run(updateQuery, [
         name, 
         url, 
-        description, 
+        description || '', 
         is_hot === '1' ? 1 : 0, 
         is_new === '1' ? 1 : 0, 
         hot_until || null, 
         new_until || null, 
-        tutorial_url || null
-      ];
-
-      if (iconPath !== null) {
-        updateQuery += ', icon = ?';
-        params.push(iconPath);
-        // 删除旧图标
-        if (oldSite.icon) {
-          try { 
-            const oldIconPath = path.join(__dirname, oldSite.icon.replace(/^\//, ''));
-            console.log('删除旧图标:', oldIconPath);
-            await fsPromises.unlink(oldIconPath); 
-          } catch (e) { 
-            console.error('删除旧图标失败:', e); 
-          }
-        }
-      }
-      
-      if (screenshotPath !== null) {
-        updateQuery += ', screenshot = ?';
-        params.push(screenshotPath);
-        // 删除旧截图
-        if (oldSite.screenshot) {
-          try { 
-            const oldScreenshotPath = path.join(__dirname, oldSite.screenshot.replace(/^\//, ''));
-            console.log('删除旧截图:', oldScreenshotPath);
-            await fsPromises.unlink(oldScreenshotPath);
-          } catch (e) { 
-            console.error('删除旧截图失败:', e); 
-          }
-        }
-      }
-
-      updateQuery += ' WHERE id = ?';
-      params.push(id);
-      
-      console.log('执行SQL更新:', updateQuery);
-      console.log('参数:', params);
-
-      await db.run(updateQuery, params);
-      console.log('网站基本信息已更新');
+        tutorial_url || null,
+        screenshotPath,
+        id
+      ]);
 
       // 更新分类关联
       await db.run('DELETE FROM site_categories WHERE siteId = ?', [id]);
-      let categoryIds = [];
       if (categories) {
-        try {
-          categoryIds = Array.isArray(categories) 
-            ? categories 
-            : (typeof categories === 'string' ? JSON.parse(categories) : []);
-          console.log('解析分类成功:', categoryIds);
-          for (const categoryId of categoryIds) {
-            if (categoryId) {
-              await db.run(
-                'INSERT INTO site_categories (siteId, categoryId) VALUES (?, ?)',
-                [id, categoryId]
-              );
-            }
+        const categoryIds = Array.isArray(categories) ? categories : JSON.parse(categories);
+        for (const categoryId of categoryIds) {
+          if (categoryId) {
+            await db.run(
+              'INSERT INTO site_categories (siteId, categoryId) VALUES (?, ?)',
+              [id, categoryId]
+            );
           }
-        } catch (parseError) {
-          console.error('解析分类失败:', parseError, '值:', categories);
-          // 继续执行，不阻止其他操作
         }
       }
-      console.log('分类关联已更新');
 
       // 更新标签关联
       await db.run('DELETE FROM site_tags WHERE siteId = ?', [id]);
       if (tags) {
-        try {
-          const tagIds = Array.isArray(tags) 
-            ? tags 
-            : (typeof tags === 'string' ? JSON.parse(tags) : []);
-          console.log('解析标签成功:', tagIds);
-          for (const tagId of tagIds) {
-            if (tagId) {
-              await db.run(
-                'INSERT INTO site_tags (siteId, tagId) VALUES (?, ?)',
-                [id, tagId]
-              );
-            }
+        const tagNames = Array.isArray(tags) ? tags : JSON.parse(tags);
+        for (const tagName of tagNames) {
+          let tagId;
+          
+          // 检查标签是否存在
+          const existingTag = await db.get('SELECT id FROM tags WHERE name = ?', [tagName]);
+          
+          if (existingTag) {
+            tagId = existingTag.id;
+          } else {
+            // 创建新标签
+            const result = await db.run(
+              'INSERT INTO tags (name, created_at, updated_at) VALUES (?, datetime("now"), datetime("now"))',
+              [tagName]
+            );
+            tagId = result.lastID;
           }
-        } catch (parseError) {
-          console.error('解析标签失败:', parseError, '值:', tags);
-          // 继续执行，不阻止其他操作
+          
+          // 添加标签关联
+          await db.run(
+            'INSERT INTO site_tags (siteId, tagId) VALUES (?, ?)',
+            [id, tagId]
+          );
         }
       }
-      console.log('标签关联已更新');
 
       await db.run('COMMIT');
-      console.log('事务提交成功,更新网站完成,ID:', id);
       
-      // 获取完整的更新后的网站信息
+      // 获取更新后的完整信息
       const updatedSite = await db.get(`
-        SELECT sites.*, 
-          GROUP_CONCAT(DISTINCT categories.id || ':' || categories.name) as categories,
-          GROUP_CONCAT(DISTINCT tags.id || ':' || tags.name) as tags
-        FROM sites
-        LEFT JOIN site_categories ON sites.id = site_categories.siteId
-        LEFT JOIN categories ON site_categories.categoryId = categories.id
-        LEFT JOIN site_tags ON sites.id = site_tags.siteId
-        LEFT JOIN tags ON site_tags.tagId = tags.id
-        WHERE sites.id = ?
-        GROUP BY sites.id
+        SELECT s.*, 
+               GROUP_CONCAT(DISTINCT c.id || ':' || c.name) as categories,
+               GROUP_CONCAT(DISTINCT t.id || ':' || t.name) as tags
+        FROM sites s
+        LEFT JOIN site_categories sc ON s.id = sc.siteId
+        LEFT JOIN categories c ON sc.categoryId = c.id
+        LEFT JOIN site_tags st ON s.id = st.siteId
+        LEFT JOIN tags t ON st.tagId = t.id
+        WHERE s.id = ?
+        GROUP BY s.id
       `, [id]);
-      
+
       if (updatedSite) {
-        // 格式化返回数据
         const result = {
           ...updatedSite,
           categories: updatedSite.categories ? updatedSite.categories.split(',').map(cat => {
             const [id, name] = cat.split(':');
-            return id && name ? { id, name } : null;
-          }).filter(Boolean) : [],
+            return { id, name };
+          }) : [],
           tags: updatedSite.tags ? updatedSite.tags.split(',').map(tag => {
             const [id, name] = tag.split(':');
-            return id && name ? { id, name } : null;
-          }).filter(Boolean) : []
+            return { id, name };
+          }) : []
         };
-        console.log('成功: 完成网站更新, 返回更新后的数据');
         res.json(result);
       } else {
-        console.log('警告: 无法获取更新后的网站信息');
         res.json({ id, success: true });
       }
     } catch (error) {
-      console.error('更新失败,回滚事务:', error);
       await db.run('ROLLBACK');
-      res.status(500).json({ error: '更新网站失败: ' + error.message });
+      throw error;
     }
   } catch (error) {
     console.error('更新网站失败:', error);
@@ -940,7 +611,7 @@ app.delete('/api/sites/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// 添加更新网站排序的路由
+// 更新网站排序
 app.post('/api/sites/reorder', authenticateToken, async (req, res) => {
   const { siteIds } = req.body;
   
@@ -950,20 +621,21 @@ app.post('/api/sites/reorder', authenticateToken, async (req, res) => {
 
   try {
     await db.run('BEGIN TRANSACTION');
-    
+
+    // 更新每个网站的显示顺序
     for (let i = 0; i < siteIds.length; i++) {
       await db.run(
-        'UPDATE sites SET displayOrder = ? WHERE id = ?',
-        [i, siteIds[i]]
+        'UPDATE sites SET displayOrder = ?, updated_at = datetime("now") WHERE id = ?',
+        [i + 1, siteIds[i]]
       );
     }
-    
+
     await db.run('COMMIT');
     res.json({ success: true });
   } catch (error) {
     await db.run('ROLLBACK');
     console.error('更新排序失败:', error);
-    res.status(500).json({ error: '服务器错误' });
+    res.status(500).json({ error: '更新排序失败: ' + error.message });
   }
 });
 
@@ -976,8 +648,28 @@ app.get('/api/categories', async (req, res) => {
       FROM categories c
       LEFT JOIN site_categories sc ON c.id = sc.categoryId
       GROUP BY c.id
+      ORDER BY c.display_order ASC, c.id ASC
     `);
-    res.json(categories);
+
+    // 确保返回一个数组
+    if (!Array.isArray(categories)) {
+      console.error('分类列表不是数组:', categories);
+      res.json([]);
+      return;
+    }
+
+    // 确保每个分类对象的字段都有合适的默认值
+    const formattedCategories = categories.map(category => ({
+      id: category.id,
+      name: category.name || '',
+      description: category.description || '',
+      display_order: category.display_order || 0,
+      siteCount: category.siteCount || 0,
+      created_at: category.created_at,
+      updated_at: category.updated_at
+    }));
+
+    res.json(formattedCategories);
   } catch (error) {
     console.error('获取分类列表失败:', error);
     res.status(500).json({ error: '服务器错误' });
@@ -1008,7 +700,7 @@ app.get('/api/categories/:id', authenticateToken, async (req, res) => {
     res.json(category);
   } catch (error) {
     console.error('获取分类详情失败:', error);
-    res.status(500).json({ error: '服务器错误: ' + error.message });
+    res.status(500).json({ error: '服务器错误' });
   }
 });
 
@@ -1019,6 +711,10 @@ app.post('/api/categories', authenticateToken, async (req, res) => {
     return res.status(400).json({ error: '分类名称不能为空' });
   }
 
+  if (!description) {
+    return res.status(400).json({ error: '分类描述不能为空' });
+  }
+
   try {
     // 检查是否已存在同名分类
     const existingCategory = await db.get('SELECT * FROM categories WHERE name = ?', [name]);
@@ -1026,10 +722,10 @@ app.post('/api/categories', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: '已存在同名分类' });
     }
 
-    const id = uuidv4();
-    await db.run(
-      'INSERT INTO categories (id, name, description) VALUES (?, ?, ?)',
-      [id, name, description]
+    // 使用自增ID
+    const result = await db.run(
+      'INSERT INTO categories (name, description, created_at, updated_at) VALUES (?, ?, datetime("now"), datetime("now"))',
+      [name, description]
     );
     
     const category = await db.get(`
@@ -1039,7 +735,7 @@ app.post('/api/categories', authenticateToken, async (req, res) => {
       LEFT JOIN site_categories sc ON c.id = sc.categoryId
       WHERE c.id = ?
       GROUP BY c.id
-    `, [id]);
+    `, [result.lastID]);
     
     res.status(201).json(category);
   } catch (error) {
@@ -1075,9 +771,9 @@ app.put('/api/categories/:id', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: '已存在同名分类' });
     }
 
-    console.log(`执行更新SQL: UPDATE categories SET name = '${name}', description = '${description}' WHERE id = '${id}'`);
+    console.log(`执行更新SQL: UPDATE categories SET name = '${name}', description = '${description}', updated_at = datetime("now") WHERE id = '${id}'`);
     const result = await db.run(
-      'UPDATE categories SET name = ?, description = ? WHERE id = ?',
+      'UPDATE categories SET name = ?, description = ?, updated_at = datetime("now") WHERE id = ?',
       [name, description, id]
     );
     
@@ -1134,20 +830,64 @@ app.delete('/api/categories/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// 重新排序分类
+app.post('/api/categories/reorder', authenticateToken, async (req, res) => {
+  const { categoryIds } = req.body;
+  
+  if (!Array.isArray(categoryIds)) {
+    return res.status(400).json({ error: '无效的分类ID列表' });
+  }
+
+  try {
+    await db.run('BEGIN TRANSACTION');
+
+    // 更新每个分类的排序
+    for (let i = 0; i < categoryIds.length; i++) {
+      await db.run(
+        'UPDATE categories SET display_order = ?, updated_at = datetime("now") WHERE id = ?',
+        [i, categoryIds[i]]
+      );
+    }
+
+    await db.run('COMMIT');
+    res.json({ success: true });
+  } catch (error) {
+    await db.run('ROLLBACK');
+    console.error('重新排序分类失败:', error);
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
 // 标签相关路由
 app.get('/api/tags', async (req, res) => {
   try {
-    const tags = await db.all(`
+    console.log('收到 /api/tags 请求');
+    
+    // 检查数据库连接
+    if (!db) {
+      console.error('数据库连接未初始化');
+      return res.status(500).json({ error: '数据库连接错误' });
+    }
+    
+    const sql = `
       SELECT t.*,
              COUNT(DISTINCT st.siteId) as siteCount
       FROM tags t
       LEFT JOIN site_tags st ON t.id = st.tagId
       GROUP BY t.id
-    `);
-    res.json(tags);
+    `;
+    
+    console.log('执行SQL查询:', sql);
+    
+    const tags = await db.all(sql);
+    
+    console.log(`查询成功，返回 ${tags.length} 个标签:`, tags);
+    
+    // 确保返回数组而不是null
+    res.json(tags || []);
   } catch (error) {
     console.error('获取标签列表失败:', error);
-    res.status(500).json({ error: '服务器错误' });
+    res.status(500).json({ error: '服务器错误', message: error.message });
   }
 });
 
@@ -1174,39 +914,52 @@ app.get('/api/tags/:id', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/tags', authenticateToken, async (req, res) => {
-  const { name, description } = req.body;
-  
-  if (!name) {
-    return res.status(400).json({ error: '标签名称不能为空' });
-  }
-
-  try {
-    // 检查是否已存在同名标签
-    const existingTag = await db.get('SELECT * FROM tags WHERE name = ?', [name]);
-    if (existingTag) {
-      return res.status(400).json({ error: '已存在同名标签' });
+    console.log('收到创建标签请求:', req.body);
+    
+    const { name } = req.body;
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+        return res.status(400).json({ error: '标签名称不能为空' });
     }
-
-    const id = uuidv4();
-    await db.run(
-      'INSERT INTO tags (id, name, description) VALUES (?, ?, ?)',
-      [id, name, description]
-    );
     
-    const tag = await db.get(`
-      SELECT t.*,
-             COUNT(DISTINCT st.siteId) as siteCount
-      FROM tags t
-      LEFT JOIN site_tags st ON t.id = st.tagId
-      WHERE t.id = ?
-      GROUP BY t.id
-    `, [id]);
+    const trimmedName = name.trim();
+    if (trimmedName.length > 50) {
+        return res.status(400).json({ error: '标签名称不能超过50个字符' });
+    }
     
-    res.status(201).json(tag);
-  } catch (error) {
-    console.error('创建标签失败:', error);
-    res.status(500).json({ error: '服务器错误' });
-  }
+    let result;
+    
+    try {
+        // 开始事务
+        await db.run('BEGIN TRANSACTION');
+        
+        // 检查标签是否已存在
+        const existingTag = await db.get('SELECT * FROM tags WHERE name = ?', [trimmedName]);
+        if (existingTag) {
+            await db.run('ROLLBACK');
+            return res.status(409).json({ error: '标签已存在', tag: existingTag });
+        }
+        
+        // 插入新标签
+        result = await db.run(
+            'INSERT INTO tags (name, created_at, updated_at) VALUES (?, datetime("now"), datetime("now"))',
+            [trimmedName]
+        );
+        
+        // 提交事务
+        await db.run('COMMIT');
+        
+        // 返回新创建的标签
+        const newTag = await db.get('SELECT * FROM tags WHERE id = ?', [result.lastID]);
+        console.log('标签创建成功:', newTag);
+        
+        res.status(201).json(newTag);
+        
+    } catch (error) {
+        // 回滚事务
+        await db.run('ROLLBACK');
+        console.error('创建标签失败:', error);
+        res.status(500).json({ error: '创建标签失败: ' + error.message });
+    }
 });
 
 app.put('/api/tags/:id', authenticateToken, async (req, res) => {
@@ -1224,8 +977,8 @@ app.put('/api/tags/:id', authenticateToken, async (req, res) => {
     }
 
     const result = await db.run(
-      'UPDATE tags SET name = ?, description = ? WHERE id = ?',
-      [name, description, req.params.id]
+      'UPDATE tags SET name = ?, updated_at = datetime("now") WHERE id = ?',
+      [name, req.params.id]
     );
     
     if (result.changes === 0) {
@@ -1273,14 +1026,42 @@ app.delete('/api/tags/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// 网站设置相关路由
+// 网站设置路由
 app.get('/api/settings', async (req, res) => {
   try {
     const settings = await db.get('SELECT * FROM site_settings LIMIT 1');
     if (!settings) {
-      return res.status(404).json({ error: '网站设置不存在' });
+      // 如果没有设置，创建默认设置
+      const result = await db.run(`
+        INSERT INTO site_settings (
+          site_name, 
+          site_description, 
+          footer_text, 
+          github_url, 
+          twitter_url, 
+          email,
+          hero_title,
+          hero_subtitle,
+          created_at,
+          updated_at
+        ) VALUES (
+          '导航网站',
+          '精选优质网站导航',
+          '© 2024 导航网站. All rights reserved.',
+          '',
+          '',
+          '',
+          '乔木精选推荐',
+          '发现最佳AI、阅读与知识管理工具，提升工作效率',
+          datetime('now'),
+          datetime('now')
+        )
+      `);
+      const newSettings = await db.get('SELECT * FROM site_settings WHERE id = ?', [result.lastID]);
+      res.json(newSettings);
+    } else {
+      res.json(settings);
     }
-    res.json(settings);
   } catch (error) {
     console.error('获取网站设置失败:', error);
     res.status(500).json({ error: '服务器错误' });
@@ -1450,7 +1231,7 @@ app.post('/api/nav-menu', authenticateToken, async (req, res) => {
     }
 
     const result = await db.run(
-      'INSERT INTO nav_menu_items (title, href, icon, order_index, is_active) VALUES (?, ?, ?, ?, 1)',
+      'INSERT INTO nav_menu_items (title, href, icon, order_index, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, 1, datetime("now"), datetime("now"))',
       [title, href, icon || null, order_index || 0]
     );
 
@@ -1470,7 +1251,7 @@ app.put('/api/nav-menu/:id', authenticateToken, async (req, res) => {
     // 如果是仅更新状态的请求，只更新 is_active 字段
     if (is_active !== undefined && Object.keys(req.body).length === 1) {
       await db.run(
-        'UPDATE nav_menu_items SET is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        'UPDATE nav_menu_items SET is_active = ?, updated_at = datetime("now") WHERE id = ?',
         [is_active ? 1 : 0, id]
       );
     } else {
@@ -1481,8 +1262,7 @@ app.put('/api/nav-menu/:id', authenticateToken, async (req, res) => {
 
       await db.run(
         `UPDATE nav_menu_items 
-         SET title = ?, href = ?, icon = ?, order_index = ?, is_active = ?, open_in_new = ?,
-             updated_at = CURRENT_TIMESTAMP 
+         SET title = ?, href = ?, icon = ?, order_index = ?, is_active = ?, open_in_new = ?, updated_at = datetime("now")
          WHERE id = ?`,
         [
           title, 
@@ -1522,7 +1302,7 @@ app.post('/api/nav-menu/reorder', authenticateToken, async (req, res) => {
     // 更新每个菜单项的排序
     for (const item of items) {
       await db.run(
-        'UPDATE nav_menu_items SET order_index = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        'UPDATE nav_menu_items SET order_index = ?, updated_at = datetime("now") WHERE id = ?',
         [item.order_index, item.id]
       );
     }

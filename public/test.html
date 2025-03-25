@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网站列表测试页面</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .site-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .site-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .site-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .site-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .site-description {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 10px 0;
+        }
+
+        .site-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .status-label {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .hot-label {
+            background: #ff4d4f;
+            color: white;
+        }
+
+        .new-label {
+            background: #52c41a;
+            color: white;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        #error {
+            text-align: center;
+            padding: 20px;
+            color: #ff4d4f;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>网站列表测试页面</h1>
+    <div id="loading">加载中...</div>
+    <div id="error"></div>
+    <div id="site-list" class="site-list"></div>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const siteList = document.getElementById('site-list');
+
+            try {
+                // 获取网站数据
+                console.log('开始获取网站数据...');
+                const response = await fetch('/api/sites');
+                console.log('API响应状态:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('获取到的网站数据:', data);
+
+                // 隐藏加载提示
+                loading.style.display = 'none';
+
+                // 显示网站列表
+                data.forEach(site => {
+                    const card = document.createElement('div');
+                    card.className = 'site-card';
+                    card.innerHTML = `
+                        <div class="site-name">
+                            ${site.name}
+                            ${site.is_hot ? '<span class="status-label hot-label">热门</span>' : ''}
+                            ${site.is_new ? '<span class="status-label new-label">新品</span>' : ''}
+                        </div>
+                        <div class="site-description">${site.description}</div>
+                        <div class="site-tags">
+                            ${site.tags.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
+                        </div>
+                    `;
+
+                    // 添加点击事件
+                    card.addEventListener('click', () => {
+                        window.open(site.url, '_blank');
+                    });
+
+                    siteList.appendChild(card);
+                });
+
+                console.log('网站列表加载完成');
+
+            } catch (err) {
+                console.error('加载数据时出错:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `加载失败: ${err.message}`;
+            }
+        });
+    </script>
+</body>
+</html> 
