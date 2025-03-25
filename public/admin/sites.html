@@ -964,6 +964,15 @@
         .tagify__tag__removeBtn:hover::after {
             color: #ef4444 !important;
         }
+
+        /* 添加多行文本截断样式 - 放在样式表部分 */
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
@@ -2213,9 +2222,9 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <img src="${site.screenshot}" alt="${site.name}" class="h-16 object-contain cursor-pointer hover:opacity-90 transition-opacity" onclick="previewScreenshot('${site.screenshot}')">
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-4">
                             <div class="text-sm font-medium text-gray-900">${site.name}</div>
-                            <div class="text-sm text-gray-500 line-clamp-2 max-w-xs">${site.description || ''}</div>
+                            <div class="text-sm text-gray-500 line-clamp-3 max-w-xs" title="${site.description || ''}">${site.description || ''}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <a href="${site.url}" target="_blank" class="text-blue-600 hover:text-blue-900 flex items-center max-w-xs truncate">
