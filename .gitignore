@@ -34,9 +34,6 @@ wheels/
 *.swo
 .DS_Store
 
-# SQLite
-*.db-journal
-
 # Logs
 logs/
 *.log
@@ -63,7 +60,7 @@ coverage/
 .env.test.local
 .env.production.local
 
-# 缓存和临时文件
+# Cache and temp files
 .cache/
 .temp/
 .tmp/
@@ -72,6 +69,6 @@ tmp/
 *.tmp
 *.temp
 
-# 编辑器和IDE文件
+# Editor and IDE files
 .DS_Store
 Thumbs.db 
