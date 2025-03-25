@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航菜单管理 - 网址导航系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #1a1a1a;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background-color: #2d2d2d;
+        }
+        .nav-link.active {
+            background-color: #2d2d2d;
+            border-left: 4px solid #4f46e5;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+        }
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #666;
+        }
+        /* 图标选择器样式 */
+        .icon-picker {
+            position: relative;
+        }
+        .icon-picker-button {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            background-color: white;
+        }
+        .icon-picker-button:hover {
+            border-color: #6366f1;
+        }
+        .icon-picker-button i {
+            margin-right: 0.5rem;
+        }
+        .icon-picker-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            margin-top: 0.5rem;
+            padding: 1rem;
+        }
+        .icon-picker-dropdown.active {
+            display: block;
+        }
+        .icon-search {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.75rem;
+        }
+        .icon-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.25rem;
+        }
+        .icon-item:hover {
+            border-color: #6366f1;
+            background-color: #f3f4f6;
+        }
+        .icon-item.selected {
+            border-color: #6366f1;
+            background-color: #e0e7ff;
+        }
+        .icon-category {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        .icon-category-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+        .truncate-link {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="p-4">
+            <h1 class="text-xl font-bold">网址导航系统</h1>
+        </div>
+        <nav class="mt-4">
+            <a href="/admin/index.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-home mr-3"></i>
+                仪表盘
+            </a>
+            <a href="/admin/sites.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-globe mr-3"></i>
+                网址管理
+            </a>
+            <a href="/admin/categories.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-folder mr-3"></i>
+                分类管理
+            </a>
+            <a href="/admin/tags.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-tags mr-3"></i>
+                标签管理
+            </a>
+            <a href="/admin/nav-menu.html" class="nav-link active flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-bars mr-3"></i>
+                导航菜单
+            </a>
+            <a href="/admin/settings.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-cog mr-3"></i>
+                网站设置
+            </a>
+            <button id="user-settings-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white mt-auto">
+                <i class="fas fa-user-cog mr-3"></i>
+                用户设置
+            </button>
+            <button id="logout-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                退出登录
+            </button>
+        </nav>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 顶部栏 -->
+        <div class="bg-white shadow-sm rounded-lg p-4 mb-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">导航菜单管理</h2>
+                <div class="flex items-center">
+                    <button id="add-menu-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        添加菜单项
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 菜单项列表 -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">排序</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标题</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">链接</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">图标</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">新窗口</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                            <th class="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="menuItemsList" class="bg-white divide-y divide-gray-200">
+                        <!-- 菜单项将通过 JavaScript 动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑菜单项模态框 -->
+    <div id="menu-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title" class="text-2xl font-bold mb-4">添加菜单项</h2>
+            <form id="menu-form" class="space-y-4">
+                <input type="hidden" id="menu-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">标题</label>
+                    <input type="text" id="menu-title" name="title" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">链接</label>
+                    <input type="text" id="menu-href" name="href" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">图标</label>
+                    <div class="icon-picker mt-1">
+                        <div class="icon-picker-button" id="iconPickerButton">
+                            <i id="selectedIcon" class=""></i>
+                            <span id="selectedIconName">选择图标</span>
+                        </div>
+                        <div class="icon-picker-dropdown" id="iconPickerDropdown">
+                            <input type="text" class="icon-search" id="iconSearch" placeholder="搜索图标...">
+                            <div class="icon-grid" id="iconGrid"></div>
+                        </div>
+                        <input type="hidden" id="menu-icon" name="icon">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">排序</label>
+                    <input type="number" id="menu-order" name="order_index" value="0"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="menu-new-window" name="open_in_new" class="mr-2">
+                        <span class="text-gray-700 text-sm font-bold">在新窗口打开</span>
+                    </label>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 用户设置模态框 -->
+    <div id="user-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-2xl font-bold mb-4">修改密码</h2>
+            <form id="change-password-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">当前密码</label>
+                    <input type="password" id="current-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">新密码</label>
+                    <input type="password" id="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">确认新密码</label>
+                    <input type="password" id="confirm-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeUserSettingsModal()">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                window.location.href = '/admin/login.html';
+                return;
+            }
+            
+            fetch('/api/auth/check', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Token invalid');
+                return response.json();
+            })
+            .then(data => {
+                if (!data.authenticated) {
+                    throw new Error('Not authenticated');
+                }
+            })
+            .catch(error => {
+                console.error('认证失败:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/admin/login.html';
+            });
+        }
+
+        // 获取所有菜单项
+        async function fetchMenuItems() {
+            try {
+                const response = await fetch('/api/nav-menu');
+                if (!response.ok) throw new Error('获取菜单项失败');
+                const items = await response.json();
+                renderMenuItems(items);
+            } catch (error) {
+                console.error('获取菜单项失败:', error);
+                alert('获取菜单项失败');
+            }
+        }
+
+        // 渲染菜单项列表
+        function renderMenuItems(items) {
+            const tbody = document.getElementById('menuItemsList');
+            tbody.innerHTML = items.map(item => `
+                <tr data-id="${item.id}" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <i class="fas fa-grip-vertical drag-handle cursor-move text-gray-400 hover:text-gray-600"></i>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">${item.title}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="truncate-link" title="${item.href}">${item.href}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <i class="${item.icon || ''}" title="${item.icon || '无图标'}"></i>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${item.open_in_new ? '是' : '否'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            item.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }">
+                            ${item.is_active ? '启用' : '禁用'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="editMenuItem(${item.id})"
+                            class="text-indigo-600 hover:text-indigo-900 mr-3">
+                            编辑
+                        </button>
+                        <button onclick="toggleMenuItem(${item.id}, ${!item.is_active})"
+                            class="text-yellow-600 hover:text-yellow-900 mr-3">
+                            ${item.is_active ? '禁用' : '启用'}
+                        </button>
+                        <button onclick="deleteMenuItem(${item.id})"
+                            class="text-red-600 hover:text-red-900">
+                            删除
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 打开模态框
+        function openModal(isEdit = false) {
+            const modal = document.getElementById('menu-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const form = document.getElementById('menu-form');
+            
+            modalTitle.textContent = isEdit ? '编辑菜单项' : '添加菜单项';
+            form.reset();
+            
+            if (!isEdit) {
+                document.getElementById('menu-id').value = '';
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('menu-modal').style.display = 'none';
+        }
+
+        // 编辑菜单项
+        async function editMenuItem(id) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('未登录');
+                }
+
+                const response = await fetch(`/api/nav-menu/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('获取菜单项失败');
+                }
+
+                const item = await response.json();
+                
+                // 填充表单数据
+                document.getElementById('menu-id').value = item.id;
+                document.getElementById('menu-title').value = item.title;
+                document.getElementById('menu-href').value = item.href;
+                document.getElementById('menu-order').value = item.order_index || 0;
+                document.getElementById('menu-new-window').checked = item.open_in_new === 1;
+                
+                // 设置图标
+                if (item.icon) {
+                    selectIcon(item.icon);
+                } else {
+                    selectedIcon.className = '';
+                    selectedIconName.textContent = '选择图标';
+                    menuIconInput.value = '';
+                }
+                
+                // 打开模态框并设置标题
+                const modalTitle = document.getElementById('modal-title');
+                modalTitle.textContent = `编辑菜单项: ${item.title}`;
+                document.getElementById('menu-modal').style.display = 'block';
+            } catch (error) {
+                console.error('获取菜单项失败:', error);
+                alert('获取菜单项失败: ' + error.message);
+            }
+        }
+
+        // 切换菜单项状态
+        async function toggleMenuItem(id, newState) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('未登录');
+                }
+
+                const response = await fetch(`/api/nav-menu/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ is_active: newState })
+                });
+
+                if (!response.ok) {
+                    throw new Error(response.status === 404 ? '菜单项不存在' : '更新菜单项状态失败');
+                }
+
+                // 重新加载菜单列表
+                await fetchMenuItems();
+            } catch (error) {
+                console.error('更新菜单项状态失败:', error);
+                alert('更新菜单项状态失败: ' + error.message);
+            }
+        }
+
+        // 删除菜单项
+        async function deleteMenuItem(id) {
+            if (!confirm('确定要删除这个菜单项吗？')) return;
+
+            try {
+                const response = await fetch(`/api/nav-menu/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('删除菜单项失败');
+                fetchMenuItems();
+            } catch (error) {
+                console.error('删除菜单项失败:', error);
+                alert('删除菜单项失败');
+            }
+        }
+
+        // 表单提交处理
+        document.getElementById('menu-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const menuId = document.getElementById('menu-id').value;
+            
+            const menuItem = {
+                title: formData.get('title'),
+                href: formData.get('href'),
+                icon: formData.get('icon'),
+                order_index: parseInt(formData.get('order_index')),
+                open_in_new: document.getElementById('menu-new-window').checked ? 1 : 0
+            };
+
+            try {
+                const url = menuId ? `/api/nav-menu/${menuId}` : '/api/nav-menu';
+                const method = menuId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(menuItem)
+                });
+
+                if (!response.ok) throw new Error('保存菜单项失败');
+                closeModal();
+                fetchMenuItems();
+            } catch (error) {
+                console.error('保存菜单项失败:', error);
+                alert('保存菜单项失败');
+            }
+        });
+
+        // 添加按钮点击事件
+        document.getElementById('add-menu-btn').addEventListener('click', () => openModal(false));
+
+        // 关闭按钮点击事件
+        document.querySelector('.close').addEventListener('click', closeModal);
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('menu-modal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // 退出登录
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            Swal.fire({
+                title: '确认退出',
+                text: '您确定要退出登录吗？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '确定退出',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/admin/login.html';
+                }
+            });
+        });
+
+        // 初始化拖拽排序
+        const menuItemsList = document.getElementById('menuItemsList');
+        new Sortable(menuItemsList, {
+            animation: 150,
+            handle: '.drag-handle',
+            onEnd: async function(evt) {
+                const items = Array.from(menuItemsList.getElementsByTagName('tr')).map((row, index) => ({
+                    id: row.dataset.id,
+                    order_index: index + 1
+                }));
+
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch('/api/nav-menu/reorder', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ items })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('更新排序失败');
+                    }
+
+                    await fetchMenuItems();
+                } catch (error) {
+                    console.error('更新排序失败:', error);
+                    alert('更新排序失败: ' + error.message);
+                }
+            }
+        });
+
+        // 图标选择器相关代码
+        const commonIcons = [
+            // 导航和基础图标
+            'fas fa-home', 'fas fa-globe', 'fas fa-folder', 'fas fa-tags', 'fas fa-bars',
+            'fas fa-cog', 'fas fa-user', 'fas fa-search', 'fas fa-star', 'fas fa-heart',
+            'fas fa-bookmark', 'fas fa-flag', 'fas fa-compass', 'fas fa-map', 'fas fa-location-dot',
+            
+            // 媒体和文件
+            'fas fa-book', 'fas fa-file', 'fas fa-image', 'fas fa-video', 'fas fa-music',
+            'fas fa-camera', 'fas fa-film', 'fas fa-photo-film', 'fas fa-file-pdf',
+            'fas fa-file-word', 'fas fa-file-excel', 'fas fa-file-powerpoint', 'fas fa-file-code',
+            
+            // 社交和通讯
+            'fas fa-link', 'fas fa-envelope', 'fas fa-phone', 'fas fa-comments',
+            'fas fa-message', 'fas fa-share', 'fas fa-share-nodes', 'fas fa-paper-plane',
+            'fab fa-twitter', 'fab fa-facebook', 'fab fa-instagram', 'fab fa-youtube',
+            'fab fa-linkedin', 'fab fa-github', 'fab fa-discord', 'fab fa-telegram',
+            
+            // 工具和功能
+            'fas fa-calendar', 'fas fa-clock', 'fas fa-bell', 'fas fa-gear',
+            'fas fa-wrench', 'fas fa-screwdriver-wrench', 'fas fa-sliders',
+            'fas fa-download', 'fas fa-upload', 'fas fa-cloud-upload', 'fas fa-cloud-download',
+            
+            // 编辑和操作
+            'fas fa-pen', 'fas fa-pencil', 'fas fa-edit', 'fas fa-trash',
+            'fas fa-copy', 'fas fa-paste', 'fas fa-cut', 'fas fa-clipboard',
+            'fas fa-plus', 'fas fa-minus', 'fas fa-times', 'fas fa-check',
+            
+            // 界面和交互
+            'fas fa-arrow-up', 'fas fa-arrow-down', 'fas fa-arrow-left', 'fas fa-arrow-right',
+            'fas fa-chevron-up', 'fas fa-chevron-down', 'fas fa-chevron-left', 'fas fa-chevron-right',
+            'fas fa-angles-up', 'fas fa-angles-down', 'fas fa-angles-left', 'fas fa-angles-right',
+            
+            // 状态和提示
+            'fas fa-info-circle', 'fas fa-question-circle', 'fas fa-exclamation-circle',
+            'fas fa-check-circle', 'fas fa-times-circle', 'fas fa-exclamation-triangle',
+            'fas fa-spinner', 'fas fa-circle-notch', 'fas fa-sync', 'fas fa-redo',
+            
+            // 安全和系统
+            'fas fa-lock', 'fas fa-unlock', 'fas fa-shield', 'fas fa-shield-alt',
+            'fas fa-key', 'fas fa-fingerprint', 'fas fa-user-shield', 'fas fa-database',
+            
+            // 设备和技术
+            'fas fa-laptop', 'fas fa-desktop', 'fas fa-mobile-alt', 'fas fa-tablet-alt',
+            'fas fa-server', 'fas fa-microchip', 'fas fa-wifi', 'fas fa-bluetooth',
+            'fas fa-code', 'fas fa-terminal', 'fas fa-bug', 'fas fa-qrcode',
+            
+            // 用户和团队
+            'fas fa-users', 'fas fa-user-plus', 'fas fa-user-minus', 'fas fa-user-edit',
+            'fas fa-user-cog', 'fas fa-user-gear', 'fas fa-user-group', 'fas fa-user-check',
+            
+            // 商务和金融
+            'fas fa-chart-bar', 'fas fa-chart-line', 'fas fa-chart-pie', 'fas fa-chart-area',
+            'fas fa-coins', 'fas fa-money-bill', 'fas fa-credit-card', 'fas fa-wallet',
+            
+            // 天气和自然
+            'fas fa-sun', 'fas fa-moon', 'fas fa-cloud', 'fas fa-cloud-sun',
+            'fas fa-cloud-moon', 'fas fa-rainbow', 'fas fa-snowflake', 'fas fa-wind',
+            
+            // 生活和娱乐
+            'fas fa-gamepad', 'fas fa-headphones', 'fas fa-camera-retro', 'fas fa-dice',
+            'fas fa-puzzle-piece', 'fas fa-palette', 'fas fa-paint-brush', 'fas fa-theater-masks'
+        ];
+
+        const iconPickerButton = document.getElementById('iconPickerButton');
+        const iconPickerDropdown = document.getElementById('iconPickerDropdown');
+        const iconSearch = document.getElementById('iconSearch');
+        const iconGrid = document.getElementById('iconGrid');
+        const selectedIcon = document.getElementById('selectedIcon');
+        const selectedIconName = document.getElementById('selectedIconName');
+        const menuIconInput = document.getElementById('menu-icon');
+
+        // 初始化图标网格
+        function initializeIconGrid() {
+            // 按类别组织图标
+            const iconsByCategory = {
+                '导航和基础': commonIcons.slice(0, 15),
+                '媒体和文件': commonIcons.slice(15, 29),
+                '社交和通讯': commonIcons.slice(29, 45),
+                '工具和功能': commonIcons.slice(45, 57),
+                '编辑和操作': commonIcons.slice(57, 69),
+                '界面和交互': commonIcons.slice(69, 81),
+                '状态和提示': commonIcons.slice(81, 91),
+                '安全和系统': commonIcons.slice(91, 99),
+                '设备和技术': commonIcons.slice(99, 111),
+                '用户和团队': commonIcons.slice(111, 119),
+                '商务和金融': commonIcons.slice(119, 127),
+                '天气和自然': commonIcons.slice(127, 135),
+                '生活和娱乐': commonIcons.slice(135)
+            };
+
+            iconGrid.innerHTML = Object.entries(iconsByCategory).map(([category, icons]) => `
+                <div class="icon-category">
+                    <div class="icon-category-title">${category}</div>
+                    <div class="icon-grid">
+                        ${icons.map(icon => `
+                            <div class="icon-item" data-icon="${icon}" title="${icon}">
+                                <i class="${icon}"></i>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            // 添加图标点击事件
+            iconGrid.querySelectorAll('.icon-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const icon = item.dataset.icon;
+                    selectIcon(icon);
+                    iconPickerDropdown.classList.remove('active');
+                });
+            });
+        }
+
+        // 选择图标
+        function selectIcon(icon) {
+            selectedIcon.className = icon;
+            selectedIconName.textContent = icon;
+            menuIconInput.value = icon;
+            
+            // 更新选中状态
+            iconGrid.querySelectorAll('.icon-item').forEach(item => {
+                item.classList.toggle('selected', item.dataset.icon === icon);
+            });
+        }
+
+        // 图标搜索
+        iconSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredIcons = commonIcons.filter(icon => 
+                icon.toLowerCase().includes(searchTerm)
+            );
+
+            // 搜索时使用单一网格布局
+            iconGrid.innerHTML = `
+                <div class="icon-grid">
+                    ${filteredIcons.map(icon => `
+                        <div class="icon-item" data-icon="${icon}" title="${icon}">
+                            <i class="${icon}"></i>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // 重新添加点击事件
+            iconGrid.querySelectorAll('.icon-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const icon = item.dataset.icon;
+                    selectIcon(icon);
+                    iconPickerDropdown.classList.remove('active');
+                });
+            });
+        });
+
+        // 切换图标选择器下拉框
+        iconPickerButton.addEventListener('click', () => {
+            iconPickerDropdown.classList.toggle('active');
+        });
+
+        // 点击外部关闭图标选择器
+        document.addEventListener('click', (e) => {
+            if (!iconPickerButton.contains(e.target) && !iconPickerDropdown.contains(e.target)) {
+                iconPickerDropdown.classList.remove('active');
+            }
+        });
+
+        // 用户设置相关函数
+        function openUserSettingsModal() {
+            document.getElementById('user-settings-modal').style.display = 'block';
+        }
+
+        function closeUserSettingsModal() {
+            document.getElementById('user-settings-modal').style.display = 'none';
+            document.getElementById('change-password-form').reset();
+        }
+
+        // 修改密码表单提交
+        document.getElementById('change-password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                Swal.fire({
+                    title: '错误',
+                    text: '两次输入的新密码不一致',
+                    icon: 'error'
+                });
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/auth/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('修改密码失败');
+                }
+                
+                Swal.fire({
+                    title: '成功',
+                    text: '密码修改成功',
+                    icon: 'success'
+                });
+                
+                closeUserSettingsModal();
+            } catch (error) {
+                console.error('修改密码失败:', error);
+                Swal.fire({
+                    title: '错误',
+                    text: '修改密码失败，请检查当前密码是否正确',
+                    icon: 'error'
+                });
+            }
+        });
+
+        // 用户设置按钮点击事件
+        document.getElementById('user-settings-btn').addEventListener('click', openUserSettingsModal);
+
+        // 关闭按钮点击事件
+        document.querySelector('#user-settings-modal .close').addEventListener('click', closeUserSettingsModal);
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('user-settings-modal');
+            if (e.target === modal) {
+                closeUserSettingsModal();
+            }
+        });
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            fetchMenuItems();
+            initializeIconGrid();
+        });
+    </script>
+</body>
+</html> 

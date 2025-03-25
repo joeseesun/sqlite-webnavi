@@ -9,9 +9,12 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
+import cors from 'cors';
+import { dirname, join } from 'path';
+import { readFile } from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,6 +37,7 @@ const upload = multer({
 });
 
 // 中间件配置
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -59,117 +63,16 @@ app.use(async (req, res, next) => {
 // 数据库初始化
 let db;
 
-async function initializeDatabase() {
+async function initializeDB() {
   try {
     db = await open({
-      filename: 'database.sqlite',
+      filename: join(__dirname, 'database.sqlite'),
       driver: sqlite3.Database
     });
 
-    // 创建必要的表
-    await db.exec(`
-      CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        lastLogin TEXT
-      );
-
-      CREATE TABLE IF NOT EXISTS categories (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL UNIQUE,
-        description TEXT
-      );
-
-      CREATE TABLE IF NOT EXISTS tags (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL UNIQUE,
-        description TEXT
-      );
-
-      CREATE TABLE IF NOT EXISTS sites (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        url TEXT NOT NULL,
-        description TEXT,
-        icon TEXT,
-        screenshot TEXT,
-        displayOrder INTEGER DEFAULT 0,
-        createdAt TEXT,
-        updatedAt TEXT
-      );
-
-      CREATE TABLE IF NOT EXISTS site_categories (
-        siteId TEXT,
-        categoryId TEXT,
-        FOREIGN KEY (siteId) REFERENCES sites(id),
-        FOREIGN KEY (categoryId) REFERENCES categories(id),
-        PRIMARY KEY (siteId, categoryId)
-      );
-
-      CREATE TABLE IF NOT EXISTS site_tags (
-        siteId TEXT,
-        tagId TEXT,
-        FOREIGN KEY (siteId) REFERENCES sites(id),
-        FOREIGN KEY (tagId) REFERENCES tags(id),
-        PRIMARY KEY (siteId, tagId)
-      );
-
-      CREATE TABLE IF NOT EXISTS site_settings (
-        id TEXT PRIMARY KEY,
-        site_name TEXT NOT NULL,
-        site_description TEXT,
-        footer_text TEXT,
-        github_url TEXT,
-        twitter_url TEXT,
-        email TEXT,
-        contact_qrcode TEXT,
-        donation_qrcode TEXT,
-        hero_title TEXT,
-        hero_subtitle TEXT,
-        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    // 检查是否有默认用户，如果没有则创建
-    const user = await db.get('SELECT * FROM users LIMIT 1');
-    if (!user) {
-      const hashedPassword = await bcrypt.hash('Qiaotjk42@', 10);
-      await db.run(
-        'INSERT INTO users (id, username, password, lastLogin) VALUES (?, ?, ?, ?)',
-        [uuidv4(), 'joe', hashedPassword, new Date().toISOString()]
-      );
-    }
-
-    // 检查是否有默认设置，如果没有则创建
-    const settings = await db.get('SELECT * FROM site_settings LIMIT 1');
-    if (!settings) {
-      await db.run(
-        'INSERT INTO site_settings (id, site_name, site_description, footer_text, github_url, twitter_url, email, hero_title, hero_subtitle) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-          uuidv4(), 
-          '乔木精选推荐', 
-          '精选AI与知识工具集',
-          '© 2025 向阳乔木. 保留所有权利.',
-          'https://github.com/joeseesun',
-          'https://twitter.com/vista8',
-          'vista8@gmail.com',
-          '乔木精选推荐',
-          '发现最佳AI、阅读与知识管理工具，提升工作效率'
-        ]
-      );
-      console.log('创建了默认网站设置');
-    }
-
-    // 在所有初始化完成后，执行数据库迁移
-    try {
-      const migrations = require('./migrations');
-      await migrations.runMigrations(db);
-    } catch (error) {
-      console.error('执行数据库迁移时出错:', error);
-      // 不阻止应用启动，即使迁移失败
-    }
-
+    // 执行数据库初始化 SQL
+    const initSQL = await readFile(join(__dirname, 'database.sql'), 'utf8');
+    await db.exec(initSQL);
     console.log('数据库初始化成功');
   } catch (error) {
     console.error('数据库初始化失败:', error);
@@ -225,6 +128,43 @@ app.post('/api/auth/login', async (req, res) => {
 // 验证认证状态
 app.get('/api/auth/check', authenticateToken, (req, res) => {
   res.json({ authenticated: true, user: req.user });
+});
+
+// 修改密码路由
+app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
+  const { current_password, new_password } = req.body;
+  const userId = req.user.id;
+
+  try {
+    // 验证必填字段
+    if (!current_password || !new_password) {
+      return res.status(400).json({ error: '当前密码和新密码都是必填项' });
+    }
+
+    // 获取用户信息
+    const user = await db.get('SELECT * FROM users WHERE id = ?', [userId]);
+    if (!user) {
+      return res.status(404).json({ error: '用户不存在' });
+    }
+
+    // 验证当前密码
+    const validPassword = await bcrypt.compare(current_password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: '当前密码错误' });
+    }
+
+    // 生成新密码的哈希值
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(new_password, salt);
+
+    // 更新密码
+    await db.run('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, userId]);
+
+    res.json({ message: '密码修改成功' });
+  } catch (error) {
+    console.error('修改密码失败:', error);
+    res.status(500).json({ error: '服务器错误' });
+  }
 });
 
 // 网站相关路由
@@ -346,8 +286,13 @@ app.post('/api/sites', authenticateToken, upload.fields([
   });
 
   try {
-    // 验证必填字段
-    const { name, url, description, categories = '[]', tags = '[]' } = req.body;
+    // 解析表单数据
+    const { name, url, description, categories, tags } = req.body;
+    const is_hot = req.body.is_hot === '1';
+    const is_new = req.body.is_new === '1';
+    const hot_until = req.body.hot_until || null;
+    const new_until = req.body.new_until || null;
+    const tutorial_url = req.body.tutorial_url || null;
     
     console.log('验证字段:', { 
       name: name || '空', 
@@ -369,6 +314,17 @@ app.post('/api/sites', authenticateToken, upload.fields([
     } catch (error) {
       console.log('失败: URL格式无效:', url);
       return res.status(400).json({ error: 'URL格式无效' });
+    }
+    
+    // 验证教程URL格式（如果有）
+    if (tutorial_url) {
+      try {
+        new URL(tutorial_url);
+        console.log('教程URL格式验证通过');
+      } catch (error) {
+        console.log('失败: 教程URL格式无效:', tutorial_url);
+        return res.status(400).json({ error: '教程URL格式无效' });
+      }
     }
     
     // 检查截图是否已上传 - 安全地检查文件是否存在
@@ -492,7 +448,14 @@ app.post('/api/sites', authenticateToken, upload.fields([
         console.log(' - URL:', url);
         console.log(' - 截图路径:', `/public/uploads/screenshots/${screenshotFilename}`);
         
-        const insertQuery = 'INSERT INTO sites (id, name, url, description, icon, screenshot, displayOrder, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, datetime("now"), datetime("now"))';
+        const insertQuery = `INSERT INTO sites (
+            id, name, url, description, icon, screenshot, 
+            displayOrder, is_hot, is_new, hot_until, new_until, 
+            tutorial_url, createdAt, updatedAt
+          ) VALUES (
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+            datetime("now"), datetime("now")
+          )`;
         const insertParams = [
           siteId, 
           name, 
@@ -500,16 +463,18 @@ app.post('/api/sites', authenticateToken, upload.fields([
           description, 
           iconFilename ? `/public/uploads/icons/${iconFilename}` : null, 
           `/public/uploads/screenshots/${screenshotFilename}`, 
-          newOrder
+          newOrder,
+          is_hot ? 1 : 0,
+          is_new ? 1 : 0,
+          hot_until,
+          new_until,
+          tutorial_url
         ];
         
         console.log('SQL:', insertQuery);
         console.log('参数:', insertParams);
         
-        await db.run(
-          insertQuery,
-          insertParams
-        );
+        await db.run(insertQuery, insertParams);
         console.log('网站信息已插入数据库');
         
         // 处理分类关联
@@ -619,7 +584,10 @@ app.put('/api/sites/:id', authenticateToken, upload.fields([
   { name: 'screenshot', maxCount: 1 }
 ]), async (req, res) => {
   const { id } = req.params;
-  const { name, url, description, categories, tags } = req.body;
+  const { 
+    name, url, description, categories, tags, 
+    is_hot, is_new, hot_until, new_until, tutorial_url 
+  } = req.body;
   
   console.log('\n\n--------------------------------');
   console.log('接收到更新网站请求 - 时间:', new Date().toISOString());
@@ -668,6 +636,17 @@ app.put('/api/sites/:id', authenticateToken, upload.fields([
   } catch (error) {
     console.log('失败: URL格式无效:', url);
     return res.status(400).json({ error: 'URL格式无效' });
+  }
+
+  // 验证教程URL格式（如果有）
+  if (tutorial_url) {
+    try {
+      new URL(tutorial_url);
+      console.log('教程URL格式验证通过');
+    } catch (error) {
+      console.log('失败: 教程URL格式无效:', tutorial_url);
+      return res.status(400).json({ error: '教程URL格式无效' });
+    }
   }
 
   try {
@@ -762,8 +741,28 @@ app.put('/api/sites/:id', authenticateToken, upload.fields([
 
     try {
       // 更新网站基本信息
-      let updateQuery = 'UPDATE sites SET name = ?, url = ?, description = ?, updatedAt = datetime("now")';
-      let params = [name, url, description];
+      let updateQuery = `
+        UPDATE sites SET 
+          name = ?, 
+          url = ?, 
+          description = ?, 
+          is_hot = ?, 
+          is_new = ?, 
+          hot_until = ?, 
+          new_until = ?, 
+          tutorial_url = ?, 
+          updatedAt = datetime("now")
+      `;
+      let params = [
+        name, 
+        url, 
+        description, 
+        is_hot === '1' ? 1 : 0, 
+        is_new === '1' ? 1 : 0, 
+        hot_until || null, 
+        new_until || null, 
+        tutorial_url || null
+      ];
 
       if (iconPath !== null) {
         updateQuery += ', icon = ?';
@@ -1413,9 +1412,151 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
   }
 });
 
+// API 路由
+// 获取所有导航菜单项
+app.get('/api/nav-menu', async (req, res) => {
+  try {
+    const items = await db.all(
+      'SELECT * FROM nav_menu_items ORDER BY order_index'
+    );
+    res.json(items);
+  } catch (error) {
+    console.error('获取导航菜单失败:', error);
+    res.status(500).json({ error: '获取导航菜单失败' });
+  }
+});
+
+// 获取单个导航菜单项
+app.get('/api/nav-menu/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const item = await db.get('SELECT * FROM nav_menu_items WHERE id = ?', [id]);
+    if (!item) {
+      return res.status(404).json({ error: '导航菜单项不存在' });
+    }
+    res.json(item);
+  } catch (error) {
+    console.error('获取导航菜单项失败:', error);
+    res.status(500).json({ error: '获取导航菜单项失败' });
+  }
+});
+
+// 创建新的导航菜单项
+app.post('/api/nav-menu', authenticateToken, async (req, res) => {
+  const { title, href, icon, order_index } = req.body;
+  try {
+    if (!title || !href) {
+      return res.status(400).json({ error: '标题和链接是必填项' });
+    }
+
+    const result = await db.run(
+      'INSERT INTO nav_menu_items (title, href, icon, order_index, is_active) VALUES (?, ?, ?, ?, 1)',
+      [title, href, icon || null, order_index || 0]
+    );
+
+    const newItem = await db.get('SELECT * FROM nav_menu_items WHERE id = ?', [result.lastID]);
+    res.status(201).json(newItem);
+  } catch (error) {
+    console.error('创建导航菜单项失败:', error);
+    res.status(500).json({ error: '创建导航菜单项失败' });
+  }
+});
+
+// 更新导航菜单项
+app.put('/api/nav-menu/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { title, href, icon, order_index, is_active, open_in_new } = req.body;
+  try {
+    // 如果是仅更新状态的请求，只更新 is_active 字段
+    if (is_active !== undefined && Object.keys(req.body).length === 1) {
+      await db.run(
+        'UPDATE nav_menu_items SET is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [is_active ? 1 : 0, id]
+      );
+    } else {
+      // 完整更新请求需要验证必填字段
+      if (!title || !href) {
+        return res.status(400).json({ error: '标题和链接是必填项' });
+      }
+
+      await db.run(
+        `UPDATE nav_menu_items 
+         SET title = ?, href = ?, icon = ?, order_index = ?, is_active = ?, open_in_new = ?,
+             updated_at = CURRENT_TIMESTAMP 
+         WHERE id = ?`,
+        [
+          title, 
+          href, 
+          icon || null, 
+          order_index || 0, 
+          is_active !== undefined ? (is_active ? 1 : 0) : 1, 
+          open_in_new ? 1 : 0, 
+          id
+        ]
+      );
+    }
+
+    const updatedItem = await db.get('SELECT * FROM nav_menu_items WHERE id = ?', [id]);
+    if (!updatedItem) {
+      return res.status(404).json({ error: '导航菜单项不存在' });
+    }
+
+    res.json(updatedItem);
+  } catch (error) {
+    console.error('更新导航菜单项失败:', error);
+    res.status(500).json({ error: '更新导航菜单项失败' });
+  }
+});
+
+// 重新排序导航菜单项
+app.post('/api/nav-menu/reorder', authenticateToken, async (req, res) => {
+  const { items } = req.body;
+  try {
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ error: '无效的请求数据' });
+    }
+
+    // 开始事务
+    await db.run('BEGIN TRANSACTION');
+
+    // 更新每个菜单项的排序
+    for (const item of items) {
+      await db.run(
+        'UPDATE nav_menu_items SET order_index = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [item.order_index, item.id]
+      );
+    }
+
+    // 提交事务
+    await db.run('COMMIT');
+
+    res.json({ message: '排序更新成功' });
+  } catch (error) {
+    // 回滚事务
+    await db.run('ROLLBACK');
+    console.error('更新排序失败:', error);
+    res.status(500).json({ error: '更新排序失败' });
+  }
+});
+
+// 删除导航菜单项
+app.delete('/api/nav-menu/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.run('DELETE FROM nav_menu_items WHERE id = ?', [id]);
+    if (result.changes === 0) {
+      return res.status(404).json({ error: '导航菜单项不存在' });
+    }
+    res.json({ message: '删除成功' });
+  } catch (error) {
+    console.error('删除导航菜单项失败:', error);
+    res.status(500).json({ error: '删除导航菜单项失败' });
+  }
+});
+
 // 启动服务器
 async function startServer() {
-  await initializeDatabase();
+  await initializeDB();
   app.listen(port, () => {
     console.log(`服务器运行在 http://localhost:${port}`);
   });

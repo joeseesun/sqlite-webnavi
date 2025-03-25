@@ -8,6 +8,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="stylesheet" href="/custom-styles.css">
     <link rel="manifest" href="/favicon/site.webmanifest">
     <link rel="shortcut icon" href="/favicon/favicon.ico">
     <link rel="stylesheet" href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css">
@@ -15,71 +16,77 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
     <style>
         :root {
-            /* 主色调：黑色系 */
-            --primary: #111111;
-            --primary-light: #333333;
-            --primary-dark: #000000;
-            --primary-gradient: linear-gradient(135deg, #111111 0%, #333333 100%);
+            /* 主色调：优雅的深蓝色系 */
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
             
-            /* 次要色调：金色系 */
-            --secondary: #d4af37;
-            --secondary-light: #e6c155;
-            --secondary-dark: #b0901c;
-            --secondary-gradient: linear-gradient(135deg, #d4af37 0%, #e6c155 100%);
+            /* 次要色调：高级灰蓝色系 */
+            --secondary: #475569;
+            --secondary-light: #64748b;
+            --secondary-dark: #334155;
+            --secondary-gradient: linear-gradient(135deg, #475569 0%, #64748b 100%);
             
-            /* 强调色：灰色系 */
-            --accent: #6b7280;
-            --accent-light: #9ca3af;
-            --accent-dark: #4b5563;
-            --accent-gradient: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+            /* 强调色：精致的珊瑚色 */
+            --accent: #f43f5e;
+            --accent-light: #fb7185;
+            --accent-dark: #e11d48;
+            --accent-gradient: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
             
-            /* 文本颜色：加深主文本颜色 */
-            --text-primary: #111827;
-            --text-secondary: #4b5563;
+            /* 文本颜色：更深邃的层次 */
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
             
-            /* 背景颜色：轻微调整 */
-            --bg-primary: #fafafa;
-            --bg-secondary: #f3f4f6;
+            /* 背景颜色：更柔和的灰度 */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
             
             /* 卡片样式优化 */
             --card-bg: #ffffff;
-            --card-border: #e5e7eb;
-            --card-shadow: rgba(0, 0, 0, 0.08);
-            --card-hover-shadow: rgba(212, 175, 55, 0.15);
+            --card-border: #e2e8f0;
+            --card-shadow: rgba(15, 23, 42, 0.08);
             
             /* 导航栏背景 */
-            --nav-blur: rgba(250, 250, 250, 0.9);
+            --nav-blur: rgba(248, 250, 252, 0.85);
+            
+            /* 添加 RGB 值用于动画 */
+            --primary-rgb: 30, 64, 175;
+            --secondary-rgb: 71, 85, 105;
         }
 
         /* 深色模式配色优化 */
         .dark {
-            --primary: #212121;
-            --primary-light: #424242;
-            --primary-dark: #000000;
-            --primary-gradient: linear-gradient(135deg, #212121 0%, #424242 100%);
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
             
-            --secondary: #ffd700;
-            --secondary-light: #ffeb3b;
-            --secondary-dark: #d4af37;
-            --secondary-gradient: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%);
+            --secondary: #64748b;
+            --secondary-light: #94a3b8;
+            --secondary-dark: #475569;
+            --secondary-gradient: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
             
-            --accent: #9e9e9e;
-            --accent-light: #bdbdbd;
-            --accent-dark: #757575;
-            --accent-gradient: linear-gradient(135deg, #9e9e9e 0%, #bdbdbd 100%);
+            --accent: #fb7185;
+            --accent-light: #fda4af;
+            --accent-dark: #f43f5e;
+            --accent-gradient: linear-gradient(135deg, #fb7185 0%, #fda4af 100%);
             
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
+            --text-primary: #f8fafc;
+            --text-secondary: #e2e8f0;
             
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
             
-            --card-bg: #1f2937;
-            --card-border: #374151;
+            --card-bg: #1e293b;
+            --card-border: #334155;
             --card-shadow: rgba(0, 0, 0, 0.25);
-            --card-hover-shadow: rgba(255, 215, 0, 0.2);
             
-            --nav-blur: rgba(17, 24, 39, 0.9);
+            --nav-blur: rgba(15, 23, 42, 0.85);
+            
+            /* 更新深色模式的 RGB 值 */
+            --primary-rgb: 59, 130, 246;
+            --secondary-rgb: 100, 116, 139;
         }
 
         body {
@@ -110,7 +117,7 @@
             left: 0;
             height: 3px;
             width: 50px;
-            background: var(--secondary);
+            background: var(--primary);
             border-radius: 2px;
         }
 
@@ -131,8 +138,8 @@
 
         .site-card:hover {
             transform: translateY(-6px); /* 减小上移距离 */
-            box-shadow: 0 12px 20px var(--card-hover-shadow); /* 更精致的悬浮阴影 */
-            border-color: var(--secondary);
+            box-shadow: 0 12px 20px var(--card-shadow); /* 更精致的悬浮阴影 */
+            border-color: var(--primary-light);
         }
 
         .card-img-container {
@@ -179,25 +186,25 @@
         }
 
         .tag-ai {
-            background-color: rgba(212, 175, 55, 0.1);
-            color: var(--secondary-dark);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(37, 99, 235, 0.2);
         }
 
         .dark .tag-ai {
-            background-color: rgba(255, 215, 0, 0.15);
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            background-color: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .tag-productivity {
-            background-color: rgba(17, 17, 17, 0.1);
-            color: var(--primary);
-            border: 1px solid rgba(17, 17, 17, 0.2);
+            background-color: rgba(14, 165, 233, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(14, 165, 233, 0.2);
         }
 
         .dark .tag-productivity {
-            background-color: rgba(33, 33, 33, 0.15);
-            border: 1px solid rgba(33, 33, 33, 0.3);
+            background-color: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
         }
 
         .tag-reading {
@@ -456,31 +463,55 @@
         /* 热门标签 */
         .hot-label {
             position: absolute;
-            top: 12px;
-            left: 12px;
-            right: auto;
-            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            top: 10px;
+            right: 10px;
+            background-color: #ef4444;
             color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .new-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #10b981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        /* 教程链接的样式 */
+        .tutorial-link {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 0.5rem;
             padding: 0.25rem 0.7rem;
             border-radius: 6px;
             font-size: 0.75rem;
-            font-weight: bold;
-            z-index: 10;
-            box-shadow: 0 3px 8px rgba(239, 68, 68, 0.25);
-            transform: translateY(0);
-            animation: pulse 2s infinite;
+            font-weight: 500;
+            background-color: #8b5cf6;
+            color: white;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            cursor: pointer;
         }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
+        .tutorial-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+            background-color: #7c3aed;
+        }
+
+        .tutorial-link i {
+            margin-right: 5px;
         }
 
         /* 返回顶部按钮 */
@@ -488,11 +519,11 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            width: 48px;
-            height: 48px;
-            background: var(--secondary);
-            color: var(--primary-dark);
-            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -501,8 +532,7 @@
             visibility: hidden;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 30;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-            border: 1px solid var(--secondary-dark);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
         .back-to-top.visible {
@@ -513,8 +543,7 @@
 
         .back-to-top:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
-            background: var(--secondary-light);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
         }
 
         @media (max-width: 768px) {
@@ -537,7 +566,7 @@
             }
         }
 
-        /* 动态波浪背景替换为几何图形 */
+        /* 动态波浪背景 */
         .wave-bg {
             position: absolute;
             bottom: 0;
@@ -546,57 +575,60 @@
             height: 150px;
             z-index: 1;
             overflow: hidden;
-            opacity: 0.5;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
         }
 
-        /* 替换波浪为几何图形 */
         .wave {
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 100%;
+            width: 200%;
             height: 100%;
-            background-size: 20px 20px;
-            opacity: 0.1;
+            background-repeat: repeat-x;
+            animation: wave-animation 25s linear infinite;
         }
 
         .wave-1 {
-            background-image: 
-                linear-gradient(45deg, var(--secondary) 25%, transparent 25%),
-                linear-gradient(-45deg, var(--secondary) 25%, transparent 25%);
-            background-size: 20px 20px;
-            animation: move-bg 30s linear infinite;
-            opacity: 0.08;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%232563eb' fill-opacity='0.08' d='M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 50% 100%;
+            z-index: 3;
         }
 
         .wave-2 {
-            background-image: 
-                linear-gradient(45deg, var(--primary) 25%, transparent 25%),
-                linear-gradient(-45deg, var(--primary) 25%, transparent 25%);
-            background-size: 15px 15px;
-            animation: move-bg 25s linear infinite;
-            animation-direction: reverse;
-            opacity: 0.06;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%230ea5e9' fill-opacity='0.06' d='M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 50% 100%;
+            animation-duration: 30s;
+            animation-delay: -5s;
+            opacity: 0.7;
+            z-index: 2;
         }
 
         .wave-3 {
-            background-image: 
-                linear-gradient(45deg, var(--accent) 25%, transparent 25%),
-                linear-gradient(-45deg, var(--accent) 25%, transparent 25%);
-            background-size: 12px 12px;
-            animation: move-bg 20s linear infinite;
-            opacity: 0.05;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f97316' fill-opacity='0.03' d='M0,128L48,149.3C96,171,192,213,288,218.7C384,224,480,192,576,181.3C672,171,768,181,864,186.7C960,192,1056,192,1152,170.7C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 50% 100%;
+            animation-duration: 35s;
+            animation-delay: -2s;
+            opacity: 0.5;
+            z-index: 1;
         }
 
-        @keyframes move-bg {
+        .dark .wave-1 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%233b82f6' fill-opacity='0.15' d='M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        .dark .wave-2 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2338bdf8' fill-opacity='0.1' d='M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        .dark .wave-3 {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23fb923c' fill-opacity='0.07' d='M0,128L48,149.3C96,171,192,213,288,218.7C384,224,480,192,576,181.3C672,171,768,181,864,186.7C960,192,1056,192,1152,170.7C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        @keyframes wave-animation {
             0% {
-                background-position: 0 0;
+                transform: translateX(0);
             }
             100% {
-                background-position: 100px 100px;
+                transform: translateX(-50%);
             }
         }
 
@@ -627,10 +659,10 @@
         }
 
         .visit-btn:hover {
-            background-color: var(--secondary);
-            color: var(--primary-dark);
+            background-color: var(--primary);
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 3px 8px rgba(212, 175, 55, 0.3); /* 调整阴影颜色 */
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3); /* 调整阴影颜色 */
         }
 
         .visit-btn i {
@@ -666,8 +698,8 @@
         .loader-circle {
             width: 48px;
             height: 48px;
-            border: 3px solid rgba(212, 175, 55, 0.2);
-            border-top: 3px solid var(--secondary);
+            border: 3px solid rgba(37, 99, 235, 0.2);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
@@ -707,17 +739,381 @@
         .hero-section {
             position: relative;
             overflow: hidden;
-            padding: 4rem 0;
+            padding: 6rem 0 7rem;
             background-color: var(--bg-secondary);
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 20%), 
-                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 20%);
+                radial-gradient(circle at 0% 0%, rgba(30, 64, 175, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 0%, rgba(71, 85, 105, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(244, 63, 94, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(30, 64, 175, 0.08) 0%, transparent 50%);
         }
 
         .dark .hero-section {
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 25%), 
-                radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 25%);
+                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 0%, rgba(100, 116, 139, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(251, 113, 133, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+        }
+
+        /* Hero新增装饰元素 */
+        .hero-decoration {
+            position: absolute;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        .hero-dot-grid {
+            top: 10%;
+            right: 5%;
+            width: 180px;
+            height: 180px;
+            background-image: radial-gradient(var(--primary) 1px, transparent 1px);
+            background-size: 12px 12px;
+            opacity: 0.08;
+            border-radius: 50%;
+        }
+
+        .hero-circle {
+            bottom: 25%;
+            left: 8%;
+            width: 120px;
+            height: 120px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            opacity: 0.08;
+        }
+
+        .hero-line {
+            top: 25%;
+            left: 12%;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            opacity: 0.12;
+            transform: rotate(-45deg);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero 标题增强 */
+        .hero-title {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, 
+                var(--primary) 0%,
+                var(--primary-light) 25%,
+                var(--secondary) 50%,
+                var(--primary) 75%,
+                var(--primary-light) 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            position: relative;
+            animation: 
+                float 4s ease-in-out infinite,
+                gradient 8s linear infinite;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .hero-highlight {
+            color: var(--primary);
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(120deg, 
+                rgba(30, 64, 175, 0.12),
+                rgba(71, 85, 105, 0.12)
+            );
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        .dark .hero-highlight::after {
+            background: linear-gradient(120deg, 
+                rgba(59, 130, 246, 0.15),
+                rgba(100, 116, 139, 0.15)
+            );
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 打字机效果 */
+        .typing-effect::after {
+            content: '|';
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* 搜索框增强 - 确保更大的点击区域和更明显的交互效果 */
+        .search-container {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+            z-index: 10;
+            background: transparent;
+            padding: 10px;
+            border-radius: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .search-container:hover {
+            transform: scale(1.02);
+        }
+
+        .search-box {
+            background-color: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 15px;
+            padding: 1.3rem 1.5rem 1.3rem 4rem;
+            width: 100%;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            font-size: 1.15rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            cursor: text;
+            color: var(--text-primary);
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2), 0 0 0 4px rgba(37, 99, 235, 0.1);
+            outline: none;
+            transform: translateY(-4px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.5rem;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-container:hover .search-icon {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* 鼠标追踪效果 */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            padding: 7rem 0 8rem;
+            background-color: var(--bg-secondary);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 35%), 
+                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 35%);
+            transition: background-position 0.5s ease;
+        }
+
+        /* 粒子效果增强 */
+        .particles-container {
+            position: absolute;
+            width: 100%;
+            height: 300px;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            animation: float-up 5s ease-in-out 1; /* 修改为只执行一次 */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100px) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-150px) scale(1.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 悬停信息卡片 */
+        .info-card {
+            position: absolute;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .info-trigger:hover + .info-card {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 更多炫酷效果 */
+        @keyframes pulse-border {
+            0%, 100% {
+                border-color: rgba(37, 99, 235, 0.3);
+            }
+            50% {
+                border-color: rgba(37, 99, 235, 0.8);
+            }
+        }
+
+        /* 搜索框脉冲动画 */
+        .search-pulse {
+            animation: pulse-border 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            color: var(--text-secondary);
+        }
+
+        .hero-highlight {
+            color: var(--primary);
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background-color: rgba(37, 99, 235, 0.2);
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        .dark .hero-highlight::after {
+            background-color: rgba(59, 130, 246, 0.25);
+        }
+
+        /* 搜索框增强 */
+        .search-container {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+            z-index: 2;
+        }
+
+        .search-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.1rem 1.5rem 1.1rem 3.5rem;
+            width: 100%;
+            transition: all 0.25s ease;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 6px 24px rgba(37, 99, 235, 0.15), 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        /* 波浪动画加强 */
+        .wave-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            z-index: 1;
+            overflow: hidden;
         }
 
         /* 卡片内部信息布局优化 */
@@ -751,115 +1147,39 @@
         }
 
         /* 页脚美化 */
-        .footer-decoration {
+        .footer-wave {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 1px;
-            z-index: 1;
-            background: linear-gradient(90deg, 
-                transparent 5%,
-                var(--secondary-dark) 20%, 
-                var(--secondary) 50%, 
-                var(--secondary-dark) 80%,
-                transparent 95%);
-        }
-
-        .footer-shapes {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
+            height: 100px;
             overflow: hidden;
-            opacity: 0.7;
+            transform: rotate(180deg);
+            z-index: 1;
         }
 
-        .footer-shape {
-            position: absolute;
-            background-color: var(--primary);
-            opacity: 0.05;
-            border-radius: 2px;
-            transform: rotate(45deg);
+        .footer-wave .wave {
+            animation-duration: 30s;
         }
 
-        .shape-1 {
-            width: 60px;
-            height: 60px;
-            top: -30px;
-            left: 10%;
-        }
-
-        .shape-2 {
-            width: 40px;
-            height: 40px;
-            top: -20px;
-            left: 25%;
-            background-color: var(--secondary);
-        }
-
-        .shape-3 {
-            width: 80px;
-            height: 80px;
-            top: -40px;
-            right: 15%;
-        }
-
-        .shape-4 {
-            width: 30px;
-            height: 30px;
-            top: -15px;
-            right: 30%;
-            background-color: var(--secondary);
-        }
-
-        .shape-5 {
-            width: 50px;
-            height: 50px;
-            top: -25px;
-            left: 65%;
-        }
-
-        .shape-6 {
-            width: 20px;
-            height: 20px;
-            top: -10px;
-            left: 45%;
-            background-color: var(--secondary);
-        }
-
-        .shape-7 {
-            width: 40px;
-            height: 40px;
-            top: -20px;
-            left: 80%;
-            background-color: var(--accent);
-        }
-
-        .dark .footer-shape {
-            opacity: 0.08;
-        }
-
-        /* 优化社交图标样式 */
+        /* 社交图标美化 */
         .social-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            color: var(--text-primary);
-            background-color: transparent;
-            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            background-color: var(--bg-secondary);
             transition: all 0.3s ease;
-            border: 1px solid var(--card-border);
         }
 
         .social-icon:hover {
-            color: var(--secondary);
+            color: white;
+            background: var(--primary);
             transform: translateY(-3px);
-            border-color: var(--secondary);
-            box-shadow: 0 5px 10px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 5px 12px rgba(37, 99, 235, 0.25);
         }
 
         /* 赞赏模态框 */
@@ -963,7 +1283,54 @@
             }
         }
 
-        /* 占位图样式 */
+        /* 标签容器样式 */
+        .labels-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+            z-index: 2;
+        }
+
+        /* 热门标签样式 */
+        .hot-label {
+            background-color: #ef4444;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* 新品标签样式 */
+        .new-label {
+            background-color: #10b981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* 标签容器响应式样式 */
+        @media (max-width: 768px) {
+            .labels-container {
+                top: 5px;
+                right: 5px;
+                gap: 3px;
+            }
+            
+            .hot-label,
+            .new-label {
+                padding: 3px 6px;
+                font-size: 10px;
+            }
+        }
+        
         .placeholder-img {
             background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--card-bg) 100%);
             display: flex;
@@ -982,6 +1349,127 @@
             margin-right: 0.5rem;
             opacity: 0.7;
         }
+
+        /* 确保筛选后卡片正确显示 */
+        .site-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-img-container {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tag-container {
+            margin-top: auto;
+        }
+        
+        /* 筛选状态栏样式 */
+        #filter-status {
+            transition: all 0.3s ease;
+        }
+        
+        #clear-filter {
+            transition: all 0.2s ease;
+        }
+        
+        #clear-filter:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* 移除旧的波浪动画相关样式 */
+        .wave-bg, .wave, .wave-1, .wave-2, .wave-3 {
+            display: none;
+        }
+
+        /* 添加新的科技感底部动画样式 */
+        .footer-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            transform: rotate(180deg);
+            z-index: 1;
+            background: linear-gradient(to bottom,
+                rgba(var(--primary-rgb), 0.05),
+                rgba(var(--secondary-rgb), 0.02));
+        }
+
+        .grid-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .math-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(var(--primary-rgb), 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(var(--primary-rgb), 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: rotateX(60deg);
+            animation: gridMove 20s linear infinite;
+        }
+
+        .particle-system {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .math-particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.3);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: rotateX(60deg) translateY(0);
+            }
+            100% {
+                transform: rotateX(60deg) translateY(40px);
+            }
+        }
+
+        @keyframes particleFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translate(20px, -10px) scale(1.2) rotate(90deg);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(40px, 0) scale(1) rotate(180deg);
+                opacity: 0.5;
+            }
+            75% {
+                transform: translate(20px, 10px) scale(1.2) rotate(270deg);
+                opacity: 0.8;
+            }
+        }
     </style>
 </head>
 <body>
@@ -989,7 +1477,7 @@
     <div id="pageLoader">
         <div class="loader-circle"></div>
         <p class="loader-text">加载中...</p>
-    </div>
+                </div>
 
     <!-- Header -->
     <header class="sticky top-0 z-30 navbar">
@@ -1001,13 +1489,11 @@
                         <span></span>
                         <span></span>
                         <span></span>
-                    </div>
+            </div>
                     <a href="#" class="logo">乔木精选推荐</a>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#ai-tools" class="nav-link" style="color: var(--text-primary);">AI工具</a>
-                    <a href="#reading" class="nav-link" style="color: var(--text-primary);">阅读与知识</a>
-                    <a href="#newsletter" class="nav-link" style="color: var(--text-primary);">精选Newsletter</a>
+        </div>
+                <div class="hidden md:flex items-center space-x-8" id="desktopNav">
+                    <!-- 导航菜单将通过JavaScript动态加载 -->
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="theme-toggle" id="themeToggle" title="切换深色/浅色模式"></div>
@@ -1021,16 +1507,8 @@
         <div class="mb-8">
             <a href="#" class="logo">乔木精选推荐</a>
         </div>
-        <nav class="space-y-5">
-            <a href="#ai-tools" class="block py-2 text-lg font-medium hover:text-primary transition-colors mobile-link" style="color: var(--text-primary);">
-                <i class="fas fa-robot mr-3"></i>AI工具
-            </a>
-            <a href="#reading" class="block py-2 text-lg font-medium hover:text-primary transition-colors mobile-link" style="color: var(--text-primary);">
-                <i class="fas fa-book-reader mr-3"></i>阅读与知识
-            </a>
-            <a href="#newsletter" class="block py-2 text-lg font-medium hover:text-primary transition-colors mobile-link" style="color: var(--text-primary);">
-                <i class="fas fa-newspaper mr-3"></i>精选Newsletter
-            </a>
+        <nav class="space-y-5" id="mobileNav">
+            <!-- 导航菜单将通过JavaScript动态加载 -->
         </nav>
         <div class="mt-8 pt-6 border-t" style="border-color: var(--card-border);">
             <div class="flex justify-center mt-4">
@@ -1046,22 +1524,27 @@
                 <div class="social-icon mx-2 cursor-pointer" id="mobileDonateTrigger" title="联系作者">
                     <i class="fas fa-user-plus"></i>
                 </div>
+                </div>
             </div>
         </div>
-    </div>
 
     <!-- Overlay -->
     <div class="overlay" id="overlay"></div>
 
     <!-- Hero Section -->
     <section class="hero-section">
+        <!-- 装饰元素 -->
+        <div class="hero-decoration hero-dot-grid"></div>
+        <div class="hero-decoration hero-circle"></div>
+        <div class="hero-decoration hero-line"></div>
+        
         <div class="container mx-auto px-4">
-            <div class="text-center">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6 relative inline-block">
-                    <span style="color: #000000;">效率工具集锦</span>
+            <div class="text-center hero-content">
+                <h1 class="hero-title">
+                    乔木精选推荐
                 </h1>
-                <p class="text-lg md:text-xl mb-10" style="color: var(--text-secondary);">
-                    发现最佳AI、阅读与知识管理工具，<span class="font-semibold" style="color: var(--primary);">提升工作效率</span>
+                <p class="hero-subtitle">
+                    发现最佳AI、阅读与知识管理工具，<span class="hero-highlight">提升工作效率</span>
                 </p>
                 <div class="search-container">
                     <i class="fas fa-search search-icon"></i>
@@ -1072,14 +1555,15 @@
                         placeholder="搜索工具、平台或技术..."
                         style="color: var(--text-primary);"
                     >
-                </div>
+                    <button type="button" class="search-clear" title="清空搜索">
+                        <i class="fas fa-times"></i>
+                    </button>
             </div>
         </div>
-        <div class="wave-bg">
-            <div class="wave wave-1"></div>
-            <div class="wave wave-2"></div>
-            <div class="wave wave-3"></div>
         </div>
+        </div>
+        <!-- 替换波浪为粒子容器 -->
+        <div class="particles-container" id="hero-particles"></div>
     </section>
 
     <!-- Category Tabs (Mobile Scrollable) -->
@@ -1087,7 +1571,7 @@
         <div class="category-tabs">
             <div class="category-tab active" data-category="all">
                 <i class="fas fa-th-large mr-2"></i>全部
-            </div>
+        </div>
             <div class="category-tab" data-category="ai-tools">
                 <i class="fas fa-robot mr-2"></i>AI工具
             </div>
@@ -1100,26 +1584,30 @@
         </div>
     </div>
 
+    <!-- 筛选状态显示 -->
+    <div id="filter-status" class="hidden fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-200 px-4 py-2 rounded-full shadow-lg z-40 flex items-center">
+        <span id="filter-status-text" class="mr-3">正在筛选: "AI"</span>
+        <button id="clear-filter" class="text-xs bg-blue-100 dark:bg-blue-800 hover:bg-blue-200 dark:hover:bg-blue-700 text-blue-700 dark:text-blue-200 px-2 py-1 rounded-full transition-all">
+            <i class="fas fa-times mr-1"></i>清除
+        </button>
+    </div>
+
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
     </main>
 
     <!-- Footer -->
     <footer style="background-color: var(--bg-secondary); position: relative; padding-top: 100px;">
-        <div class="footer-decoration"></div>
-        <div class="footer-shapes">
-            <div class="footer-shape shape-1"></div>
-            <div class="footer-shape shape-2"></div>
-            <div class="footer-shape shape-3"></div>
-            <div class="footer-shape shape-4"></div>
-            <div class="footer-shape shape-5"></div>
-            <div class="footer-shape shape-6"></div>
-            <div class="footer-shape shape-7"></div>
+        <div class="footer-animation">
+            <div class="grid-container">
+                <div class="math-grid"></div>
+                <div class="particle-system" id="footerParticles"></div>
+            </div>
         </div>
         <div class="container mx-auto px-4 py-12 relative z-10">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-8 md:mb-0 text-center md:text-left">
-                    <a href="#" class="logo text-3xl">乔木精选推荐</a>
+                    <a href="#" class="logo">乔木精选推荐</a>
                     <p class="mt-3 text-lg" style="color: var(--text-secondary);">精选AI与知识工具集</p>
                     <p class="mt-2" style="color: var(--text-secondary);">更快、更智能地找到你需要的工具</p>
                 </div>
@@ -1145,7 +1633,7 @@
                 </div>
             </div>
             <div class="mt-10 pt-6 border-t text-center" style="border-color: var(--card-border);">
-                <p style="color: var(--text-secondary);">© 2025 向阳乔木. 保留所有权利.</p>
+                <p style="color: var(--text-secondary);"> 2025 向阳乔木. 保留所有权利.</p>
             </div>
         </div>
     </footer>
@@ -1168,12 +1656,135 @@
         <i class="fas fa-arrow-up"></i>
     </div>
 
+    <!-- 添加新的粒子容器 -->
+    <div class="particles-container" id="particles-container"></div>
+
     <script>
         // 全局数据存储
         let allSites = [];
         let allCategories = [];
         let allTags = [];
         let siteSettings = null;
+        let navMenuItems = []; // 添加导航菜单项存储
+
+        // 在页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化搜索增强功能
+            enhanceSearchExperience();
+            
+            // 其他页面初始化
+            fetchDataAndRenderPage();
+            initMobileMenu();
+            initThemeToggle();
+            initParticles();
+            initDonationModal();
+            initBackToTop();
+            addTabClickEvents();
+            
+            // 添加点击特效
+            document.addEventListener('click', createClickEffect);
+            
+            // 初始化清除筛选按钮
+            document.getElementById('clear-filter').addEventListener('click', () => {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('filter-status').classList.add('hidden');
+                resetCardDisplay();
+            });
+        });
+        
+        // 搜索框增强功能
+        function enhanceSearchExperience() {
+            const searchInput = document.getElementById('searchInput');
+            const searchClear = document.querySelector('.search-clear');
+            
+            // 清空按钮功能
+            if (searchClear) {
+                searchClear.addEventListener('click', () => {
+                    searchInput.value = '';
+                    searchInput.focus();
+                    
+                    // 更新筛选状态
+                    const filterStatus = document.getElementById('filter-status');
+                    filterStatus.classList.add('hidden');
+                    
+                    // 重置卡片显示
+                    resetCardDisplay();
+                });
+            }
+            
+            // 添加快捷键支持
+            document.addEventListener('keydown', (e) => {
+                // '/' 键聚焦搜索框
+                if (e.key === '/' && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+                
+                // ESC 键清空搜索
+                if (e.key === 'Escape' && document.activeElement === searchInput) {
+                    if (searchInput.value) {
+                        searchInput.value = '';
+                        
+                        // 更新筛选状态
+                        const filterStatus = document.getElementById('filter-status');
+                        filterStatus.classList.add('hidden');
+                        
+                        // 重置卡片显示
+                        resetCardDisplay();
+                    } else {
+                        searchInput.blur(); // 如果已经是空的，则取消焦点
+                    }
+                }
+            });
+        }
+        
+        // 重置卡片显示
+        function resetCardDisplay() {
+            // 重置所有卡片显示
+            document.querySelectorAll('.site-card').forEach(card => {
+                card.style.display = 'flex';
+                
+                // 移除高亮
+                removeHighlight(card.querySelector('.card-title'));
+                removeHighlight(card.querySelector('.card-description'));
+            });
+            
+            // 显示所有分类
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = 'block';
+            });
+        }
+        
+        // 高亮文本内容
+        function highlightText(element, searchTerm) {
+            if (!element || !searchTerm) return;
+            
+            const originalText = element.textContent;
+            const lowerText = originalText.toLowerCase();
+            
+            if (lowerText.includes(searchTerm)) {
+                // 移除现有高亮
+                removeHighlight(element);
+                
+                // 添加新高亮
+                const startIndex = lowerText.indexOf(searchTerm);
+                const endIndex = startIndex + searchTerm.length;
+                
+                const beforeMatch = originalText.substring(0, startIndex);
+                const match = originalText.substring(startIndex, endIndex);
+                const afterMatch = originalText.substring(endIndex);
+                
+                element.innerHTML = `${beforeMatch}<span class="highlight-match">${match}</span>${afterMatch}`;
+            }
+        }
+        
+        // 移除文本高亮
+        function removeHighlight(element) {
+            if (!element) return;
+            if (element.querySelector('.highlight-match')) {
+                element.textContent = element.textContent;
+            }
+        }
 
         // 从后端API获取数据并初始化页面
         async function fetchDataAndRenderPage() {
@@ -1182,11 +1793,12 @@
                 document.getElementById('pageLoader').classList.remove('hidden');
 
                 // 并行获取所有数据
-                const [sitesResponse, categoriesResponse, tagsResponse, settingsResponse] = await Promise.all([
+                const [sitesResponse, categoriesResponse, tagsResponse, settingsResponse, menuItems] = await Promise.all([
                     fetch('/api/sites'),
                     fetch('/api/categories'),
                     fetch('/api/tags'),
-                    fetch('/api/settings')
+                    fetch('/api/settings'),
+                    fetchNavMenuItems() // 添加导航菜单数据获取
                 ]);
 
                 // 检查响应状态
@@ -1199,11 +1811,15 @@
                 allCategories = await categoriesResponse.json();
                 allTags = await tagsResponse.json();
                 siteSettings = await settingsResponse.json();
+                navMenuItems = menuItems;
 
-                console.log('加载的网站数:', allSites.length);
-                console.log('加载的分类数:', allCategories.length);
-                console.log('加载的标签数:', allTags.length);
-                console.log('网站设置:', siteSettings);
+                // 渲染导航菜单
+                if (Array.isArray(navMenuItems) && navMenuItems.length > 0) {
+                    renderDesktopNav(navMenuItems);
+                    renderMobileNav(navMenuItems);
+                } else {
+                    console.warn('导航菜单为空或加载失败');
+                }
 
                 // 应用网站设置
                 applySettings();
@@ -1222,22 +1838,7 @@
                 }, 800);
             } catch (error) {
                 console.error('加载数据失败:', error);
-                // 显示错误信息
-                document.getElementById('pageLoader').classList.add('hidden');
-                
-                // 显示友好的错误提示
-                const mainContent = document.querySelector('main');
-                mainContent.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-64 text-center p-8">
-                        <i class="fas fa-exclamation-triangle text-4xl mb-4" style="color: var(--accent);"></i>
-                        <h2 class="text-2xl font-bold mb-2">数据加载失败</h2>
-                        <p class="mb-4">很抱歉，加载数据时出现了问题: ${error.message}</p>
-                        <button onclick="location.reload()" class="px-6 py-2 rounded-full transition-all" 
-                                style="background: var(--primary); color: white;">
-                            <i class="fas fa-redo mr-2"></i>重新加载
-                        </button>
-                    </div>
-                `;
+                handleLoadError(error);
             }
         }
 
@@ -1259,9 +1860,27 @@
             });
             
             // 更新Hero区域的标题和描述
-            const heroTitle = document.querySelector('.hero-section h1 span');
+            const heroTitle = document.querySelector('.hero-section h1');
             if (heroTitle) {
-                heroTitle.textContent = siteSettings.site_name || "效率工具集锦";
+                heroTitle.textContent = siteSettings.hero_title || "乔木精选推荐";
+            }
+            
+            const heroSubtitle = document.querySelector('.hero-section .hero-subtitle');
+            if (heroSubtitle) {
+                // 检查是否有高亮部分需要保留
+                const highlightSpan = heroSubtitle.querySelector('.hero-highlight');
+                if (highlightSpan && siteSettings.hero_subtitle) {
+                    // 尝试保留高亮部分，将副标题的最后一部分设为高亮
+                    const subtitleParts = siteSettings.hero_subtitle.split('，');
+                    if (subtitleParts.length > 1) {
+                        const lastPart = subtitleParts.pop();
+                        heroSubtitle.innerHTML = `${subtitleParts.join('，')}，<span class="hero-highlight">${lastPart}</span>`;
+                    } else {
+                        heroSubtitle.textContent = siteSettings.hero_subtitle;
+                    }
+                } else {
+                    heroSubtitle.textContent = siteSettings.hero_subtitle || "发现最佳AI、阅读与知识管理工具，提升工作效率";
+                }
             }
             
             // 更新页脚内容
@@ -1270,7 +1889,7 @@
                 footerContent.innerHTML = `
                     <a href="#" class="logo text-3xl">${siteSettings.site_name || "乔木精选推荐"}</a>
                     <p class="mt-3 text-lg" style="color: var(--text-secondary);">${siteSettings.site_description || "精选AI与知识工具集"}</p>
-                    <p class="mt-2" style="color: var(--text-secondary);">${siteSettings.footer_text || "更快、更智能地找到你需要的工具"}</p>
+                    
                 `;
             }
             
@@ -1327,7 +1946,7 @@
             tabsContainer.innerHTML = `
                 <div class="category-tab active" data-category="all">
                     <i class="fas fa-th-large mr-2"></i>全部
-                </div>
+                            </div>
             `;
             
             // 将分类按网站数量排序
@@ -1353,7 +1972,7 @@
                 const tabHtml = `
                     <div class="category-tab" data-category="${category.id}">
                         <i class="${icon} mr-2"></i>${category.name}
-                    </div>
+                            </div>
                 `;
                 tabsContainer.innerHTML += tabHtml;
             });
@@ -1367,6 +1986,22 @@
             // 清空主内容区域
             const mainContent = document.querySelector('main');
             mainContent.innerHTML = '';
+            
+            // 先添加筛选状态条
+            const filterStatusHtml = `
+                <div id="filter-status" class="mb-6 py-3 px-4 rounded-lg hidden" style="background-color: var(--bg-secondary); border: 1px solid var(--card-border);">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <i class="fas fa-filter mr-2"></i>
+                            <span id="filter-status-text">正在筛选:</span>
+                        </div>
+                        <button id="clear-filter" class="px-3 py-1 rounded text-sm" style="background-color: var(--primary); color: white;">
+                            <i class="fas fa-times mr-1"></i>清除筛选
+                        </button>
+                    </div>
+                </div>
+            `;
+            mainContent.innerHTML = filterStatusHtml;
             
             // 将分类按网站数量排序
             const sortedCategories = [...allCategories].sort((a, b) => b.siteCount - a.siteCount);
@@ -1400,6 +2035,9 @@
                 const sitesContainer = document.querySelector(`#category-${category.id} .sites-container`);
                 renderSiteCards(sitesInCategory, sitesContainer);
             });
+            
+            // 设置清除筛选按钮事件
+            document.getElementById('clear-filter').addEventListener('click', clearFilter);
         }
 
         // 添加占位图片生成函数
@@ -1430,57 +2068,178 @@
 
         // 渲染网站卡片（修改）
         function renderSiteCards(sites, container) {
+            // 定义标签样式类数组
+            const tagClasses = [
+                'tag-ai',         // 蓝色系 - 第一个标签
+                'tag-productivity', // 青色系 - 第二个标签
+                'tag-reading',     // 橙色系 - 第三个标签
+                'tag-tool',        // 紫色系 - 第四个标签
+                'tag-design',      // 粉色系 - 第五个标签
+                'tag-writing',     // 绿色系 - 第六个标签
+                'tag-social',      // 红色系 - 第七个标签
+                'tag-learning',    // 黄色系 - 第八个标签
+                'tag-development', // 深蓝色系 - 第九个标签
+                'tag-creative'     // 青绿色系 - 第十个标签
+            ];
+
             // 按显示顺序排序网站
             const sortedSites = [...sites].sort((a, b) => a.displayOrder - b.displayOrder);
             
             sortedSites.forEach(site => {
-                // 将标签数组转换为标签类
-                const tagClasses = {
-                    'AI': 'tag-ai',
-                    '知识管理': 'tag-productivity',
-                    '阅读': 'tag-reading',
-                };
+                // 检查热门和最新标记
+                const isHot = site.is_hot === 1;
+                const isNew = site.is_new === 1;
                 
-                // 生成标签HTML
-                const tagsHtml = site.tags.map(tag => {
-                    const tagClass = tagClasses[tag.name] || 'tag-productivity';
-                    return `<span class="tag ${tagClass}">${tag.name}</span>`;
-                }).join('');
+                // 检查热门和最新标记的有效期
+                const now = new Date();
+                let isHotValid = isHot;
+                let isNewValid = isNew;
                 
-                // 检查是否为热门或新品
-                const isHot = site.displayOrder < 3; // 假设前3个是热门
-                const isNew = new Date(site.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 一周内的新品
+                if (isHot && site.hot_until) {
+                    const hotUntil = new Date(site.hot_until);
+                    isHotValid = now <= hotUntil;
+                }
                 
-                // 热门标签
-                const hotLabelHtml = isHot ? 
-                    `<div class="hot-label" style="left: 12px; right: auto;">热门</div>` : 
-                    (isNew ? `<div class="hot-label" style="left: 12px; right: auto;">新品</div>` : '');
+                if (isNew && site.new_until) {
+                    const newUntil = new Date(site.new_until);
+                    isNewValid = now <= newUntil;
+                }
+                
+                // 热门和新品标签HTML - 修改这部分代码
+                let statusLabelHtml = '';
+                if (isHotValid || isNewValid) {
+                    statusLabelHtml = '<div class="labels-container">';
+                    if (isHotValid) {
+                        statusLabelHtml += '<span class="hot-label">热门</span>';
+                    }
+                    if (isNewValid) {
+                        statusLabelHtml += '<span class="new-label">新品</span>';
+                    }
+                    statusLabelHtml += '</div>';
+                }
                 
                 // 生成占位图片URL
                 const placeholderUrl = generatePlaceholder(site.name);
                 
+                // 教程链接HTML
+                let tutorialLinkHtml = '';
+                if (site.tutorial_url) {
+                    tutorialLinkHtml = `
+                        <a href="${site.tutorial_url}" class="tutorial-link" target="_blank" title="查看使用教程" 
+                           onclick="event.stopPropagation();">
+                            <i class="fas fa-book"></i>教程
+                        </a>
+                    `;
+                }
+                
                 // 生成卡片HTML
                 const cardHtml = `
-                    <a href="${site.url}" target="_blank" class="site-card" data-site-id="${site.id}" data-tags="${site.tags.map(t => t.name).join(' ')}">
-                        <div class="card-img-container">
+                    <div class="site-card" data-site-id="${site.id}" data-tags="${site.tags.map(t => t.name).join(' ')}">
+                        <div class="card-img-container site-link" data-url="${site.url}">
                             <img src="${site.screenshot || placeholderUrl}" alt="${site.name}" class="card-img" 
                                  onerror="this.onerror=null; this.src='${placeholderUrl}';">
-                            ${hotLabelHtml}
+                            ${statusLabelHtml}
+                            ${tutorialLinkHtml}
                         </div>
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title">${site.name}</h3>
+                                <h3 class="card-title site-link" data-url="${site.url}">${site.name}</h3>
                             </div>
-                            <p class="card-description">${site.description || '暂无描述'}</p>
-                            <div>
-                                ${tagsHtml}
+                            <p class="card-description site-link" data-url="${site.url}">${site.description || '暂无描述'}</p>
+                            <div class="tag-container">
+                                ${site.tags.map((tag, index) => {
+                                    const tagClass = tagClasses[index % tagClasses.length];
+                                    return `<span class="tag ${tagClass}" data-tag="${tag.name}">${tag.name}</span>`;
+                                }).join('')}
                             </div>
                         </div>
-                    </a>
+                    </div>
                 `;
                 
                 container.innerHTML += cardHtml;
             });
+            
+            // 在添加所有网站卡片后为元素添加事件处理
+            addCardEventListeners();
+        }
+
+        // 为卡片元素添加事件监听器
+        function addCardEventListeners() {
+            // 为所有网站链接元素添加点击事件
+            document.querySelectorAll('.site-link').forEach(element => {
+                element.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                });
+                // 添加指针样式，提示可点击
+                element.style.cursor = 'pointer';
+            });
+            
+            // 为所有标签添加点击事件
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡，避免触发卡片的点击事件
+                    const tagName = this.getAttribute('data-tag');
+                    if (tagName) {
+                        filterSitesByTag(tagName);
+                    }
+                });
+                // 添加指针样式，提示可点击
+                tag.style.cursor = 'pointer';
+            });
+        }
+
+        // 根据标签筛选网站 - 更新显示filter状态和修复卡片显示问题
+        function filterSitesByTag(tagName) {
+            // 显示筛选状态
+            const filterStatus = document.getElementById('filter-status');
+            const filterStatusText = document.getElementById('filter-status-text');
+            filterStatus.classList.remove('hidden');
+            filterStatusText.textContent = `正在筛选: "${tagName}"`;
+            
+            // 重置分类选项卡
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('.category-tab[data-category="all"]').classList.add('active');
+            
+            // 显示所有分类区域
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // 筛选卡片
+            const searchTerm = tagName.toLowerCase();
+            document.getElementById('searchInput').value = searchTerm; // 更新搜索框
+            
+            // 获取所有网站卡片
+            const cards = document.querySelectorAll('.site-card');
+            
+            cards.forEach(card => {
+                const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
+                
+                if (tags.includes(searchTerm)) {
+                    card.style.display = 'flex'; // 确保正确的显示模式
+                    const section = card.closest('.category-section');
+                    if (section) {
+                        section.style.display = 'block';
+                    }
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 检查每个分类是否有可见的卡片
+            const categorySections = document.querySelectorAll('.category-section');
+            categorySections.forEach(section => {
+                const visibleCards = Array.from(section.querySelectorAll('.site-card')).some(card => card.style.display !== 'none');
+                section.style.display = visibleCards ? 'block' : 'none';
+            });
+            
+            // 滚动到筛选状态条位置
+            filterStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         // 为分类选项卡添加点击事件
@@ -1519,6 +2278,17 @@
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase().trim();
                 
+                // 更新筛选状态显示
+                const filterStatus = document.getElementById('filter-status');
+                const filterStatusText = document.getElementById('filter-status-text');
+                
+                if (searchTerm) {
+                    filterStatus.classList.remove('hidden');
+                    filterStatusText.textContent = `正在搜索: "${searchTerm}"`;
+                } else {
+                    filterStatus.classList.add('hidden');
+                }
+                
                 // 获取所有网站卡片
                 const cards = document.querySelectorAll('.site-card');
                 
@@ -1528,10 +2298,20 @@
                     const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
                     
                     if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
-                        card.style.display = 'flex';
+                        card.style.display = 'flex'; // 使用flex确保卡片内容正确显示
                         const section = card.closest('.category-section');
                         if (section) {
                             section.style.display = 'block';
+                        }
+                        
+                        // 高亮匹配文本
+                        if (searchTerm) {
+                            highlightText(card.querySelector('.card-title'), searchTerm);
+                            highlightText(card.querySelector('.card-description'), searchTerm);
+                        } else {
+                            // 移除高亮
+                            removeHighlight(card.querySelector('.card-title'));
+                            removeHighlight(card.querySelector('.card-description'));
                         }
                     } else {
                         card.style.display = 'none';
@@ -1557,10 +2337,148 @@
             });
         }
 
+        // 添加粒子效果创建函数
+        function createParticles() {
+            // 首先处理Hero部分的粒子
+            const heroContainer = document.getElementById('hero-particles');
+            if (heroContainer) {
+                createParticlesInContainer(heroContainer, {
+                    count: 60, 
+                    colors: ['#2563eb', '#3b82f6', '#0ea5e9', '#38bdf8', '#f97316'],
+                    sizeRange: [10, 30],
+                    speedRange: [4, 8]
+                });
+            }
+            
+            // 处理底部的粒子容器
+            const footerContainer = document.getElementById('particles-container');
+            if (footerContainer) {
+                createParticlesInContainer(footerContainer, {
+                    count: 40,
+                    colors: ['#2563eb', '#0ea5e9', '#f97316', '#3b82f6', '#38bdf8'],
+                    sizeRange: [8, 25],
+                    speedRange: [5, 9]
+                });
+            }
+            
+            // 设置清理
+            cleanupParticles();
+        }
+
+        // 在指定容器中创建粒子
+        function createParticlesInContainer(container, options) {
+            // 设置默认值
+            const config = {
+                count: options.count || 40,
+                colors: options.colors || ['#2563eb', '#3b82f6', '#0ea5e9'],
+                sizeRange: options.sizeRange || [10, 30],
+                speedRange: options.speedRange || [4, 8]
+            };
+            
+            // 清除现有粒子
+            container.innerHTML = '';
+            
+            // 创建新粒子
+            for (let i = 0; i < config.count; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // 随机大小
+                const minSize = config.sizeRange[0];
+                const maxSize = config.sizeRange[1];
+                const size = Math.random() * (maxSize - minSize) + minSize;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 随机位置
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                particle.style.left = `${posX}%`;
+                particle.style.bottom = `${posY}%`;
+                
+                // 随机颜色
+                const color = config.colors[Math.floor(Math.random() * config.colors.length)];
+                particle.style.backgroundColor = color;
+                
+                // 随机动画延迟和持续时间
+                const delay = Math.random() * 5;
+                const minDuration = config.speedRange[0];
+                const maxDuration = config.speedRange[1];
+                const duration = Math.random() * (maxDuration - minDuration) + minDuration;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                // 添加粒子到容器
+                container.appendChild(particle);
+                
+                // 动画结束后自动移除粒子
+                setTimeout(() => {
+                    if (particle && particle.parentNode) {
+                        particle.style.animation = 'none';
+                        particle.style.opacity = '0';
+                        setTimeout(() => particle.parentNode.removeChild(particle), 300);
+                    }
+                }, (delay + duration + 1) * 1000); // 确保动画完全结束后再移除
+            }
+            
+            // 不再需要定期刷新粒子，而是在适当的时间后自然消失
+        }
+
+        // 粒子动画完全结束后清空容器
+        function cleanupParticles() {
+            // 给足够时间让所有粒子完成动画，比如20秒后
+            setTimeout(() => {
+                const containers = document.querySelectorAll('.particles-container');
+                containers.forEach(container => {
+                    // 平滑淡出所有剩余粒子
+                    const particles = container.querySelectorAll('.particle');
+                    particles.forEach(particle => {
+                        particle.style.transition = 'opacity 1s ease';
+                        particle.style.opacity = '0';
+                    });
+                    
+                    // 完全清空容器
+                    setTimeout(() => {
+                        container.innerHTML = '';
+                    }, 1000);
+                });
+            }, 20000);
+        }
+
+        // 点击效果
+        function createClickEffect(e) {
+            const effect = document.createElement('div');
+            effect.classList.add('click-effect');
+            
+            // 设置效果的位置
+            effect.style.left = `${e.clientX}px`;
+            effect.style.top = `${e.clientY}px`;
+            
+            // 添加到页面
+            document.body.appendChild(effect);
+            
+            // 动画结束后移除
+            setTimeout(() => {
+                effect.remove();
+            }, 600);
+        }
+
         // 页面加载时初始化
         window.addEventListener('load', () => {
             // 获取数据并渲染页面
             fetchDataAndRenderPage();
+            
+            // 创建粒子效果 - 只在首次加载时创建一次
+            createParticles();
+            
+            // 移除定期刷新粒子的代码
+            // setInterval(createParticles, 10000);
+            
+            // 添加点击效果
+            document.addEventListener('click', createClickEffect);
+            
+            // 初始化增强交互效果 - 只在首次加载时执行一次
+            initEnhancedEffects();
             
             // 添加返回顶部按钮的显示/隐藏逻辑
             const backToTopButton = document.getElementById('backToTop');
@@ -1669,6 +2587,275 @@
             if (e.target === donationModal) {
                 closeDonationModal();
             }
+        });
+
+        // 添加增强搜索框脉冲和打字机效果功能
+        function initEnhancedEffects() {
+            const searchContainer = document.querySelector('.search-container');
+            const searchInput = document.getElementById('searchInput');
+            const heroTitle = document.querySelector('.hero-title');
+
+            // 添加搜索框动画提示 - 只执行一次
+            function addSearchPulse() {
+                if (searchContainer) {
+                    searchContainer.classList.add('search-pulse');
+                    setTimeout(() => {
+                        searchContainer.classList.remove('search-pulse');
+                    }, 2000);
+                }
+            }
+
+            // 首次加载后添加脉冲提示 - 只执行一次
+            setTimeout(addSearchPulse, 2000);
+            
+            // 移除定期脉冲提示
+            // setInterval(addSearchPulse, 15000);
+
+            // 添加搜索框点击交互
+            if (searchContainer && searchInput) {
+                searchContainer.addEventListener('click', (event) => {
+                    searchInput.focus();
+                    
+                    // 创建点击波纹效果
+                    const ripple = document.createElement('div');
+                    ripple.classList.add('click-effect');
+                    ripple.style.left = event.clientX + 'px';
+                    ripple.style.top = event.clientY + 'px';
+                    document.body.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            }
+
+            // 添加打字机效果 - 只执行一次
+            function addTypingEffect(element, text, speed) {
+                if (!element) return;
+                
+                element.classList.add('typing-effect');
+                element.textContent = '';
+                let i = 0;
+                
+                function type() {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    } else {
+                        // 打字完成后删除打字机效果类
+                        setTimeout(() => {
+                            element.classList.remove('typing-effect');
+                        }, 1000);
+                    }
+                }
+                
+                type();
+            }
+
+            // 应用打字机效果 - 只执行一次
+            if (heroTitle) {
+                // 延迟1秒后开始打字效果
+                setTimeout(() => {
+                    const titleText = heroTitle.textContent.trim();
+                    addTypingEffect(heroTitle, titleText, 150);
+                }, 1000);
+            }
+        }
+
+        // 添加清除筛选功能
+        function clearFilter() {
+            // 隐藏筛选状态条
+            document.getElementById('filter-status').classList.add('hidden');
+            
+            // 清空搜索框
+            document.getElementById('searchInput').value = '';
+            
+            // 显示所有卡片和分类
+            document.querySelectorAll('.site-card').forEach(card => {
+                card.style.display = 'flex';
+            });
+            
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // 重置分类选项卡，保持"全部"选中
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('.category-tab[data-category="all"]').classList.add('active');
+        }
+
+        // 添加导航菜单相关函数
+        async function fetchNavMenuItems() {
+            try {
+                const response = await fetch('/api/nav-menu');
+                if (!response.ok) {
+                    throw new Error('获取导航菜单失败');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('获取导航菜单失败:', error);
+                showErrorToast('导航菜单加载失败，请刷新页面重试');
+                return [];
+            }
+        }
+
+        function renderDesktopNav(menuItems) {
+            const desktopNav = document.getElementById('desktopNav');
+            if (!desktopNav) return;
+
+            desktopNav.innerHTML = menuItems
+                .filter(item => item.is_active)
+                .map(item => `
+                    <a href="${item.href}" 
+                       class="nav-link flex items-center" 
+                       style="color: var(--text-primary);"
+                       ${item.open_in_new ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+                        ${item.icon ? `<i class="${item.icon} mr-2"></i>` : ''}
+                        ${item.title}
+                    </a>
+                `).join('');
+        }
+
+        function renderMobileNav(menuItems) {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (!mobileMenu) return;
+
+            mobileMenu.innerHTML = menuItems
+                .filter(item => item.is_active)
+                .map(item => `
+                    <a href="${item.href}" 
+                       class="mobile-link block px-4 py-2 text-lg" 
+                       style="color: var(--text-primary);"
+                       ${item.open_in_new ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+                        ${item.icon ? `<i class="${item.icon} mr-2"></i>` : ''}
+                        ${item.title}
+                    </a>
+                `).join('');
+
+            // 添加点击事件，点击链接后关闭菜单
+            const mobileLinks = mobileMenu.querySelectorAll('.mobile-link');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const menuToggle = document.getElementById('menuToggle');
+                    const overlay = document.getElementById('overlay');
+                    
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            });
+        }
+
+        function showErrorToast(message, duration = 3000) {
+            const errorToast = document.createElement('div');
+            errorToast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
+            errorToast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(errorToast);
+            
+            // 添加淡入动画样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in {
+                    animation: fadeIn 0.3s ease-out forwards;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // duration后自动移除提示
+            setTimeout(() => {
+                errorToast.style.opacity = '0';
+                errorToast.style.transform = 'translateY(-10px)';
+                errorToast.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => {
+                    errorToast.remove();
+                    style.remove();
+                }, 300);
+            }, duration);
+        }
+
+        function handleLoadError(error) {
+            console.error('加载失败:', error);
+            showErrorToast(error.message || '加载失败，请刷新页面重试');
+            
+            // 隐藏加载动画
+            document.getElementById('pageLoader').classList.add('hidden');
+        }
+
+        // 在 script 部分添加粒子系统初始化代码
+        function initFooterParticles() {
+            const particleContainer = document.getElementById('footerParticles');
+            if (!particleContainer) return;
+            
+            // 清除现有粒子
+            particleContainer.innerHTML = '';
+            
+            // 定义粒子颜色数组
+            const colors = [
+                ['30, 64, 175', '59, 130, 246'],  // 蓝色系
+                ['71, 85, 105', '100, 116, 139'], // 灰色系
+                ['244, 63, 94', '251, 113, 133'], // 红色系
+                ['16, 185, 129', '52, 211, 153'], // 绿色系
+                ['245, 158, 11', '251, 191, 36'], // 橙色系
+                ['139, 92, 246', '167, 139, 250'] // 紫色系
+            ];
+            
+            // 创建新粒子
+            const particleCount = 30; // 增加粒子数量
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'math-particle';
+                
+                // 随机大小 (2-8px)
+                const size = Math.random() * 6 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // 随机位置
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画延迟
+                particle.style.animationDelay = `${Math.random() * 8}s`;
+                
+                // 随机动画持续时间
+                const duration = Math.random() * 4 + 6; // 6-10秒
+                particle.style.animationDuration = `${duration}s`;
+                
+                // 随机颜色
+                const colorPair = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = `linear-gradient(${Math.random() * 360}deg, 
+                    rgba(${colorPair[0]}, ${Math.random() * 0.4 + 0.4}) 0%,
+                    rgba(${colorPair[1]}, ${Math.random() * 0.4 + 0.4}) 100%)`;
+                
+                // 随机阴影
+                const shadowColor = colorPair[0];
+                particle.style.boxShadow = `0 0 ${Math.random() * 8 + 4}px rgba(${shadowColor}, 0.3)`;
+                
+                // 随机旋转
+                const rotation = Math.random() * 360;
+                particle.style.transform = `rotate(${rotation}deg)`;
+                
+                particleContainer.appendChild(particle);
+            }
+        }
+
+        // 在页面加载时初始化粒子系统
+        window.addEventListener('load', () => {
+            // ... existing code ...
+            initFooterParticles();
         });
     </script>
 </body>

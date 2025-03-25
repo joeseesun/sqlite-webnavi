@@ -1,0 +1,321 @@
+/* 卡片整体容器 */
+.card {
+    position: relative;
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 图片容器 */
+.card-img-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background-color: var(--bg-secondary);
+    overflow: hidden;
+    min-width: 200px; /* 防止过窄 */
+}
+
+/* 图片样式 */
+.card-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 标签容器 */
+.labels-container {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    z-index: 10 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+}
+
+/* 热门标签 */
+.hot-label, .new-label {
+    display: inline-flex !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: white !important;
+    z-index: 11 !important;
+    visibility: visible !important;
+    opacity: 0.9 !important;
+    min-width: fit-content !important;
+    position: static !important; /* 确保不会被定位属性影响 */
+    backdrop-filter: blur(2px) !important;
+}
+
+.hot-label {
+    background-color: rgba(239, 68, 68, 0.75) !important; /* 更柔和的红色 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.new-label {
+    background-color: rgba(16, 185, 129, 0.75) !important; /* 更柔和的绿色 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 教程链接 */
+.tutorial-link {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background-color: rgba(139, 92, 246, 0.9);
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+/* 卡片内容区域 */
+.card-content {
+    padding: 16px;
+}
+
+/* 卡片标题 */
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+/* 卡片描述 */
+.card-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* 多彩标签样式 - 增加更多颜色 */
+/* AI相关 - 蓝色系 */
+.tag-ai {
+    background-color: rgba(37, 99, 235, 0.1) !important;
+    color: #2563eb !important;
+    border: 1px solid rgba(37, 99, 235, 0.2) !important;
+}
+
+/* 知识管理 - 青色系 */
+.tag-productivity {
+    background-color: rgba(14, 165, 233, 0.1) !important;
+    color: #0ea5e9 !important;
+    border: 1px solid rgba(14, 165, 233, 0.2) !important;
+}
+
+/* 阅读 - 橙色系 */
+.tag-reading {
+    background-color: rgba(249, 115, 22, 0.1) !important;
+    color: #f97316 !important;
+    border: 1px solid rgba(249, 115, 22, 0.2) !important;
+}
+
+/* 工具 - 紫色系 */
+.tag-tool {
+    background-color: rgba(139, 92, 246, 0.1) !important;
+    color: #8b5cf6 !important;
+    border: 1px solid rgba(139, 92, 246, 0.2) !important;
+}
+
+/* 设计 - 粉色系 */
+.tag-design {
+    background-color: rgba(236, 72, 153, 0.1) !important;
+    color: #ec4899 !important;
+    border: 1px solid rgba(236, 72, 153, 0.2) !important;
+}
+
+/* 写作 - 绿色系 */
+.tag-writing {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+
+/* 社交 - 红色系 */
+.tag-social {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+/* 学习 - 黄色系 */
+.tag-learning {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+    color: #f59e0b !important;
+    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+/* 开发 - 深蓝色系 */
+.tag-development {
+    background-color: rgba(30, 64, 175, 0.1) !important;
+    color: #1e40af !important;
+    border: 1px solid rgba(30, 64, 175, 0.2) !important;
+}
+
+/* 创意 - 青绿色系 */
+.tag-creative {
+    background-color: rgba(20, 184, 166, 0.1) !important;
+    color: #14b8a6 !important;
+    border: 1px solid rgba(20, 184, 166, 0.2) !important;
+}
+
+/* 深色模式下的标签样式 */
+.dark .tag-ai {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    color: #93c5fd !important;
+}
+
+.dark .tag-productivity {
+    background-color: rgba(56, 189, 248, 0.15) !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    color: #7dd3fc !important;
+}
+
+.dark .tag-reading {
+    background-color: rgba(251, 146, 60, 0.15) !important;
+    border: 1px solid rgba(251, 146, 60, 0.3) !important;
+    color: #fdba74 !important;
+}
+
+.dark .tag-tool {
+    background-color: rgba(167, 139, 250, 0.15) !important;
+    border: 1px solid rgba(167, 139, 250, 0.3) !important;
+    color: #c4b5fd !important;
+}
+
+.dark .tag-design {
+    background-color: rgba(244, 114, 182, 0.15) !important;
+    border: 1px solid rgba(244, 114, 182, 0.3) !important;
+    color: #f9a8d4 !important;
+}
+
+.dark .tag-writing {
+    background-color: rgba(52, 211, 153, 0.15) !important;
+    border: 1px solid rgba(52, 211, 153, 0.3) !important;
+    color: #6ee7b7 !important;
+}
+
+.dark .tag-social {
+    background-color: rgba(248, 113, 113, 0.15) !important;
+    border: 1px solid rgba(248, 113, 113, 0.3) !important;
+    color: #fca5a5 !important;
+}
+
+.dark .tag-learning {
+    background-color: rgba(252, 211, 77, 0.15) !important;
+    border: 1px solid rgba(252, 211, 77, 0.3) !important;
+    color: #fcd34d !important;
+}
+
+.dark .tag-development {
+    background-color: rgba(96, 165, 250, 0.15) !important;
+    border: 1px solid rgba(96, 165, 250, 0.3) !important;
+    color: #93c5fd !important;
+}
+
+.dark .tag-creative {
+    background-color: rgba(45, 212, 191, 0.15) !important;
+    border: 1px solid rgba(45, 212, 191, 0.3) !important;
+    color: #5eead4 !important;
+}
+
+/* 深色模式下的热门标签和新标签样式 */
+.dark .hot-label {
+    background-color: rgba(248, 113, 113, 0.75) !important; /* 深色模式下更亮的红色 */
+}
+
+.dark .new-label {
+    background-color: rgba(52, 211, 153, 0.75) !important; /* 深色模式下更亮的绿色 */
+}
+
+/* 优化的搜索框样式 */
+.search-container {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.search-box {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 0.9rem 1.5rem 0.9rem 3.5rem; /* 增加左内边距，给图标留更多空间 */
+    width: 100%;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03); /* 添加内部阴影 */
+}
+
+.search-box:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), inset 0 1px 3px rgba(0, 0, 0, 0.03);
+    outline: none;
+}
+
+.search-box:hover {
+    border-color: var(--primary-light);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.07), inset 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.search-icon {
+    position: absolute;
+    left: 4rem; /* 增加左边距 */
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    pointer-events: none; /* 确保图标不影响点击 */
+}
+
+/* 清空搜索按钮 */
+.search-clear {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-box:not(:placeholder-shown) + .search-icon + .search-clear {
+    opacity: 0.7;
+}
+
+.search-clear:hover {
+    opacity: 1;
+}
+
+/* 搜索结果高亮样式 */
+.highlight-match {
+    background-color: rgba(37, 99, 235, 0.15);
+    border-radius: 2px;
+    padding: 0 2px;
+    margin: 0 -2px;
+}

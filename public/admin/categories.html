@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>分类管理 - 网址导航系统</title>
-    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-100-M/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -40,33 +41,32 @@
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 1000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
         }
         .modal-content {
-            position: relative;
-            background-color: white;
-            margin: 50px auto;
+            background-color: #fefefe;
+            margin: 15% auto;
             padding: 20px;
-            width: 90%;
-            max-width: 500px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 500px;
+            position: relative;
         }
         .close {
             position: absolute;
             right: 20px;
-            top: 20px;
-            font-size: 24px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
             cursor: pointer;
-            color: #666;
         }
         .close:hover {
-            color: #000;
+            color: #666;
         }
     </style>
 </head>
@@ -93,6 +93,18 @@
                 <i class="fas fa-tags mr-3"></i>
                 标签管理
             </a>
+            <a href="/admin/nav-menu.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-bars mr-3"></i>
+                导航菜单
+            </a>
+            <a href="/admin/settings.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-cog mr-3"></i>
+                网站设置
+            </a>
+            <button id="user-settings-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white mt-auto">
+                <i class="fas fa-user-cog mr-3"></i>
+                用户设置
+            </button>
             <button id="logout-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white">
                 <i class="fas fa-sign-out-alt mr-3"></i>
                 退出登录
@@ -104,18 +116,12 @@
     <div class="main-content">
         <!-- 顶部栏 -->
         <div class="bg-white shadow-sm rounded-lg p-4 mb-6">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-900">分类管理</h2>
-                <div class="flex items-center">
-                    <span class="text-gray-600 mr-4">
-                        <i class="fas fa-user mr-2"></i>
-                        <span id="username"></span>
-                    </span>
-                    <button id="add-category-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
-                        <i class="fas fa-plus mr-2"></i>
-                        添加分类
-                    </button>
-                </div>
+                <button id="add-category-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    添加分类
+                </button>
             </div>
         </div>
 
@@ -162,6 +168,32 @@
         </div>
     </div>
 
+    <!-- 用户设置模态框 -->
+    <div id="user-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-2xl font-bold mb-4">修改密码</h2>
+            <form id="change-password-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">当前密码</label>
+                    <input type="password" id="current-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">新密码</label>
+                    <input type="password" id="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">确认新密码</label>
+                    <input type="password" id="confirm-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeUserSettingsModal()">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // 检查登录状态
         function checkAuth() {
@@ -184,7 +216,9 @@
                 return response.json();
             })
             .then(data => {
-                document.getElementById('username').textContent = data.user.username;
+                if (!data.authenticated) {
+                    throw new Error('Not authenticated');
+                }
             })
             .catch(error => {
                 console.error('认证失败:', error);
@@ -392,11 +426,98 @@
             }
         });
 
+        // 用户设置相关函数
+        function openUserSettingsModal() {
+            document.getElementById('user-settings-modal').style.display = 'block';
+        }
+
+        function closeUserSettingsModal() {
+            document.getElementById('user-settings-modal').style.display = 'none';
+            document.getElementById('change-password-form').reset();
+        }
+
+        // 修改密码表单提交
+        document.getElementById('change-password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                Swal.fire({
+                    title: '错误',
+                    text: '两次输入的新密码不一致',
+                    icon: 'error'
+                });
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/auth/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('修改密码失败');
+                }
+                
+                Swal.fire({
+                    title: '成功',
+                    text: '密码修改成功',
+                    icon: 'success'
+                });
+                
+                closeUserSettingsModal();
+            } catch (error) {
+                console.error('修改密码失败:', error);
+                Swal.fire({
+                    title: '错误',
+                    text: '修改密码失败，请检查当前密码是否正确',
+                    icon: 'error'
+                });
+            }
+        });
+
+        // 用户设置按钮点击事件
+        document.getElementById('user-settings-btn').addEventListener('click', openUserSettingsModal);
+
+        // 关闭按钮点击事件
+        document.querySelector('#user-settings-modal .close').addEventListener('click', closeUserSettingsModal);
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('user-settings-modal');
+            if (e.target === modal) {
+                closeUserSettingsModal();
+            }
+        });
+
         // 退出登录
         document.getElementById('logout-btn').addEventListener('click', function() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/admin/login.html';
+            Swal.fire({
+                title: '确认退出',
+                text: '您确定要退出登录吗？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '确定退出',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/admin/login.html';
+                }
+            });
         });
 
         // 页面加载时执行

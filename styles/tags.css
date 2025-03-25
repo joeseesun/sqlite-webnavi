@@ -1,0 +1,30 @@
+.card {
+  position: relative;  /* 为绝对定位的标签容器提供定位上下文 */
+}
+
+.tags-container {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;  /* 控制标签之间的间距 */
+  z-index: 1;  /* 确保标签显示在其他内容之上 */
+}
+
+.tag {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;  /* 防止标签文字换行 */
+}
+
+.tag-new {
+  background-color: #10B981;  /* 绿色背景 */
+  color: white;
+}
+
+.tag-hot {
+  background-color: #EF4444;  /* 红色背景 */
+  color: white;
+}

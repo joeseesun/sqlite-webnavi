@@ -6,7 +6,7 @@
  * 这个脚本会检查并添加缺失的字段，确保数据库结构与应用代码保持同步。
  */
 
-async function migrate(db) {
+export const up = async function(db) {
   try {
     // 检查字段是否已存在
     console.log("检查site_settings表结构...");
@@ -48,6 +48,17 @@ async function migrate(db) {
     console.error("❌ 迁移失败:", error);
     throw error;
   }
-}
+};
 
-module.exports = { migrate }; 
+export const down = async function(db) {
+  const collection = db.collection('heroes');
+  
+  await collection.updateMany({}, {
+    $unset: {
+      level: "",
+      experience: "",
+      skills: "",
+      inventory: ""
+    }
+  });
+}; 
