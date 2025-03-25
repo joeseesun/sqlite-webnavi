@@ -15,23 +15,23 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
     <style>
         :root {
-            /* 主色调：从紫色改为专业蓝色 */
-            --primary: #2563eb;
-            --primary-light: #3b82f6;
-            --primary-dark: #1d4ed8;
-            --primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            /* 主色调：黑色系 */
+            --primary: #111111;
+            --primary-light: #333333;
+            --primary-dark: #000000;
+            --primary-gradient: linear-gradient(135deg, #111111 0%, #333333 100%);
             
-            /* 次要色调：从青色改为浅蓝色 */
-            --secondary: #0ea5e9;
-            --secondary-light: #38bdf8;
-            --secondary-dark: #0284c7;
-            --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+            /* 次要色调：金色系 */
+            --secondary: #d4af37;
+            --secondary-light: #e6c155;
+            --secondary-dark: #b0901c;
+            --secondary-gradient: linear-gradient(135deg, #d4af37 0%, #e6c155 100%);
             
-            /* 强调色：稍微调整橙色 */
-            --accent: #f97316;
-            --accent-light: #fb923c;
-            --accent-dark: #ea580c;
-            --accent-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            /* 强调色：灰色系 */
+            --accent: #6b7280;
+            --accent-light: #9ca3af;
+            --accent-dark: #4b5563;
+            --accent-gradient: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
             
             /* 文本颜色：加深主文本颜色 */
             --text-primary: #111827;
@@ -45,6 +45,7 @@
             --card-bg: #ffffff;
             --card-border: #e5e7eb;
             --card-shadow: rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: rgba(212, 175, 55, 0.15);
             
             /* 导航栏背景 */
             --nav-blur: rgba(250, 250, 250, 0.9);
@@ -52,20 +53,20 @@
 
         /* 深色模式配色优化 */
         .dark {
-            --primary: #3b82f6;
-            --primary-light: #60a5fa;
-            --primary-dark: #2563eb;
-            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            --primary: #212121;
+            --primary-light: #424242;
+            --primary-dark: #000000;
+            --primary-gradient: linear-gradient(135deg, #212121 0%, #424242 100%);
             
-            --secondary: #38bdf8;
-            --secondary-light: #7dd3fc;
-            --secondary-dark: #0ea5e9;
-            --secondary-gradient: linear-gradient(135deg, #38bdf8 0%, #7dd3fc 100%);
+            --secondary: #ffd700;
+            --secondary-light: #ffeb3b;
+            --secondary-dark: #d4af37;
+            --secondary-gradient: linear-gradient(135deg, #ffd700 0%, #ffeb3b 100%);
             
-            --accent: #fb923c;
-            --accent-light: #fdba74;
-            --accent-dark: #f97316;
-            --accent-gradient: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
+            --accent: #9e9e9e;
+            --accent-light: #bdbdbd;
+            --accent-dark: #757575;
+            --accent-gradient: linear-gradient(135deg, #9e9e9e 0%, #bdbdbd 100%);
             
             --text-primary: #f9fafb;
             --text-secondary: #d1d5db;
@@ -76,6 +77,7 @@
             --card-bg: #1f2937;
             --card-border: #374151;
             --card-shadow: rgba(0, 0, 0, 0.25);
+            --card-hover-shadow: rgba(255, 215, 0, 0.2);
             
             --nav-blur: rgba(17, 24, 39, 0.9);
         }
@@ -108,7 +110,7 @@
             left: 0;
             height: 3px;
             width: 50px;
-            background: var(--primary);
+            background: var(--secondary);
             border-radius: 2px;
         }
 
@@ -129,8 +131,8 @@
 
         .site-card:hover {
             transform: translateY(-6px); /* 减小上移距离 */
-            box-shadow: 0 12px 20px var(--card-shadow); /* 更精致的悬浮阴影 */
-            border-color: var(--primary-light);
+            box-shadow: 0 12px 20px var(--card-hover-shadow); /* 更精致的悬浮阴影 */
+            border-color: var(--secondary);
         }
 
         .card-img-container {
@@ -177,25 +179,25 @@
         }
 
         .tag-ai {
-            background-color: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-            border: 1px solid rgba(37, 99, 235, 0.2);
+            background-color: rgba(212, 175, 55, 0.1);
+            color: var(--secondary-dark);
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         .dark .tag-ai {
-            background-color: rgba(59, 130, 246, 0.15);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background-color: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .tag-productivity {
-            background-color: rgba(14, 165, 233, 0.1);
-            color: var(--secondary);
-            border: 1px solid rgba(14, 165, 233, 0.2);
+            background-color: rgba(17, 17, 17, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(17, 17, 17, 0.2);
         }
 
         .dark .tag-productivity {
-            background-color: rgba(56, 189, 248, 0.15);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            background-color: rgba(33, 33, 33, 0.15);
+            border: 1px solid rgba(33, 33, 33, 0.3);
         }
 
         .tag-reading {
@@ -486,11 +488,11 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: var(--primary);
-            color: white;
-            width: 46px;
-            height: 46px;
-            border-radius: 8px;
+            width: 48px;
+            height: 48px;
+            background: var(--secondary);
+            color: var(--primary-dark);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -499,7 +501,8 @@
             visibility: hidden;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 30;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            border: 1px solid var(--secondary-dark);
         }
 
         .back-to-top.visible {
@@ -510,7 +513,8 @@
 
         .back-to-top:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+            background: var(--secondary-light);
         }
 
         @media (max-width: 768px) {
@@ -533,7 +537,7 @@
             }
         }
 
-        /* 动态波浪背景 */
+        /* 动态波浪背景替换为几何图形 */
         .wave-bg {
             position: absolute;
             bottom: 0;
@@ -542,60 +546,57 @@
             height: 150px;
             z-index: 1;
             overflow: hidden;
+            opacity: 0.5;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
         }
 
+        /* 替换波浪为几何图形 */
         .wave {
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 200%;
+            width: 100%;
             height: 100%;
-            background-repeat: repeat-x;
-            animation: wave-animation 25s linear infinite;
+            background-size: 20px 20px;
+            opacity: 0.1;
         }
 
         .wave-1 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%232563eb' fill-opacity='0.08' d='M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: 50% 100%;
-            z-index: 3;
+            background-image: 
+                linear-gradient(45deg, var(--secondary) 25%, transparent 25%),
+                linear-gradient(-45deg, var(--secondary) 25%, transparent 25%);
+            background-size: 20px 20px;
+            animation: move-bg 30s linear infinite;
+            opacity: 0.08;
         }
 
         .wave-2 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%230ea5e9' fill-opacity='0.06' d='M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: 50% 100%;
-            animation-duration: 30s;
-            animation-delay: -5s;
-            opacity: 0.7;
-            z-index: 2;
+            background-image: 
+                linear-gradient(45deg, var(--primary) 25%, transparent 25%),
+                linear-gradient(-45deg, var(--primary) 25%, transparent 25%);
+            background-size: 15px 15px;
+            animation: move-bg 25s linear infinite;
+            animation-direction: reverse;
+            opacity: 0.06;
         }
 
         .wave-3 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f97316' fill-opacity='0.03' d='M0,128L48,149.3C96,171,192,213,288,218.7C384,224,480,192,576,181.3C672,171,768,181,864,186.7C960,192,1056,192,1152,170.7C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: 50% 100%;
-            animation-duration: 35s;
-            animation-delay: -2s;
-            opacity: 0.5;
-            z-index: 1;
+            background-image: 
+                linear-gradient(45deg, var(--accent) 25%, transparent 25%),
+                linear-gradient(-45deg, var(--accent) 25%, transparent 25%);
+            background-size: 12px 12px;
+            animation: move-bg 20s linear infinite;
+            opacity: 0.05;
         }
 
-        .dark .wave-1 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%233b82f6' fill-opacity='0.15' d='M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-        }
-
-        .dark .wave-2 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2338bdf8' fill-opacity='0.1' d='M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-        }
-
-        .dark .wave-3 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23fb923c' fill-opacity='0.07' d='M0,128L48,149.3C96,171,192,213,288,218.7C384,224,480,192,576,181.3C672,171,768,181,864,186.7C960,192,1056,192,1152,170.7C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-        }
-
-        @keyframes wave-animation {
+        @keyframes move-bg {
             0% {
-                transform: translateX(0);
+                background-position: 0 0;
             }
             100% {
-                transform: translateX(-50%);
+                background-position: 100px 100px;
             }
         }
 
@@ -626,10 +627,10 @@
         }
 
         .visit-btn:hover {
-            background-color: var(--primary);
-            color: white;
+            background-color: var(--secondary);
+            color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3); /* 调整阴影颜色 */
+            box-shadow: 0 3px 8px rgba(212, 175, 55, 0.3); /* 调整阴影颜色 */
         }
 
         .visit-btn i {
@@ -665,8 +666,8 @@
         .loader-circle {
             width: 48px;
             height: 48px;
-            border: 3px solid rgba(37, 99, 235, 0.2);
-            border-top: 3px solid var(--primary);
+            border: 3px solid rgba(212, 175, 55, 0.2);
+            border-top: 3px solid var(--secondary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
@@ -706,327 +707,17 @@
         .hero-section {
             position: relative;
             overflow: hidden;
-            padding: 6rem 0 7rem;
+            padding: 4rem 0;
             background-color: var(--bg-secondary);
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 30%), 
-                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.08) 0%, transparent 30%);
+                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 20%), 
+                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 20%);
         }
 
         .dark .hero-section {
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 35%), 
-                radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.15) 0%, transparent 35%);
-        }
-
-        /* Hero新增装饰元素 */
-        .hero-decoration {
-            position: absolute;
-            z-index: 0;
-            opacity: 0.5;
-        }
-
-        .hero-dot-grid {
-            top: 10%;
-            right: 5%;
-            width: 180px;
-            height: 180px;
-            background-image: radial-gradient(var(--primary) 1px, transparent 1px);
-            background-size: 12px 12px;
-            opacity: 0.15;
-            border-radius: 50%;
-        }
-
-        .hero-circle {
-            bottom: 25%;
-            left: 8%;
-            width: 120px;
-            height: 120px;
-            border: 2px solid var(--secondary);
-            border-radius: 50%;
-            opacity: 0.1;
-        }
-
-        .hero-line {
-            top: 25%;
-            left: 12%;
-            width: 80px;
-            height: 3px;
-            background: var(--accent-gradient);
-            opacity: 0.2;
-            transform: rotate(-45deg);
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Hero 标题增强 */
-        .hero-title {
-            font-size: 3.5rem;
-            line-height: 1.2;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
-            position: relative;
-            text-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
-            animation: float 4s ease-in-out 1; /* 修改为只执行一次 */
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
-            100% {
-                transform: translateY(0); /* 确保结束时回到原位置 */
-            }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 10;
-        }
-
-        /* 打字机效果 */
-        .typing-effect::after {
-            content: '|';
-            display: inline-block;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0;
-            }
-        }
-
-        /* 搜索框增强 - 确保更大的点击区域和更明显的交互效果 */
-        .search-container {
-            position: relative;
-            max-width: 700px;
-            margin: 0 auto;
-            z-index: 10;
-            background: transparent;
-            padding: 10px;
-            border-radius: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .search-container:hover {
-            transform: scale(1.02);
-        }
-
-        .search-box {
-            background-color: var(--card-bg);
-            border: 2px solid var(--card-border);
-            border-radius: 15px;
-            padding: 1.3rem 1.5rem 1.3rem 4rem;
-            width: 100%;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            font-size: 1.15rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            cursor: text;
-            color: var(--text-primary);
-        }
-
-        .search-box:focus {
-            border-color: var(--primary);
-            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2), 0 0 0 4px rgba(37, 99, 235, 0.1);
-            outline: none;
-            transform: translateY(-4px);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary);
-            font-size: 1.5rem;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .search-container:hover .search-icon {
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        /* 鼠标追踪效果 */
-        .hero-section {
-            position: relative;
-            overflow: hidden;
-            padding: 7rem 0 8rem;
-            background-color: var(--bg-secondary);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 35%), 
-                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 35%);
-            transition: background-position 0.5s ease;
-        }
-
-        /* 粒子效果增强 */
-        .particles-container {
-            position: absolute;
-            width: 100%;
-            height: 300px;
-            bottom: 0;
-            left: 0;
-            z-index: 1;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0;
-            animation: float-up 5s ease-in-out 1; /* 修改为只执行一次 */
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        @keyframes float-up {
-            0% {
-                transform: translateY(100px) scale(0) rotate(0deg);
-                opacity: 0;
-            }
-            20% {
-                opacity: 0.8;
-            }
-            80% {
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(-150px) scale(1.5) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* 悬停信息卡片 */
-        .info-card {
-            position: absolute;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 10px 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            pointer-events: none;
-            z-index: 20;
-        }
-
-        .info-trigger:hover + .info-card {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 更多炫酷效果 */
-        @keyframes pulse-border {
-            0%, 100% {
-                border-color: rgba(37, 99, 235, 0.3);
-            }
-            50% {
-                border-color: rgba(37, 99, 235, 0.8);
-            }
-        }
-
-        /* 搜索框脉冲动画 */
-        .search-pulse {
-            animation: pulse-border 2s infinite;
-        }
-
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            line-height: 1.6;
-            max-width: 600px;
-            margin: 0 auto 2.5rem;
-            color: var(--text-secondary);
-        }
-
-        .hero-highlight {
-            color: var(--primary);
-            font-weight: 600;
-            position: relative;
-            display: inline-block;
-        }
-
-        .hero-highlight::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            background-color: rgba(37, 99, 235, 0.2);
-            z-index: -1;
-            border-radius: 4px;
-        }
-
-        .dark .hero-highlight::after {
-            background-color: rgba(59, 130, 246, 0.25);
-        }
-
-        /* 搜索框增强 */
-        .search-container {
-            position: relative;
-            max-width: 700px;
-            margin: 0 auto;
-            z-index: 2;
-        }
-
-        .search-box {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 1.1rem 1.5rem 1.1rem 3.5rem;
-            width: 100%;
-            transition: all 0.25s ease;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .search-box:focus {
-            border-color: var(--primary);
-            box-shadow: 0 6px 24px rgba(37, 99, 235, 0.15), 0 0 0 3px rgba(37, 99, 235, 0.1);
-            outline: none;
-            transform: translateY(-2px);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary);
-            font-size: 1.25rem;
-        }
-
-        /* 波浪动画加强 */
-        .wave-bg {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 150px;
-            z-index: 1;
-            overflow: hidden;
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 25%), 
+                radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.1) 0%, transparent 25%);
         }
 
         /* 卡片内部信息布局优化 */
@@ -1060,39 +751,115 @@
         }
 
         /* 页脚美化 */
-        .footer-wave {
+        .footer-decoration {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100px;
-            overflow: hidden;
-            transform: rotate(180deg);
+            height: 1px;
             z-index: 1;
+            background: linear-gradient(90deg, 
+                transparent 5%,
+                var(--secondary-dark) 20%, 
+                var(--secondary) 50%, 
+                var(--secondary-dark) 80%,
+                transparent 95%);
         }
 
-        .footer-wave .wave {
-            animation-duration: 30s;
+        .footer-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            overflow: hidden;
+            opacity: 0.7;
         }
 
-        /* 社交图标美化 */
+        .footer-shape {
+            position: absolute;
+            background-color: var(--primary);
+            opacity: 0.05;
+            border-radius: 2px;
+            transform: rotate(45deg);
+        }
+
+        .shape-1 {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 10%;
+        }
+
+        .shape-2 {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 25%;
+            background-color: var(--secondary);
+        }
+
+        .shape-3 {
+            width: 80px;
+            height: 80px;
+            top: -40px;
+            right: 15%;
+        }
+
+        .shape-4 {
+            width: 30px;
+            height: 30px;
+            top: -15px;
+            right: 30%;
+            background-color: var(--secondary);
+        }
+
+        .shape-5 {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 65%;
+        }
+
+        .shape-6 {
+            width: 20px;
+            height: 20px;
+            top: -10px;
+            left: 45%;
+            background-color: var(--secondary);
+        }
+
+        .shape-7 {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 80%;
+            background-color: var(--accent);
+        }
+
+        .dark .footer-shape {
+            opacity: 0.08;
+        }
+
+        /* 优化社交图标样式 */
         .social-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            color: var(--text-secondary);
-            background-color: var(--bg-secondary);
+            width: 36px;
+            height: 36px;
+            color: var(--text-primary);
+            background-color: transparent;
+            border-radius: 50%;
             transition: all 0.3s ease;
+            border: 1px solid var(--card-border);
         }
 
         .social-icon:hover {
-            color: white;
-            background: var(--primary);
+            color: var(--secondary);
             transform: translateY(-3px);
-            box-shadow: 0 5px 12px rgba(37, 99, 235, 0.25);
+            border-color: var(--secondary);
+            box-shadow: 0 5px 10px rgba(212, 175, 55, 0.15);
         }
 
         /* 赞赏模态框 */
@@ -1215,127 +982,6 @@
             margin-right: 0.5rem;
             opacity: 0.7;
         }
-
-        /* 确保筛选后卡片正确显示 */
-        .site-card {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card-img-container {
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .card-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .tag-container {
-            margin-top: auto;
-        }
-        
-        /* 筛选状态栏样式 */
-        #filter-status {
-            transition: all 0.3s ease;
-        }
-        
-        #clear-filter {
-            transition: all 0.2s ease;
-        }
-        
-        #clear-filter:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        /* 替换为轻量级几何装饰效果 */
-        .footer-decoration {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            z-index: 1;
-            background: linear-gradient(90deg, 
-                var(--primary) 0%, 
-                var(--primary-light) 50%, 
-                var(--primary) 100%);
-        }
-
-        .footer-shapes {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            overflow: hidden;
-        }
-
-        .footer-shape {
-            position: absolute;
-            background-color: var(--primary);
-            opacity: 0.05;
-            border-radius: 50%;
-        }
-
-        .shape-1 {
-            width: 120px;
-            height: 120px;
-            top: -60px;
-            left: 10%;
-        }
-
-        .shape-2 {
-            width: 80px;
-            height: 80px;
-            top: -20px;
-            left: 25%;
-        }
-
-        .shape-3 {
-            width: 160px;
-            height: 160px;
-            top: -100px;
-            right: 15%;
-        }
-
-        .shape-4 {
-            width: 60px;
-            height: 60px;
-            top: -30px;
-            right: 30%;
-        }
-
-        .shape-5 {
-            width: 100px;
-            height: 100px;
-            top: -50px;
-            left: 65%;
-        }
-
-        .shape-6 {
-            width: 40px;
-            height: 40px;
-            top: -10px;
-            left: 45%;
-        }
-
-        .shape-7 {
-            width: 80px;
-            height: 80px;
-            top: -40px;
-            left: 80%;
-        }
-
-        .dark .footer-shape {
-            opacity: 0.1;
-        }
     </style>
 </head>
 <body>
@@ -1409,18 +1055,13 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
-        <!-- 装饰元素 -->
-        <div class="hero-decoration hero-dot-grid"></div>
-        <div class="hero-decoration hero-circle"></div>
-        <div class="hero-decoration hero-line"></div>
-        
         <div class="container mx-auto px-4">
-            <div class="text-center hero-content">
-                <h1 class="hero-title">
-                    乔木精选推荐
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 relative inline-block">
+                    <span style="color: #000000;">效率工具集锦</span>
                 </h1>
-                <p class="hero-subtitle">
-                    发现最佳AI、阅读与知识管理工具，<span class="hero-highlight">提升工作效率</span>
+                <p class="text-lg md:text-xl mb-10" style="color: var(--text-secondary);">
+                    发现最佳AI、阅读与知识管理工具，<span class="font-semibold" style="color: var(--primary);">提升工作效率</span>
                 </p>
                 <div class="search-container">
                     <i class="fas fa-search search-icon"></i>
@@ -1434,8 +1075,11 @@
                 </div>
             </div>
         </div>
-        <!-- 替换波浪为粒子容器 -->
-        <div class="particles-container" id="hero-particles"></div>
+        <div class="wave-bg">
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+            <div class="wave wave-3"></div>
+        </div>
     </section>
 
     <!-- Category Tabs (Mobile Scrollable) -->
@@ -1461,7 +1105,7 @@
     </main>
 
     <!-- Footer -->
-    <footer style="background-color: var(--bg-secondary); position: relative; padding-top: 60px;">
+    <footer style="background-color: var(--bg-secondary); position: relative; padding-top: 100px;">
         <div class="footer-decoration"></div>
         <div class="footer-shapes">
             <div class="footer-shape shape-1"></div>
@@ -1523,9 +1167,6 @@
     <div class="back-to-top" id="backToTop">
         <i class="fas fa-arrow-up"></i>
     </div>
-
-    <!-- 添加新的粒子容器 -->
-    <div class="particles-container" id="particles-container"></div>
 
     <script>
         // 全局数据存储
@@ -1618,27 +1259,9 @@
             });
             
             // 更新Hero区域的标题和描述
-            const heroTitle = document.querySelector('.hero-section h1');
+            const heroTitle = document.querySelector('.hero-section h1 span');
             if (heroTitle) {
-                heroTitle.textContent = siteSettings.hero_title || "乔木精选推荐";
-            }
-            
-            const heroSubtitle = document.querySelector('.hero-section .hero-subtitle');
-            if (heroSubtitle) {
-                // 检查是否有高亮部分需要保留
-                const highlightSpan = heroSubtitle.querySelector('.hero-highlight');
-                if (highlightSpan && siteSettings.hero_subtitle) {
-                    // 尝试保留高亮部分，将副标题的最后一部分设为高亮
-                    const subtitleParts = siteSettings.hero_subtitle.split('，');
-                    if (subtitleParts.length > 1) {
-                        const lastPart = subtitleParts.pop();
-                        heroSubtitle.innerHTML = `${subtitleParts.join('，')}，<span class="hero-highlight">${lastPart}</span>`;
-                    } else {
-                        heroSubtitle.textContent = siteSettings.hero_subtitle;
-                    }
-                } else {
-                    heroSubtitle.textContent = siteSettings.hero_subtitle || "发现最佳AI、阅读与知识管理工具，提升工作效率";
-                }
+                heroTitle.textContent = siteSettings.site_name || "效率工具集锦";
             }
             
             // 更新页脚内容
@@ -1745,22 +1368,6 @@
             const mainContent = document.querySelector('main');
             mainContent.innerHTML = '';
             
-            // 先添加筛选状态条
-            const filterStatusHtml = `
-                <div id="filter-status" class="mb-6 py-3 px-4 rounded-lg hidden" style="background-color: var(--bg-secondary); border: 1px solid var(--card-border);">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center">
-                            <i class="fas fa-filter mr-2"></i>
-                            <span id="filter-status-text">正在筛选:</span>
-                        </div>
-                        <button id="clear-filter" class="px-3 py-1 rounded text-sm" style="background-color: var(--primary); color: white;">
-                            <i class="fas fa-times mr-1"></i>清除筛选
-                        </button>
-                    </div>
-                </div>
-            `;
-            mainContent.innerHTML = filterStatusHtml;
-            
             // 将分类按网站数量排序
             const sortedCategories = [...allCategories].sort((a, b) => b.siteCount - a.siteCount);
             
@@ -1793,9 +1400,6 @@
                 const sitesContainer = document.querySelector(`#category-${category.id} .sites-container`);
                 renderSiteCards(sitesInCategory, sitesContainer);
             });
-            
-            // 设置清除筛选按钮事件
-            document.getElementById('clear-filter').addEventListener('click', clearFilter);
         }
 
         // 添加占位图片生成函数
@@ -1840,7 +1444,7 @@
                 // 生成标签HTML
                 const tagsHtml = site.tags.map(tag => {
                     const tagClass = tagClasses[tag.name] || 'tag-productivity';
-                    return `<span class="tag ${tagClass}" data-tag="${tag.name}">${tag.name}</span>`;
+                    return `<span class="tag ${tagClass}">${tag.name}</span>`;
                 }).join('');
                 
                 // 检查是否为热门或新品
@@ -1855,110 +1459,28 @@
                 // 生成占位图片URL
                 const placeholderUrl = generatePlaceholder(site.name);
                 
-                // 生成卡片HTML（将<a>改为<div>）
+                // 生成卡片HTML
                 const cardHtml = `
-                    <div class="site-card" data-site-id="${site.id}" data-tags="${site.tags.map(t => t.name).join(' ')}">
-                        <div class="card-img-container site-link" data-url="${site.url}">
+                    <a href="${site.url}" target="_blank" class="site-card" data-site-id="${site.id}" data-tags="${site.tags.map(t => t.name).join(' ')}">
+                        <div class="card-img-container">
                             <img src="${site.screenshot || placeholderUrl}" alt="${site.name}" class="card-img" 
                                  onerror="this.onerror=null; this.src='${placeholderUrl}';">
                             ${hotLabelHtml}
                         </div>
                         <div class="card-content">
                             <div class="card-header">
-                                <h3 class="card-title site-link" data-url="${site.url}">${site.name}</h3>
+                                <h3 class="card-title">${site.name}</h3>
                             </div>
-                            <p class="card-description site-link" data-url="${site.url}">${site.description || '暂无描述'}</p>
-                            <div class="tag-container">
+                            <p class="card-description">${site.description || '暂无描述'}</p>
+                            <div>
                                 ${tagsHtml}
                             </div>
                         </div>
-                    </div>
+                    </a>
                 `;
                 
                 container.innerHTML += cardHtml;
             });
-            
-            // 在添加所有网站卡片后为元素添加事件处理
-            addCardEventListeners();
-        }
-
-        // 为卡片元素添加事件监听器
-        function addCardEventListeners() {
-            // 为所有网站链接元素添加点击事件
-            document.querySelectorAll('.site-link').forEach(element => {
-                element.addEventListener('click', function() {
-                    const url = this.getAttribute('data-url');
-                    if (url) {
-                        window.open(url, '_blank');
-                    }
-                });
-                // 添加指针样式，提示可点击
-                element.style.cursor = 'pointer';
-            });
-            
-            // 为所有标签添加点击事件
-            document.querySelectorAll('.tag').forEach(tag => {
-                tag.addEventListener('click', function(e) {
-                    e.stopPropagation(); // 阻止事件冒泡，避免触发卡片的点击事件
-                    const tagName = this.getAttribute('data-tag');
-                    if (tagName) {
-                        filterSitesByTag(tagName);
-                    }
-                });
-                // 添加指针样式，提示可点击
-                tag.style.cursor = 'pointer';
-            });
-        }
-
-        // 根据标签筛选网站 - 更新显示filter状态和修复卡片显示问题
-        function filterSitesByTag(tagName) {
-            // 显示筛选状态
-            const filterStatus = document.getElementById('filter-status');
-            const filterStatusText = document.getElementById('filter-status-text');
-            filterStatus.classList.remove('hidden');
-            filterStatusText.textContent = `正在筛选: "${tagName}"`;
-            
-            // 重置分类选项卡
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector('.category-tab[data-category="all"]').classList.add('active');
-            
-            // 显示所有分类区域
-            document.querySelectorAll('.category-section').forEach(section => {
-                section.style.display = 'block';
-            });
-            
-            // 筛选卡片
-            const searchTerm = tagName.toLowerCase();
-            document.getElementById('searchInput').value = searchTerm; // 更新搜索框
-            
-            // 获取所有网站卡片
-            const cards = document.querySelectorAll('.site-card');
-            
-            cards.forEach(card => {
-                const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
-                
-                if (tags.includes(searchTerm)) {
-                    card.style.display = 'flex'; // 确保正确的显示模式
-                    const section = card.closest('.category-section');
-                    if (section) {
-                        section.style.display = 'block';
-                    }
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            // 检查每个分类是否有可见的卡片
-            const categorySections = document.querySelectorAll('.category-section');
-            categorySections.forEach(section => {
-                const visibleCards = Array.from(section.querySelectorAll('.site-card')).some(card => card.style.display !== 'none');
-                section.style.display = visibleCards ? 'block' : 'none';
-            });
-            
-            // 滚动到筛选状态条位置
-            filterStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         // 为分类选项卡添加点击事件
@@ -1997,17 +1519,6 @@
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase().trim();
                 
-                // 更新筛选状态显示
-                const filterStatus = document.getElementById('filter-status');
-                const filterStatusText = document.getElementById('filter-status-text');
-                
-                if (searchTerm) {
-                    filterStatus.classList.remove('hidden');
-                    filterStatusText.textContent = `正在搜索: "${searchTerm}"`;
-                } else {
-                    filterStatus.classList.add('hidden');
-                }
-                
                 // 获取所有网站卡片
                 const cards = document.querySelectorAll('.site-card');
                 
@@ -2017,7 +1528,7 @@
                     const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
                     
                     if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
-                        card.style.display = 'flex'; // 使用flex确保卡片内容正确显示
+                        card.style.display = 'flex';
                         const section = card.closest('.category-section');
                         if (section) {
                             section.style.display = 'block';
@@ -2046,137 +1557,10 @@
             });
         }
 
-        // 添加粒子效果创建函数
-        function createParticles() {
-            // 只处理Hero部分的粒子，移除底部粒子以减少资源消耗
-            const heroContainer = document.getElementById('hero-particles');
-            if (heroContainer) {
-                createParticlesInContainer(heroContainer, {
-                    count: 30, // 减少粒子数量
-                    colors: ['#2563eb', '#3b82f6', '#0ea5e9'],
-                    sizeRange: [10, 25],
-                    speedRange: [4, 7]
-                });
-            }
-            
-            // 设置清理
-            cleanupParticles();
-        }
-
-        // 在指定容器中创建粒子
-        function createParticlesInContainer(container, options) {
-            // 设置默认值
-            const config = {
-                count: options.count || 40,
-                colors: options.colors || ['#2563eb', '#3b82f6', '#0ea5e9'],
-                sizeRange: options.sizeRange || [10, 30],
-                speedRange: options.speedRange || [4, 8]
-            };
-            
-            // 清除现有粒子
-            container.innerHTML = '';
-            
-            // 创建新粒子
-            for (let i = 0; i < config.count; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                // 随机大小
-                const minSize = config.sizeRange[0];
-                const maxSize = config.sizeRange[1];
-                const size = Math.random() * (maxSize - minSize) + minSize;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                // 随机位置
-                const posX = Math.random() * 100;
-                const posY = Math.random() * 100;
-                particle.style.left = `${posX}%`;
-                particle.style.bottom = `${posY}%`;
-                
-                // 随机颜色
-                const color = config.colors[Math.floor(Math.random() * config.colors.length)];
-                particle.style.backgroundColor = color;
-                
-                // 随机动画延迟和持续时间
-                const delay = Math.random() * 5;
-                const minDuration = config.speedRange[0];
-                const maxDuration = config.speedRange[1];
-                const duration = Math.random() * (maxDuration - minDuration) + minDuration;
-                particle.style.animationDelay = `${delay}s`;
-                particle.style.animationDuration = `${duration}s`;
-                
-                // 添加粒子到容器
-                container.appendChild(particle);
-                
-                // 动画结束后自动移除粒子
-                setTimeout(() => {
-                    if (particle && particle.parentNode) {
-                        particle.style.animation = 'none';
-                        particle.style.opacity = '0';
-                        setTimeout(() => particle.parentNode.removeChild(particle), 300);
-                    }
-                }, (delay + duration + 1) * 1000); // 确保动画完全结束后再移除
-            }
-            
-            // 不再需要定期刷新粒子，而是在适当的时间后自然消失
-        }
-
-        // 粒子动画完全结束后清空容器
-        function cleanupParticles() {
-            // 给足够时间让所有粒子完成动画，比如20秒后
-            setTimeout(() => {
-                const containers = document.querySelectorAll('.particles-container');
-                containers.forEach(container => {
-                    // 平滑淡出所有剩余粒子
-                    const particles = container.querySelectorAll('.particle');
-                    particles.forEach(particle => {
-                        particle.style.transition = 'opacity 1s ease';
-                        particle.style.opacity = '0';
-                    });
-                    
-                    // 完全清空容器
-                    setTimeout(() => {
-                        container.innerHTML = '';
-                    }, 1000);
-                });
-            }, 20000);
-        }
-
-        // 点击效果
-        function createClickEffect(e) {
-            const effect = document.createElement('div');
-            effect.classList.add('click-effect');
-            
-            // 设置效果的位置
-            effect.style.left = `${e.clientX}px`;
-            effect.style.top = `${e.clientY}px`;
-            
-            // 添加到页面
-            document.body.appendChild(effect);
-            
-            // 动画结束后移除
-            setTimeout(() => {
-                effect.remove();
-            }, 600);
-        }
-
         // 页面加载时初始化
         window.addEventListener('load', () => {
             // 获取数据并渲染页面
             fetchDataAndRenderPage();
-            
-            // 创建粒子效果 - 只在首次加载时创建一次
-            createParticles();
-            
-            // 移除定期刷新粒子的代码
-            // setInterval(createParticles, 10000);
-            
-            // 添加点击效果
-            document.addEventListener('click', createClickEffect);
-            
-            // 初始化增强交互效果 - 只在首次加载时执行一次
-            initEnhancedEffects();
             
             // 添加返回顶部按钮的显示/隐藏逻辑
             const backToTopButton = document.getElementById('backToTop');
@@ -2286,104 +1670,6 @@
                 closeDonationModal();
             }
         });
-
-        // 添加增强搜索框脉冲和打字机效果功能
-        function initEnhancedEffects() {
-            const searchContainer = document.querySelector('.search-container');
-            const searchInput = document.getElementById('searchInput');
-            const heroTitle = document.querySelector('.hero-title');
-
-            // 添加搜索框动画提示 - 只执行一次
-            function addSearchPulse() {
-                if (searchContainer) {
-                    searchContainer.classList.add('search-pulse');
-                    setTimeout(() => {
-                        searchContainer.classList.remove('search-pulse');
-                    }, 2000);
-                }
-            }
-
-            // 首次加载后添加脉冲提示 - 只执行一次
-            setTimeout(addSearchPulse, 2000);
-            
-            // 移除定期脉冲提示
-            // setInterval(addSearchPulse, 15000);
-
-            // 添加搜索框点击交互
-            if (searchContainer && searchInput) {
-                searchContainer.addEventListener('click', (event) => {
-                    searchInput.focus();
-                    
-                    // 创建点击波纹效果
-                    const ripple = document.createElement('div');
-                    ripple.classList.add('click-effect');
-                    ripple.style.left = event.clientX + 'px';
-                    ripple.style.top = event.clientY + 'px';
-                    document.body.appendChild(ripple);
-                    
-                    setTimeout(() => {
-                        ripple.remove();
-                    }, 600);
-                });
-            }
-
-            // 添加打字机效果 - 只执行一次
-            function addTypingEffect(element, text, speed) {
-                if (!element) return;
-                
-                element.classList.add('typing-effect');
-                element.textContent = '';
-                let i = 0;
-                
-                function type() {
-                    if (i < text.length) {
-                        element.textContent += text.charAt(i);
-                        i++;
-                        setTimeout(type, speed);
-                    } else {
-                        // 打字完成后删除打字机效果类
-                        setTimeout(() => {
-                            element.classList.remove('typing-effect');
-                        }, 1000);
-                    }
-                }
-                
-                type();
-            }
-
-            // 应用打字机效果 - 只执行一次
-            if (heroTitle) {
-                // 延迟1秒后开始打字效果
-                setTimeout(() => {
-                    const titleText = heroTitle.textContent.trim();
-                    addTypingEffect(heroTitle, titleText, 150);
-                }, 1000);
-            }
-        }
-
-        // 添加清除筛选功能
-        function clearFilter() {
-            // 隐藏筛选状态条
-            document.getElementById('filter-status').classList.add('hidden');
-            
-            // 清空搜索框
-            document.getElementById('searchInput').value = '';
-            
-            // 显示所有卡片和分类
-            document.querySelectorAll('.site-card').forEach(card => {
-                card.style.display = 'flex';
-            });
-            
-            document.querySelectorAll('.category-section').forEach(section => {
-                section.style.display = 'block';
-            });
-            
-            // 重置分类选项卡，保持"全部"选中
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector('.category-tab[data-category="all"]').classList.add('active');
-        }
     </script>
 </body>
 </html>
