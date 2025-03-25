@@ -1025,6 +1025,24 @@
             const mainContent = document.querySelector('main');
             mainContent.innerHTML = '';
             
+            // 先添加筛选状态条 - 巴洛克风格
+            const filterStatusHtml = `
+                <div id="filter-status" class="mb-8 hidden">
+                    <div style="background-color: var(--baroque-gold); border: 2px solid var(--baroque-brown); border-radius: 5px; padding: 15px; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fas fa-filter mr-2"></i>
+                                <span id="filter-status-text" class="font-bold" style="color: var(--baroque-brown);">正在筛选:</span>
+                            </div>
+                            <button id="clear-filter" class="baroque-button">
+                                <i class="fas fa-times mr-1"></i>清除筛选
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            mainContent.innerHTML = filterStatusHtml;
+            
             // 将分类按网站数量排序
             const sortedCategories = [...allCategories].sort((a, b) => b.siteCount - a.siteCount);
             
@@ -1043,10 +1061,11 @@
                 // 创建分类区域
                 const sectionHtml = `
                     <section id="${category.name.toLowerCase().replace(/\s+/g, '-')}" class="mb-12 category-section" data-category="${category.id}">
-                        <h2 class="text-3xl font-bold mb-6" style="border-bottom: 3px solid var(--baroque-gold); display: inline-block; padding-bottom: 5px;">
-                            ${category.name}
-                            <span class="sound-effect ml-4" style="font-size: 18px;">精选</span>
-                        </h2>
+                        <div class="category-header">
+                            <h2 class="category-title text-2xl md:text-3xl font-bold mb-4">${category.name}</h2>
+                            <div class="category-decoration"></div>
+                        </div>
+                        <p class="text-lg mb-8" style="color: var(--text-secondary);">${category.description || '发现珍贵的工具与知识，提升您的生活品味'}</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sites-container">
                             <!-- 网站卡片会在这里动态添加 -->
                         </div>
@@ -1059,6 +1078,9 @@
                 const sitesContainer = document.querySelector(`#${category.name.toLowerCase().replace(/\s+/g, '-')} .sites-container`);
                 renderSiteCards(sitesInCategory, sitesContainer);
             });
+            
+            // 设置清除筛选按钮事件
+            document.getElementById('clear-filter').addEventListener('click', clearFilter);
         }
 
         // 渲染网站卡片
@@ -1141,6 +1163,12 @@
 
         // 根据标签筛选网站
         function filterSitesByTag(tagName) {
+            // 显示筛选状态 - 巴洛克风格
+            const filterStatus = document.getElementById('filter-status');
+            const filterStatusText = document.getElementById('filter-status-text');
+            filterStatus.classList.remove('hidden');
+            filterStatusText.textContent = `正在筛选: "${tagName}"`;
+            
             // 重置分类选项卡
             document.querySelectorAll('.category-tab').forEach(tab => {
                 tab.classList.remove('active');
@@ -1163,7 +1191,7 @@
                 const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
                 
                 if (tags.includes(searchTerm)) {
-                    card.style.display = 'flex';
+                    card.style.display = 'flex'; // 确保正确的显示模式
                     const section = card.closest('.category-section');
                     if (section) {
                         section.style.display = 'block';
@@ -1179,6 +1207,33 @@
                 const visibleCards = Array.from(section.querySelectorAll('.site-card')).some(card => card.style.display !== 'none');
                 section.style.display = visibleCards ? 'block' : 'none';
             });
+            
+            // 滚动到筛选状态条位置
+            filterStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // 添加清除筛选功能
+        function clearFilter() {
+            // 隐藏筛选状态条
+            document.getElementById('filter-status').classList.add('hidden');
+            
+            // 清空搜索框
+            document.getElementById('searchInput').value = '';
+            
+            // 显示所有卡片和分类
+            document.querySelectorAll('.site-card').forEach(card => {
+                card.style.display = 'flex';
+            });
+            
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // 重置分类选项卡，保持"全部"选中
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('.category-tab[data-category="all"]').classList.add('active');
         }
 
         // 初始化分类选项卡
@@ -1221,6 +1276,17 @@
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase().trim();
                 
+                // 更新筛选状态显示
+                const filterStatus = document.getElementById('filter-status');
+                const filterStatusText = document.getElementById('filter-status-text');
+                
+                if (searchTerm) {
+                    filterStatus.classList.remove('hidden');
+                    filterStatusText.textContent = `正在搜索: "${searchTerm}"`;
+                } else {
+                    filterStatus.classList.add('hidden');
+                }
+                
                 // 获取所有网站卡片
                 const cards = document.querySelectorAll('.site-card');
                 
@@ -1230,7 +1296,7 @@
                     const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
                     
                     if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
-                        card.style.display = 'block';
+                        card.style.display = 'flex'; // 使用flex确保卡片内容正确显示
                         const section = card.closest('.category-section');
                         if (section) {
                             section.style.display = 'block';

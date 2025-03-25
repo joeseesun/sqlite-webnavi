@@ -1218,6 +1218,44 @@
             margin-right: 0.5rem;
             opacity: 0.7;
         }
+
+        /* 确保筛选后卡片正确显示 */
+        .site-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-img-container {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tag-container {
+            margin-top: auto;
+        }
+        
+        /* 筛选状态栏样式 */
+        #filter-status {
+            transition: all 0.3s ease;
+        }
+        
+        #clear-filter {
+            transition: all 0.2s ease;
+        }
+        
+        #clear-filter:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
@@ -1622,6 +1660,22 @@
             const mainContent = document.querySelector('main');
             mainContent.innerHTML = '';
             
+            // 先添加筛选状态条
+            const filterStatusHtml = `
+                <div id="filter-status" class="mb-6 py-3 px-4 rounded-lg hidden" style="background-color: var(--bg-secondary); border: 1px solid var(--card-border);">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <i class="fas fa-filter mr-2"></i>
+                            <span id="filter-status-text">正在筛选:</span>
+                        </div>
+                        <button id="clear-filter" class="px-3 py-1 rounded text-sm" style="background-color: var(--primary); color: white;">
+                            <i class="fas fa-times mr-1"></i>清除筛选
+                        </button>
+                    </div>
+                </div>
+            `;
+            mainContent.innerHTML = filterStatusHtml;
+            
             // 将分类按网站数量排序
             const sortedCategories = [...allCategories].sort((a, b) => b.siteCount - a.siteCount);
             
@@ -1654,6 +1708,9 @@
                 const sitesContainer = document.querySelector(`#category-${category.id} .sites-container`);
                 renderSiteCards(sitesInCategory, sitesContainer);
             });
+            
+            // 设置清除筛选按钮事件
+            document.getElementById('clear-filter').addEventListener('click', clearFilter);
         }
 
         // 添加占位图片生成函数
@@ -1768,8 +1825,14 @@
             });
         }
 
-        // 根据标签筛选网站
+        // 根据标签筛选网站 - 更新显示filter状态和修复卡片显示问题
         function filterSitesByTag(tagName) {
+            // 显示筛选状态
+            const filterStatus = document.getElementById('filter-status');
+            const filterStatusText = document.getElementById('filter-status-text');
+            filterStatus.classList.remove('hidden');
+            filterStatusText.textContent = `正在筛选: "${tagName}"`;
+            
             // 重置分类选项卡
             document.querySelectorAll('.category-tab').forEach(tab => {
                 tab.classList.remove('active');
@@ -1792,7 +1855,7 @@
                 const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
                 
                 if (tags.includes(searchTerm)) {
-                    card.style.display = 'flex';
+                    card.style.display = 'flex'; // 确保正确的显示模式
                     const section = card.closest('.category-section');
                     if (section) {
                         section.style.display = 'block';
@@ -1808,6 +1871,9 @@
                 const visibleCards = Array.from(section.querySelectorAll('.site-card')).some(card => card.style.display !== 'none');
                 section.style.display = visibleCards ? 'block' : 'none';
             });
+            
+            // 滚动到筛选状态条位置
+            filterStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         // 为分类选项卡添加点击事件
@@ -1846,6 +1912,17 @@
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase().trim();
                 
+                // 更新筛选状态显示
+                const filterStatus = document.getElementById('filter-status');
+                const filterStatusText = document.getElementById('filter-status-text');
+                
+                if (searchTerm) {
+                    filterStatus.classList.remove('hidden');
+                    filterStatusText.textContent = `正在搜索: "${searchTerm}"`;
+                } else {
+                    filterStatus.classList.add('hidden');
+                }
+                
                 // 获取所有网站卡片
                 const cards = document.querySelectorAll('.site-card');
                 
@@ -1855,7 +1932,7 @@
                     const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
                     
                     if (title.includes(searchTerm) || description.includes(searchTerm) || tags.includes(searchTerm)) {
-                        card.style.display = 'flex';
+                        card.style.display = 'flex'; // 使用flex确保卡片内容正确显示
                         const section = card.closest('.category-section');
                         if (section) {
                             section.style.display = 'block';
@@ -2208,6 +2285,30 @@
                     addTypingEffect(heroTitle, titleText, 150);
                 }, 1000);
             }
+        }
+
+        // 添加清除筛选功能
+        function clearFilter() {
+            // 隐藏筛选状态条
+            document.getElementById('filter-status').classList.add('hidden');
+            
+            // 清空搜索框
+            document.getElementById('searchInput').value = '';
+            
+            // 显示所有卡片和分类
+            document.querySelectorAll('.site-card').forEach(card => {
+                card.style.display = 'flex';
+            });
+            
+            document.querySelectorAll('.category-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // 重置分类选项卡，保持"全部"选中
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('.category-tab[data-category="all"]').classList.add('active');
         }
     </script>
 </body>
