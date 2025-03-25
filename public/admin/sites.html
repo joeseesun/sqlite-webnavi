@@ -2943,6 +2943,20 @@
                                 e.detail.data.id = newTag.id;
                             }
                             
+                            // 关键修复：更新Tagify内部的value数组
+                            // 查找内部数据中的这个标签并更新ID
+                            const tagIndex = tagifyInstance.value.findIndex(t => 
+                                t.value === tagValue && (!t.id || t.id === undefined)
+                            );
+
+                            if (tagIndex >= 0) {
+                                console.log(`在Tagify内部数据的索引 ${tagIndex} 处更新标签ID为 ${newTag.id}`);
+                                tagifyInstance.value[tagIndex].id = newTag.id;
+                                console.log('更新后的Tagify值:', JSON.stringify(tagifyInstance.value));
+                            } else {
+                                console.warn('无法在Tagify内部数据中找到匹配的标签进行更新');
+                            }
+                            
                             // 添加到标签列表
                             allTags.push(newTag);
                             
