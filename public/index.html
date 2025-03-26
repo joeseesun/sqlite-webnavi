@@ -650,8 +650,8 @@
         /* Logo美化 - 改为纯黑/纯白 */
         .logo {
             font-family: 'Noto Serif SC', serif;
-            font-weight: 700;
-            font-size: 1.75rem;
+            font-weight: 800;
+            font-size: 2rem;
             color: #000000;
             transition: color 0.3s ease;
         }
@@ -1333,7 +1333,7 @@
         
         .mobile-menu-title {
             font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
@@ -1369,8 +1369,8 @@
         }
         
         .mobile-logo .logo {
-            font-size: 1.2rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 800;
             color: var(--text-primary);
             text-decoration: none;
         }
@@ -1500,9 +1500,27 @@
         
         .mobile-menu-title {
             font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 700;
             margin: 15px 0 10px;
-            padding: 0 15px;
+            padding: 0 15px 0 18px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .mobile-menu-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 1.2em;
+            background-color: var(--primary-color, #3b82f6);
+            border-radius: 2px;
+        }
+        
+        .dark .mobile-menu-title::before {
+            background-color: var(--primary-light, #60a5fa);
         }
         
         .mobile-menu-close {
