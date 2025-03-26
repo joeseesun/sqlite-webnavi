@@ -58,8 +58,11 @@ async function loadSiteData() {
         
         console.log('按分类组织的网站:', sitesByCategory);
         
+        // 更新导航栏分类标签
+        updateCategoryTabs(categories);
+        
         // 渲染网站卡片
-        renderSiteCards(sitesByCategory);
+        renderSiteCards(sitesByCategory, categories);
         
     } catch (error) {
         console.error('加载网站数据失败:', error);
@@ -70,8 +73,41 @@ async function loadSiteData() {
     }
 }
 
+// 更新导航栏分类标签
+function updateCategoryTabs(categories) {
+    console.log('更新导航栏分类标签...');
+    
+    const tabsContainer = document.querySelector('.category-tabs');
+    if (!tabsContainer) {
+        console.error('未找到分类标签容器');
+        return;
+    }
+    
+    // 清空现有的标签（保留"全部"标签）
+    tabsContainer.innerHTML = `
+        <a href="#" class="category-link category-tab active" data-id="all">
+            <i class="fas fa-th-large mr-2"></i>全部
+        </a>
+    `;
+    
+    // 按 display_order 排序并添加分类标签
+    categories
+        .sort((a, b) => a.display_order - b.display_order)
+        .forEach(category => {
+            const tabHtml = `
+                <a href="#" class="category-link category-tab" data-id="${category.id}">
+                    <i class="${category.icon || 'fas fa-folder'} mr-2"></i>${category.name}
+                </a>
+            `;
+            tabsContainer.insertAdjacentHTML('beforeend', tabHtml);
+        });
+    
+    // 重新绑定事件监听器
+    addEventListeners();
+}
+
 // 渲染网站卡片
-function renderSiteCards(sitesByCategory) {
+function renderSiteCards(sitesByCategory, categories) {
     console.log('开始渲染网站卡片...');
     
     // 获取主内容区域
@@ -83,12 +119,23 @@ function renderSiteCards(sitesByCategory) {
         return;
     }
     
-    // 清空主内容区域
-    console.log('清空主内容区域...');
+    // 清空主内容区域，但保留筛选状态条
+    const filterStatus = mainContent.querySelector('#filter-status');
     mainContent.innerHTML = '';
+    if (filterStatus) {
+        mainContent.appendChild(filterStatus);
+    }
     
-    // 遍历分类
-    Object.values(sitesByCategory).forEach(category => {
+    // 将分类转换为数组并按 display_order 排序
+    const sortedCategories = Object.values(sitesByCategory)
+        .map(category => ({
+            ...category,
+            display_order: categories.find(c => c.id === category.id)?.display_order || 0
+        }))
+        .sort((a, b) => a.display_order - b.display_order);
+    
+    // 遍历排序后的分类
+    sortedCategories.forEach(category => {
         // 跳过没有网站的分类
         if (category.sites.length === 0) {
             return;

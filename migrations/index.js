@@ -8,9 +8,15 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 import { MongoClient } from 'mongodb';
 import * as migration from './add_hero_fields.js';
+import sqlite3 from 'sqlite3';
+import { up as addFeaturesColumns } from './add_features_columns.js';
+import { up as addSiteFlagsFields } from './add_site_flags_fields.js';
+import { up as addHeroFields } from './add_hero_fields.js';
+import { up as cleanupSettings } from './cleanup_settings.js';
+import { up as addCategoryIcon } from './add_category_icon.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -112,4 +118,87 @@ async function runMigration() {
   }
 }
 
-runMigration(); 
+runMigration();
+
+const db = new sqlite3.Database(join(__dirname, '../database.sqlite'));
+
+const migrations = [
+    {
+        name: 'add_features_columns',
+        up: addFeaturesColumns
+    },
+    {
+        name: 'add_site_flags_fields',
+        up: addSiteFlagsFields
+    },
+    {
+        name: 'add_hero_fields',
+        up: addHeroFields
+    },
+    {
+        name: 'cleanup_settings',
+        up: cleanupSettings
+    },
+    {
+        name: 'add_category_icon',
+        up: addCategoryIcon
+    }
+];
+
+async function runMigrations() {
+    try {
+        // 创建迁移记录表（如果不存在）
+        await new Promise((resolve, reject) => {
+            db.run(`
+                CREATE TABLE IF NOT EXISTS migrations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL UNIQUE,
+                    executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            `, (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+
+        // 获取已执行的迁移
+        const executedMigrations = await new Promise((resolve, reject) => {
+            db.all('SELECT name FROM migrations', (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows.map(row => row.name));
+            });
+        });
+
+        // 执行未执行的迁移
+        for (const migration of migrations) {
+            if (!executedMigrations.includes(migration.name)) {
+                console.log(`执行迁移: ${migration.name}`);
+                await migration.up();
+                
+                // 记录迁移执行
+                await new Promise((resolve, reject) => {
+                    db.run(
+                        'INSERT INTO migrations (name) VALUES (?)',
+                        [migration.name],
+                        (err) => {
+                            if (err) reject(err);
+                            else resolve();
+                        }
+                    );
+                });
+                
+                console.log(`迁移 ${migration.name} 执行完成`);
+            } else {
+                console.log(`迁移 ${migration.name} 已执行过，跳过`);
+            }
+        }
+
+        console.log('所有迁移执行完成');
+        process.exit(0);
+    } catch (error) {
+        console.error('迁移执行失败:', error);
+        process.exit(1);
+    }
+}
+
+runMigrations(); 

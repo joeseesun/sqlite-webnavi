@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网址管理 - 网址导航系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #1a1a1a;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background-color: #2d2d2d;
+        }
+        .nav-link.active {
+            background-color: #2d2d2d;
+            border-left: 4px solid #4f46e5;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #666;
+        }
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+        }
+        .tagify {
+            width: 100%;
+            max-width: 100%;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="p-4">
+            <h1 class="text-xl font-bold">网址导航系统</h1>
+        </div>
+        <nav class="mt-4">
+            <a href="/admin/index.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-home mr-3"></i>
+                仪表盘
+            </a>
+            <a href="/admin/sites.html" class="nav-link active flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-globe mr-3"></i>
+                网址管理
+            </a>
+            <a href="/admin/categories.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-folder mr-3"></i>
+                分类管理
+            </a>
+            <a href="/admin/tags.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-tags mr-3"></i>
+                标签管理
+            </a>
+            <a href="/admin/nav-menu.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-bars mr-3"></i>
+                导航菜单
+            </a>
+            <a href="/admin/settings.html" class="nav-link flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-cog mr-3"></i>
+                网站设置
+            </a>
+            <button id="user-settings-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white mt-auto">
+                <i class="fas fa-user-cog mr-3"></i>
+                用户设置
+            </button>
+            <button id="logout-btn" class="nav-link w-full flex items-center px-4 py-3 text-gray-300 hover:text-white">
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                退出登录
+            </button>
+        </nav>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 顶部栏 -->
+        <div class="bg-white shadow-sm rounded-lg p-4 mb-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">网址管理</h2>
+                <button id="add-site-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    添加网址
+                </button>
+            </div>
+        </div>
+
+        <!-- 网址列表 -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="w-8"></th>
+                            <th class="w-48 px-4 py-2">截图</th>
+                            <th class="px-4 py-2">网站信息</th>
+                            <th class="px-4 py-2">分类</th>
+                            <th class="px-4 py-2">标签</th>
+                            <th class="px-4 py-2">状态</th>
+                            <th class="px-4 py-2">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sites-table-body">
+                        <!-- 网站列表将通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑网址模态框 -->
+    <div id="site-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title" class="text-2xl font-bold mb-4">添加网址</h2>
+            <form id="site-form" class="space-y-4">
+                <input type="hidden" id="site-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">网站名称</label>
+                        <input type="text" id="site-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">网站地址</label>
+                        <input type="url" id="site-url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">网站描述</label>
+                    <textarea id="site-description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">分类</label>
+                        <select id="site-categories" multiple class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">标签</label>
+                        <input id="site-tags" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="screenshot">
+                        网站截图
+                        </label>
+                    <div id="screenshotUploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                        <input type="file" id="screenshot" name="screenshot" accept="image/*" class="hidden">
+                        <div id="screenshotPreview" class="hidden mb-2">
+                            <img src="" alt="Screenshot preview" class="max-w-xs mx-auto">
+                    </div>
+                        <p class="text-gray-600">点击上传或粘贴截图</p>
+                        <p class="text-sm text-gray-500 mt-1">支持拖拽、粘贴和点击上传</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">教程地址</label>
+                        <input type="url" id="site-tutorial" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="site-is-hot" class="rounded border-gray-300 text-red-600 focus:ring-red-500">
+                            <label for="site-is-hot" class="ml-2 block text-sm text-gray-700">热门</label>
+                    </div>
+                        <input type="date" id="site-hot-until" class="ml-2 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="site-is-new" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                            <label for="site-is-new" class="ml-2 block text-sm text-gray-700">新品</label>
+                </div>
+                        <input type="date" id="site-new-until" class="ml-2 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                </div>
+                    </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeModal()">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">保存</button>
+                </div>
+            </form>
+        </div>
+                </div>
+                
+    <!-- 用户设置模态框 -->
+    <div id="user-settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="text-2xl font-bold mb-4">修改密码</h2>
+            <form id="change-password-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">当前密码</label>
+                    <input type="password" id="current-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">新密码</label>
+                    <input type="password" id="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">确认新密码</label>
+                    <input type="password" id="confirm-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeUserSettingsModal()">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <script>
+        // 全局变量
+        let tagify;
+        let categories = [];
+        let tags = [];
+
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                window.location.href = '/admin/login.html';
+                return;
+            }
+            
+            fetch('/api/auth/check', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Token invalid');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.authenticated) {
+                    throw new Error('Not authenticated');
+                }
+            })
+            .catch(error => {
+                console.error('认证失败:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/admin/login.html';
+            });
+        }
+
+        // 加载分类列表
+        async function loadCategories() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/categories', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                    categories = await response.json();
+                
+                const select = document.getElementById('site-categories');
+                select.innerHTML = categories.map(category => 
+                    `<option value="${category.id}">${category.name}</option>`
+                ).join('');
+                } catch (error) {
+                console.error('加载分类列表失败:', error);
+            }
+        }
+
+        // 加载标签列表
+        async function loadTags() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/tags', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                    tags = await response.json();
+                
+                // 初始化Tagify
+                const input = document.getElementById('site-tags');
+                tagify = new Tagify(input, {
+                    whitelist: tags.map(tag => tag.name),
+                    dropdown: {
+                        maxItems: 20,
+                        classname: "tags-look",
+                        enabled: 0,
+                        closeOnSelect: false
+                    }
+                });
+                } catch (error) {
+                console.error('加载标签列表失败:', error);
+            }
+        }
+            
+            // 加载网站列表
+        async function loadSites() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('未登录，请先登录');
+                }
+
+                const response = await fetch('/api/sites', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        window.location.href = '/admin/login.html';
+                        return;
+                    }
+                    throw new Error(`加载失败: ${response.status} ${response.statusText}`);
+                }
+
+                const sites = await response.json();
+                console.log('加载的网站列表:', sites);
+
+                const tableBody = document.getElementById('sites-table-body');
+                if (!tableBody) {
+                    throw new Error('找不到网站列表容器元素');
+                }
+                
+                // 清空现有内容
+                tableBody.innerHTML = '';
+                
+                sites.forEach(site => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b hover:bg-gray-50 cursor-move';
+                    tr.dataset.id = site.id;
+                    
+                    // 处理截图URL
+                    let screenshotUrl = site.screenshot || '';
+                    console.log(`网站 ${site.id} 原始截图URL:`, screenshotUrl);
+                    
+                    // 确保URL格式正确
+                    if (screenshotUrl && !screenshotUrl.startsWith('http')) {
+                        // 移除开头的斜杠（如果有）
+                        screenshotUrl = screenshotUrl.replace(/^\/+/, '');
+                        // 确保路径包含uploads/screenshots
+                        if (!screenshotUrl.startsWith('uploads/screenshots/')) {
+                            screenshotUrl = 'uploads/screenshots/' + screenshotUrl;
+                        }
+                        // 添加根路径
+                        screenshotUrl = '/' + screenshotUrl;
+                    }
+                    
+                    console.log(`网站 ${site.id} 处理后的截图URL:`, screenshotUrl);
+                    
+                    // 尝试预加载图片
+                    if (screenshotUrl) {
+                        try {
+                            await new Promise((resolve, reject) => {
+                                const img = new Image();
+                                const timeoutId = setTimeout(() => {
+                                    reject(new Error('图片加载超时'));
+                                }, 5000);
+
+                                img.onload = () => {
+                                    clearTimeout(timeoutId);
+                                    console.log(`网站 ${site.id} 图片加载成功:`, img.src);
+                                    resolve();
+                                };
+
+                                img.onerror = () => {
+                                    clearTimeout(timeoutId);
+                                    reject(new Error('图片加载失败'));
+                                };
+
+                                img.src = screenshotUrl;
+                            });
+                        } catch (error) {
+                            console.warn(`网站 ${site.id} 图片加载失败:`, error);
+                            screenshotUrl = '/images/no-image.png';
+                        }
+                    }
+                    
+                    // 构建图片元素，添加加载错误处理
+                    const imgHtml = screenshotUrl ? 
+                        `<img src="${screenshotUrl}" alt="${site.name}" class="w-32 h-20 object-cover rounded" 
+                            onerror="this.onerror=null; this.src='/images/no-image.png'; console.error('图片加载失败:', this.src);">` :
+                        '<div class="w-32 h-20 bg-gray-200 rounded flex items-center justify-center">无截图</div>';
+                    
+                    tr.innerHTML = `
+                        <td class="px-2 py-2 text-center">
+                            <i class="fas fa-grip-vertical text-gray-400"></i>
+                        </td>
+                        <td class="px-4 py-2">
+                            ${imgHtml}
+                        </td>
+                        <td class="px-4 py-2">
+                            <div class="font-semibold">${site.name}</div>
+                            <div class="text-sm text-gray-600">${site.url}</div>
+                            <div class="text-sm text-gray-500">${site.description || ''}</div>
+                        </td>
+                        <td class="px-4 py-2">
+                            ${(site.categories || []).map(cat => 
+                                `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">${cat.name}</span>`
+                            ).join(' ')}
+                        </td>
+                        <td class="px-4 py-2">
+                            ${(site.tags || []).map(tag => 
+                                `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">${tag.name}</span>`
+                            ).join(' ')}
+                        </td>
+                        <td class="px-4 py-2">
+                            <div class="flex space-x-4">
+                                ${site.is_hot ? '<span class="text-red-500"><i class="fas fa-fire"></i> 热门</span>' : ''}
+                                ${site.is_new ? '<span class="text-green-500"><i class="fas fa-star"></i> 新品</span>' : ''}
+                            </div>
+                        </td>
+                        <td class="px-4 py-2">
+                            <button onclick="editSite(${site.id})" class="text-blue-600 hover:text-blue-800 mr-2">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteSite(${site.id})" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(tr);
+                });
+
+                // 初始化排序功能
+                new Sortable(document.querySelector('#sites-table-body'), {
+                    handle: '.fa-grip-vertical',
+                    animation: 150,
+                    onEnd: async function(evt) {
+                        try {
+                            // 显示加载提示
+                    Swal.fire({
+                                title: '正在保存排序...',
+                                allowOutsideClick: false,
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+
+                            // 获取所有行的ID
+                            const rows = Array.from(document.querySelectorAll('#sites-table-body tr'));
+                            const siteIds = rows.map(row => row.dataset.id);
+
+                            // 调用后端API更新排序
+                            const response = await fetch('/api/sites/reorder', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                },
+                                body: JSON.stringify({ siteIds })
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('更新排序失败');
+                            }
+
+                            // 显示成功提示
+                            Swal.fire({
+                                icon: 'success',
+                                title: '排序已保存',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            // 重新加载网站列表以更新顺序
+                            await loadSites();
+            } catch (error) {
+                            console.error('更新排序失败:', error);
+                            
+                            // 显示错误提示
+                    Swal.fire({
+                                icon: 'error',
+                                title: '保存失败',
+                                text: '排序更新失败，将重新加载页面恢复原始顺序',
+                                showConfirmButton: true
+                            }).then(() => {
+                                // 重新加载页面以恢复原始顺序
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('加载网站列表失败:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '加载失败',
+                    text: '获取网站列表失败，请稍后重试'
+                });
+            }
+        }
+
+        // 打开模态框
+        function openModal(isEdit = false) {
+            document.getElementById('modal-title').textContent = isEdit ? '编辑网址' : '添加网址';
+            document.getElementById('site-modal').style.display = 'block';
+            if (!isEdit) {
+                document.getElementById('site-form').reset();
+                document.getElementById('site-id').value = '';
+                
+                // 重置预览区域
+                const screenshotPreview = document.getElementById('screenshotPreview');
+                let previewImg = screenshotPreview.querySelector('img');
+                if (!previewImg) {
+                    previewImg = document.createElement('img');
+                    previewImg.alt = 'Screenshot preview';
+                    previewImg.className = 'max-w-xs mx-auto';
+                    screenshotPreview.appendChild(previewImg);
+                }
+                previewImg.src = '';
+                screenshotPreview.classList.add('hidden');
+                
+                // 清除文件输入
+                document.getElementById('screenshot').value = '';
+                // 清除标签
+                tagify.removeAllTags();
+            }
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('site-modal').style.display = 'none';
+        }
+
+        // 修改图片预览处理函数
+        function handleScreenshotFile(file) {
+            console.log('1. 开始处理文件:', {
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: new Date(file.lastModified).toISOString()
+            });
+            
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                const screenshotPreview = document.getElementById('screenshotPreview');
+                console.log('2. 获取预览容器元素:', {
+                    exists: !!screenshotPreview,
+                    className: screenshotPreview?.className,
+                    isHidden: screenshotPreview?.classList.contains('hidden')
+                });
+                
+                // 确保预览容器存在
+                if (!screenshotPreview) {
+                    console.error('预览容器不存在');
+                    return;
+                }
+                
+                // 获取或创建预览图片元素
+                let previewImg = screenshotPreview.querySelector('img');
+                console.log('3. 当前预览图片元素:', {
+                    exists: !!previewImg,
+                    src: previewImg?.src,
+                    className: previewImg?.className
+                });
+                
+                if (!previewImg) {
+                    console.log('4. 创建新的预览图片元素');
+                    previewImg = document.createElement('img');
+                    previewImg.alt = 'Screenshot preview';
+                    previewImg.className = 'max-w-xs mx-auto';
+                    screenshotPreview.appendChild(previewImg);
+                }
+                
+                // 设置FileReader的回调
+                reader.onload = (e) => {
+                    console.log('5. 文件读取完成，准备显示预览');
+                    
+                    // 创建新的Image对象进行预加载
+                    const tempImage = new Image();
+                    
+                    tempImage.onload = () => {
+                        console.log('6. 临时图片加载完成，尺寸验证通过');
+                        
+                        // 设置实际预览图片
+                        previewImg.src = e.target.result;
+                        console.log('7. 设置预览图片src');
+                        
+                        // 显示预览区域
+                        screenshotPreview.classList.remove('hidden');
+                        console.log('8. 显示预览区域');
+                        
+                        // 更新文件输入
+                        console.log('9. 更新文件输入');
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        const screenshotInput = document.getElementById('screenshot');
+                        screenshotInput.files = dataTransfer.files;
+                        
+                        console.log('10. 处理完成', {
+                            previewVisible: !screenshotPreview.classList.contains('hidden'),
+                            fileInputCount: screenshotInput.files.length
+                        });
+                    };
+                    
+                    tempImage.onerror = () => {
+                        console.error('图片加载失败');
+                        Swal.fire({
+                            icon: 'error',
+                            title: '图片加载失败',
+                            text: '请检查图片格式是否正确'
+                        });
+                    };
+                    
+                    // 开始加载临时图片
+                    tempImage.src = e.target.result;
+                };
+                
+                reader.onerror = (error) => {
+                    console.error('文件读取失败:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '文件读取失败',
+                        text: '请重试或选择其他图片'
+                    });
+                };
+                
+                // 开始读取文件
+                console.log('11. 开始读取文件');
+                reader.readAsDataURL(file);
+                
+            } else {
+                console.warn('不支持的文件类型:', file.type);
+                Swal.fire({
+                    icon: 'error',
+                    title: '不支持的文件类型',
+                    text: '请选择图片文件'
+                });
+            }
+        }
+
+        // 修改拖拽区域的事件处理
+        const screenshotUploadArea = document.getElementById('screenshotUploadArea');
+        const screenshotInput = document.getElementById('screenshot');
+        const screenshotPreview = document.getElementById('screenshotPreview');
+
+        // 点击上传
+        screenshotUploadArea.addEventListener('click', () => {
+            console.log('15. 点击上传区域');
+            screenshotInput.click();
+        });
+
+        // 文件选择处理
+        screenshotInput.addEventListener('change', (e) => {
+            console.log('16. 文件选择事件触发', {
+                filesCount: e.target.files.length
+            });
+            const file = e.target.files[0];
+            if (file) {
+                handleScreenshotFile(file);
+            }
+        });
+
+        // 拖拽处理
+        screenshotUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            console.log('17. 拖拽悬停');
+            screenshotUploadArea.classList.add('border-blue-500');
+        });
+
+        screenshotUploadArea.addEventListener('dragleave', () => {
+            console.log('18. 拖拽离开');
+            screenshotUploadArea.classList.remove('border-blue-500');
+        });
+
+        screenshotUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            console.log('19. 文件拖放', {
+                filesCount: e.dataTransfer.files.length
+            });
+            screenshotUploadArea.classList.remove('border-blue-500');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleScreenshotFile(file);
+            }
+        });
+
+        // 粘贴处理
+        document.addEventListener('paste', (e) => {
+            console.log('20. 粘贴事件触发', {
+                itemsCount: e.clipboardData.items.length,
+                types: Array.from(e.clipboardData.items).map(item => item.type)
+            });
+            const items = e.clipboardData.items;
+            for (let item of items) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    handleScreenshotFile(file);
+                    break;
+                }
+            }
+        });
+
+        // 编辑网站
+        async function editSite(siteId) {
+            try {
+                // 显示加载提示
+                Swal.fire({
+                    title: '加载中...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // 获取网站详情
+                const response = await fetch(`/api/sites/${siteId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('加载网站详情失败');
+                }
+
+                const site = await response.json();
+                console.log('网站详情:', site); // 添加调试日志
+                
+                // 填充表单
+                document.getElementById('site-id').value = site.id;
+                document.getElementById('site-name').value = site.name;
+                document.getElementById('site-url').value = site.url;
+                document.getElementById('site-description').value = site.description || '';
+                document.getElementById('site-tutorial').value = site.tutorial_url || '';
+                document.getElementById('site-is-hot').checked = site.is_hot === 1;
+                document.getElementById('site-is-new').checked = site.is_new === 1;
+                document.getElementById('site-hot-until').value = site.hot_until || '';
+                document.getElementById('site-new-until').value = site.new_until || '';
+
+                // 显示现有截图
+                const screenshotPreview = document.getElementById('screenshotPreview');
+                const previewImg = screenshotPreview.querySelector('img') || document.createElement('img');
+                if (site.screenshot) {
+                    previewImg.src = site.screenshot;
+                    previewImg.alt = site.name;
+                    previewImg.className = 'max-w-xs mx-auto';
+                    if (!screenshotPreview.contains(previewImg)) {
+                        screenshotPreview.appendChild(previewImg);
+                    }
+                    screenshotPreview.classList.remove('hidden');
+                        } else {
+                    screenshotPreview.classList.add('hidden');
+                }
+
+                // 设置分类
+                const categorySelect = document.getElementById('site-categories');
+                const selectedCategoryIds = site.categories.map(cat => cat.id.toString()); // 转换为字符串
+                console.log('已选分类:', selectedCategoryIds); // 添加调试日志
+                
+                // 遍历所有选项设置选中状态
+                Array.from(categorySelect.options).forEach(option => {
+                    option.selected = selectedCategoryIds.includes(option.value);
+                    console.log(`分类选项 ${option.value} (${option.text}) 选中状态:`, option.selected); // 添加调试日志
+                });
+
+                // 设置标签
+                tagify.removeAllTags();
+                if (site.tags && site.tags.length > 0) {
+                    tagify.addTags(site.tags.map(tag => tag.name));
+                }
+
+                // 关闭加载提示并显示模态框
+                Swal.close();
+                openModal(true);
+            } catch (error) {
+                console.error('加载网站详情失败:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '错误',
+                    text: error.message
+                });
+            }
+        }
+
+        // 删除网站
+        async function deleteSite(id) {
+                const result = await Swal.fire({
+                    title: '确认删除',
+                text: '确定要删除这个网站吗？',
+                    icon: 'warning',
+                    showCancelButton: true,
+                confirmButtonText: '确定删除',
+                    cancelButtonText: '取消'
+                });
+
+                if (result.isConfirmed) {
+                try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/sites/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: '成功',
+                            text: '网站删除成功',
+                            icon: 'success'
+                        });
+                    loadSites();
+                    } else {
+                        throw new Error('删除失败');
+                }
+            } catch (error) {
+                    console.error('删除网站失败:', error);
+                Swal.fire({
+                        title: '错误',
+                        text: '删除网站失败',
+                        icon: 'error'
+                });
+            }
+        }
+        }
+
+        // 修改表单提交函数
+        async function submitForm(e) {
+            e.preventDefault();
+            
+            try {
+                // 显示加载提示
+                const loadingPrompt = Swal.fire({
+                    title: '保存中...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                const formData = new FormData();
+                const currentSiteId = document.getElementById('site-id').value;
+                const screenshotFile = document.getElementById('screenshot').files[0];
+                
+                // 构建表单数据
+                formData.append('name', document.getElementById('site-name').value.trim());
+                formData.append('url', document.getElementById('site-url').value.trim());
+                formData.append('description', document.getElementById('site-description').value.trim() || '');
+                formData.append('tutorial_url', document.getElementById('site-tutorial').value.trim() || '');
+                formData.append('is_hot', document.getElementById('site-is-hot').checked ? '1' : '0');
+                formData.append('is_new', document.getElementById('site-is-new').checked ? '1' : '0');
+                formData.append('hot_until', document.getElementById('site-hot-until').value || '');
+                formData.append('new_until', document.getElementById('site-new-until').value || '');
+
+                // 处理分类
+                const categorySelect = document.getElementById('site-categories');
+                const selectedCategories = Array.from(categorySelect.selectedOptions).map(option => parseInt(option.value));
+                formData.append('categories', JSON.stringify(selectedCategories));
+
+                // 处理标签
+                const tags = tagify.value.map(tag => tag.value);
+                formData.append('tags', JSON.stringify(tags));
+
+                // 添加图片（如果有）
+                if (screenshotFile) {
+                    formData.append('screenshot', screenshotFile);
+                    console.log('添加图片到表单:', {
+                        name: screenshotFile.name,
+                        type: screenshotFile.type,
+                        size: screenshotFile.size
+                    });
+                }
+
+                // 发送请求
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('未登录或登录已过期');
+                }
+
+                // 定义最大重试次数
+                const maxRetries = 3;
+                let currentRetry = 0;
+                let success = false;
+                let result;
+
+                while (currentRetry < maxRetries && !success) {
+                    try {
+                        console.log(`尝试第 ${currentRetry + 1} 次保存`);
+                        
+                        const response = await fetch(currentSiteId ? `/api/sites/${currentSiteId}` : '/api/sites', {
+                            method: currentSiteId ? 'PUT' : 'POST',
+                            body: formData,
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || `服务器返回错误: ${response.status}`);
+                        }
+
+                        result = await response.json();
+                        console.log('服务器响应:', result);
+
+                        if (!result) {
+                            throw new Error('服务器返回数据为空');
+                        }
+
+                        // 如果上传了图片，验证返回的图片路径
+                        if (screenshotFile) {
+                            if (!result.screenshot) {
+                                throw new Error('服务器未返回图片路径');
+                            }
+
+                            // 验证图片是否可访问
+                            let imgPath = result.screenshot;
+                            if (!imgPath.startsWith('http') && !imgPath.startsWith('/')) {
+                                imgPath = '/' + imgPath;
+                            }
+
+                            console.log('验证图片路径:', imgPath);
+                            
+                            // 等待一段时间让服务器处理图片
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+
+                            // 尝试加载图片
+                            try {
+                                await new Promise((resolve, reject) => {
+                                    const img = new Image();
+                                    const timeoutId = setTimeout(() => {
+                                        reject(new Error('图片加载超时'));
+                                    }, 5000);
+
+                                    img.onload = () => {
+                                        clearTimeout(timeoutId);
+                                        console.log('图片加载成功:', img.src);
+                                        resolve();
+                                    };
+
+                                    img.onerror = () => {
+                                        clearTimeout(timeoutId);
+                                        reject(new Error('图片加载失败'));
+                                    };
+
+                                    img.src = imgPath;
+                                });
+                                
+                                // 图片加载成功，标记操作成功
+                                success = true;
+                            } catch (error) {
+                                console.warn(`图片验证失败 (重试 ${currentRetry + 1}/${maxRetries}):`, error);
+                                if (currentRetry < maxRetries - 1) {
+                                    await new Promise(resolve => setTimeout(resolve, 2000 * (currentRetry + 1)));
+                                }
+                            }
+                        } else {
+                            // 如果没有上传图片，直接标记成功
+                            success = true;
+                        }
+                    } catch (error) {
+                        console.error(`保存失败 (重试 ${currentRetry + 1}/${maxRetries}):`, error);
+                        if (currentRetry < maxRetries - 1) {
+                            await new Promise(resolve => setTimeout(resolve, 2000 * (currentRetry + 1)));
+                        }
+                    }
+            
+            currentRetry++;
+        }
+
+        if (!success) {
+            throw new Error('保存失败，请稍后重试');
+        }
+
+        // 显示成功消息
+        await Swal.fire({
+            icon: 'success',
+            title: '保存成功',
+            text: '网站信息已更新',
+            showConfirmButton: false,
+            timer: 1500
+        });
+
+        // 关闭模态框
+        closeModal();
+
+        // 等待额外时间确保图片处理完成
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // 清空并重新加载列表
+        const tableBody = document.getElementById('sites-table-body');
+        if (tableBody) {
+            tableBody.innerHTML = '';
+        }
+
+        // 重新加载网站列表
+        await loadSites();
+
+    } catch (error) {
+        console.error('最终保存失败:', error);
+        Swal.fire({
+            icon: 'error',
+            title: '保存失败',
+            text: error.message || '请稍后重试'
+        });
+    }
+}
+
+        // 绑定表单提交事件
+        document.getElementById('site-form').addEventListener('submit', submitForm);
+
+        // 用户设置相关函数
+        function openUserSettingsModal() {
+            document.getElementById('user-settings-modal').style.display = 'block';
+        }
+
+        function closeUserSettingsModal() {
+            document.getElementById('user-settings-modal').style.display = 'none';
+            document.getElementById('change-password-form').reset();
+        }
+
+        // 修改密码表单提交
+        document.getElementById('change-password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                Swal.fire({
+                    title: '错误',
+                    text: '两次输入的新密码不一致',
+                    icon: 'error'
+                });
+                return;
+            }
+                        
+                        try {
+                            const token = localStorage.getItem('token');
+                const response = await fetch('/api/auth/change-password', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                            });
+                            
+                            if (!response.ok) {
+                    throw new Error('修改密码失败');
+                }
+                
+                Swal.fire({
+                    title: '成功',
+                    text: '密码修改成功',
+                    icon: 'success'
+                });
+                
+                closeUserSettingsModal();
+                        } catch (error) {
+                console.error('修改密码失败:', error);
+                Swal.fire({
+                    title: '错误',
+                    text: '修改密码失败，请检查当前密码是否正确',
+                    icon: 'error'
+                });
+            }
+        });
+
+        // 用户设置按钮点击事件
+        document.getElementById('user-settings-btn').addEventListener('click', openUserSettingsModal);
+
+        // 关闭按钮点击事件
+        document.querySelector('#user-settings-modal .close').addEventListener('click', closeUserSettingsModal);
+        document.querySelector('#site-modal .close').addEventListener('click', closeModal);
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const userSettingsModal = document.getElementById('user-settings-modal');
+            const siteModal = document.getElementById('site-modal');
+            if (e.target === userSettingsModal) {
+                closeUserSettingsModal();
+            }
+            if (e.target === siteModal) {
+                closeModal();
+            }
+        });
+
+        // 退出登录
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            Swal.fire({
+                title: '确认退出',
+                text: '您确定要退出登录吗？',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '确定退出',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/admin/login.html';
+                }
+            });
+        });
+
+        // 添加网站按钮点击事件
+        document.getElementById('add-site-btn').addEventListener('click', function() {
+            openModal();
+        });
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadCategories();
+            loadTags();
+                loadSites();
+        });
+    </script>
+</body>
+</html> 

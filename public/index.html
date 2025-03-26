@@ -414,42 +414,34 @@
             visibility: visible;
         }
 
-        /* 主题切换按钮 */
+        /* 主题切换按钮样式 */
         .theme-toggle {
-            position: relative;
-            width: 52px;
-            height: 26px;
-            border-radius: 13px;
-            background: var(--primary);
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
-        }
-
-        .theme-toggle::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 20px;
-            height: 20px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background-color: white;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--card-border);
         }
 
-        .dark .theme-toggle {
-            background: var(--primary);
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--primary-light);
+            color: white;
         }
 
-        .dark .theme-toggle::after {
-            transform: translateX(26px);
-            background-color: var(--bg-secondary);
+        .theme-toggle i {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
         }
 
-        .theme-toggle:hover::after {
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        .theme-toggle:hover i {
+            color: white;
         }
 
         /* 热门标签 */
@@ -1312,7 +1304,9 @@
                     <!-- 导航菜单将通过JavaScript动态加载 -->
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="theme-toggle" id="themeToggle" title="切换深色/浅色模式"></div>
+                    <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">
+                        <i class="fas fa-sun"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1410,54 +1404,7 @@
                 </button>
             </div>
         </div>
-        
-        <!-- 测试卡片 -->
-        <section class="category-section mb-12">
-            <h2 class="text-2xl font-bold mb-2">测试分类</h2>
-            <p class="text-gray-600 mb-6">这是一个测试分类，用于验证卡片显示是否正常</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sites-container">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:-translate-y-1">
-                    <a href="https://example.com" target="_blank" class="block h-full">
-                        <div class="relative overflow-hidden" style="padding-top: 56.25%;">
-                            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22348%22%20height%3D%22225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20348%20225%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18e5eb468a8%20text%20%7B%20fill%3A%23eceeef%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A17pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18e5eb468a8%22%3E%3Crect%20width%3D%22348%22%20height%3D%22225%22%20fill%3D%22%2355595c%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22116.7109375%22%20y%3D%22120.3%22%3EThumbnail%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="测试网站" class="absolute top-0 left-0 w-full h-full object-cover">
-                            <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">热门</span>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg mb-2 text-gray-900 dark:text-white">测试网站</h3>
-                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">这是一个测试网站描述</p>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">测试标签1</span>
-                                <span class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">测试标签2</span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
-        
-        <!-- 测试卡片 - 用于调试搜索功能 -->
-        <div class="category-section mb-12">
-            <h2 class="text-2xl font-bold mb-6">测试分类</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- 测试卡片 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:-translate-y-1" data-id="test-card" data-tags="测试,搜索,功能测试">
-                    <a href="#" target="_blank" class="block h-full">
-                        <div class="relative overflow-hidden" style="padding-top: 56.25%;">
-                            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22348%22%20height%3D%22225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20348%20225%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18e5eb468a8%20text%20%7B%20fill%3A%23eceeef%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A17pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18e5eb468a8%22%3E%3Crect%20width%3D%22348%22%20height%3D%22225%22%20fill%3D%22%2355595c%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22116.7109375%22%20y%3D%22120.3%22%3EThumbnail%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="测试卡片" class="absolute top-0 left-0 w-full h-full object-cover">
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg mb-2 text-gray-900 dark:text-white">测试卡片</h3>
-                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">这是一个用于测试搜索功能的卡片</p>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">测试</span>
-                                <span class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">搜索</span>
-                                <span class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">功能测试</span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
+        <!-- 分类和网站卡片将通过 JavaScript 动态加载 -->
     </main>
 
     <!-- Footer -->
@@ -1666,22 +1613,73 @@
         // 初始化主题切换
         function initThemeToggle() {
             const themeToggle = document.getElementById('themeToggle');
+            if (!themeToggle) return;
+
             const html = document.documentElement;
-            const currentTheme = localStorage.getItem('theme') || 'light';
+            const body = document.body;
             
-            html.classList.add(currentTheme);
+            // 检查系统主题偏好
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const savedTheme = localStorage.getItem('theme');
+            const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
             
+            // 应用初始主题
+            applyTheme(currentTheme);
+            
+            // 更新按钮图标
+            updateThemeToggleIcon(currentTheme);
+            
+            // 添加点击事件
             themeToggle.addEventListener('click', () => {
-                if (html.classList.contains('dark')) {
-                    html.classList.remove('dark');
-                    html.classList.add('light');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    html.classList.remove('light');
-                    html.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
+                const isDark = html.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                
+                applyTheme(newTheme);
+                updateThemeToggleIcon(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+
+            // 监听系统主题变化
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    applyTheme(newTheme);
+                    updateThemeToggleIcon(newTheme);
                 }
             });
+        }
+
+        // 应用主题
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            const body = document.body;
+
+            // 移除所有主题类
+            html.classList.remove('light', 'dark');
+            
+            // 添加新主题类
+            html.classList.add(theme);
+            
+            // 更新body背景色和文字颜色
+            body.style.backgroundColor = `var(--bg-primary)`;
+            body.style.color = `var(--text-primary)`;
+
+            // 触发重新计算CSS变量
+            document.body.style.display = 'none';
+            document.body.offsetHeight; // 强制重排
+            document.body.style.display = '';
+        }
+
+        // 更新主题切换按钮图标
+        function updateThemeToggleIcon(theme) {
+            const themeToggle = document.getElementById('themeToggle');
+            if (!themeToggle) return;
+
+            const icon = themeToggle.querySelector('i');
+            if (!icon) return;
+
+            icon.className = `fas ${theme === 'dark' ? 'fa-moon' : 'fa-sun'}`;
+            themeToggle.title = `切换到${theme === 'dark' ? '浅色' : '深色'}模式`;
         }
     </script>
 </body>

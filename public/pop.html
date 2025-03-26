@@ -1942,43 +1942,27 @@
         function renderCategories() {
             const tabsContainer = document.querySelector('.category-tabs');
             
-            // 清空现有的选项卡（保留"全部"选项卡）
+            // 清空现有的标签（保留"全部"标签）
             tabsContainer.innerHTML = `
-                <div class="category-tab active" data-category="all">
+                <a href="#" class="category-link category-tab active" data-id="all">
                     <i class="fas fa-th-large mr-2"></i>全部
-                            </div>
+                </a>
             `;
             
-            // 将分类按网站数量排序
-            const sortedCategories = [...allCategories].sort((a, b) => b.siteCount - a.siteCount);
+            // 按 display_order 排序并添加分类标签
+            categories
+                .sort((a, b) => a.display_order - b.display_order)
+                .forEach(category => {
+                    const tabHtml = `
+                        <a href="#" class="category-link category-tab" data-id="${category.id}">
+                            <i class="${category.icon || 'fas fa-folder'} mr-2"></i>${category.name}
+                        </a>
+                    `;
+                    tabsContainer.insertAdjacentHTML('beforeend', tabHtml);
+                });
             
-            // 只显示有网站的分类
-            const categoriesToShow = sortedCategories.filter(cat => cat.siteCount > 0);
-            
-            // 添加分类选项卡
-            categoriesToShow.forEach(category => {
-                // 分类图标映射
-                const iconMap = {
-                    'AI工具': 'fas fa-robot',
-                    '阅读与知识': 'fas fa-book-reader',
-                    '精选Newsletter': 'fas fa-newspaper',
-                    '生产力工具': 'fas fa-tools',
-                    '开发工具': 'fas fa-code'
-                };
-                
-                // 获取图标或使用默认图标
-                const icon = iconMap[category.name] || 'fas fa-folder';
-                
-                const tabHtml = `
-                    <div class="category-tab" data-category="${category.id}">
-                        <i class="${icon} mr-2"></i>${category.name}
-                            </div>
-                `;
-                tabsContainer.innerHTML += tabHtml;
-            });
-            
-            // 为新的选项卡添加点击事件
-            addTabClickEvents();
+            // 重新绑定事件监听器
+            addEventListeners();
         }
 
         // 根据分类渲染网站卡片
@@ -2003,8 +1987,8 @@
             `;
             mainContent.innerHTML = filterStatusHtml;
             
-            // 将分类按网站数量排序
-            const sortedCategories = [...allCategories].sort((a, b) => b.siteCount - a.siteCount);
+            // 使用后台配置的排序顺序
+            const sortedCategories = [...allCategories].sort((a, b) => a.display_order - b.display_order);
             
             // 只显示有网站的分类
             const categoriesToShow = sortedCategories.filter(cat => cat.siteCount > 0);
@@ -2139,7 +2123,14 @@
                             <img src="${site.screenshot || placeholderUrl}" alt="${site.name}" class="card-img" 
                                  onerror="this.onerror=null; this.src='${placeholderUrl}';">
                             ${statusLabelHtml}
-                            ${tutorialLinkHtml}
+                            ${site.tutorial_url ? `
+                                <a href="${site.tutorial_url}" 
+                                   class="absolute bottom-2 left-2 bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1 rounded flex items-center transition-all duration-300 z-10"
+                                   target="_blank"
+                                   onclick="event.stopPropagation();">
+                                    <i class="fas fa-book-reader mr-1"></i>教程
+                                </a>
+                            ` : ''}
                         </div>
                         <div class="card-content">
                             <div class="card-header">

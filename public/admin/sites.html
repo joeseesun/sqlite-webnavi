@@ -137,6 +137,58 @@
                     添加网址
                 </button>
             </div>
+            
+            <!-- 搜索框 -->
+            <div class="flex items-center space-x-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="搜索网站名称、URL或描述..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                </div>
+                <button id="search-btn" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                    搜索
+                </button>
+                <button id="reset-search-btn" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                    重置
+                </button>
+            </div>
+            
+            <!-- 筛选和排序 -->
+            <div class="flex items-center space-x-4 mt-4">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">按分类筛选</label>
+                    <select id="category-filter" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">全部分类</option>
+                        <!-- 分类选项将通过JavaScript动态加载 -->
+                    </select>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">排序方式</label>
+                    <select id="sort-order" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="default">默认排序</option>
+                        <option value="name-asc">名称 (A-Z)</option>
+                        <option value="name-desc">名称 (Z-A)</option>
+                        <option value="newest">最新添加</option>
+                        <option value="oldest">最早添加</option>
+                    </select>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">状态筛选</label>
+                    <select id="status-filter" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">全部状态</option>
+                        <option value="hot">热门</option>
+                        <option value="new">新品</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button id="apply-filters-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        应用筛选
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- 网址列表 -->
@@ -147,7 +199,7 @@
                         <tr class="bg-gray-100">
                             <th class="w-8"></th>
                             <th class="w-48 px-4 py-2">截图</th>
-                            <th class="px-4 py-2">网站信息</th>
+                            <th class="w-[500px] px-4 py-2">网站信息</th>
                             <th class="px-4 py-2">分类</th>
                             <th class="px-4 py-2">标签</th>
                             <th class="px-4 py-2">状态</th>
@@ -164,79 +216,89 @@
 
     <!-- 添加/编辑网址模态框 -->
     <div id="site-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content max-w-4xl">
             <span class="close">&times;</span>
-            <h2 id="modal-title" class="text-2xl font-bold mb-4">添加网址</h2>
+            <h2 id="modal-title" class="text-2xl font-bold mb-4 text-center text-blue-600">添加网址</h2>
             <form id="site-form" class="space-y-4">
                 <input type="hidden" id="site-id">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">网站名称</label>
-                        <input type="text" id="site-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
-                </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">网站地址</label>
-                        <input type="url" id="site-url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
-                </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">网站描述</label>
-                    <textarea id="site-description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">网站名称 <span class="text-red-500">*</span></label>
+                        <input type="text" id="site-name" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" required placeholder="输入网站名称">
                     </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">网站地址 <span class="text-red-500">*</span></label>
+                        <input type="url" id="site-url" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" required placeholder="https://example.com">
+                    </div>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">网站描述</label>
+                    <textarea id="site-description" rows="2" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="输入网站描述..."></textarea>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">分类</label>
-                        <select id="site-categories" multiple class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                        <select id="site-categories" multiple class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 h-24">
                         </select>
+                        <p class="text-xs text-gray-500 mt-0.5">按住Ctrl键可选择多个分类</p>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">标签</label>
-                        <input id="site-tags" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">标签</label>
+                        <input id="site-tags" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" placeholder="输入标签，用逗号分隔">
+                        <p class="text-xs text-gray-500 mt-0.5">多个标签请用逗号分隔</p>
+                    </div>
                 </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="screenshot">
-                        网站截图
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <label class="block text-gray-700 text-sm font-medium mb-1" for="screenshot">
+                            网站截图 <span class="text-red-500">*</span>
                         </label>
-                    <div id="screenshotUploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition-colors">
-                        <input type="file" id="screenshot" name="screenshot" accept="image/*" class="hidden">
-                        <div id="screenshotPreview" class="hidden mb-2">
-                            <img src="" alt="Screenshot preview" class="max-w-xs mx-auto">
+                        <div id="screenshotUploadArea" class="border-2 border-dashed border-blue-300 rounded-lg p-3 text-center cursor-pointer hover:border-blue-500 transition-colors bg-blue-50">
+                            <input type="file" id="screenshot" name="screenshot" accept="image/*" class="hidden">
+                            <div id="screenshotPreview" class="hidden mb-2">
+                                <img src="" alt="Screenshot preview" class="max-h-24 mx-auto rounded-md shadow-sm">
+                            </div>
+                            <i class="fas fa-cloud-upload-alt text-blue-500 text-xl mb-1"></i>
+                            <p class="text-gray-700 text-sm font-medium">点击上传或粘贴截图</p>
+                            <p class="text-xs text-gray-500">支持拖拽、粘贴和点击上传</p>
+                        </div>
                     </div>
-                        <p class="text-gray-600">点击上传或粘贴截图</p>
-                        <p class="text-sm text-gray-500 mt-1">支持拖拽、粘贴和点击上传</p>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">教程地址</label>
+                        <input type="url" id="site-tutorial" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" placeholder="https://example.com/tutorial">
+                        <p class="text-xs text-gray-500 mt-0.5">可选，填写与该网站相关的教程链接</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">教程地址</label>
-                        <input type="url" id="site-tutorial" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-red-200 hover:shadow-md transition-shadow">
                         <div class="flex items-center">
-                            <input type="checkbox" id="site-is-hot" class="rounded border-gray-300 text-red-600 focus:ring-red-500">
-                            <label for="site-is-hot" class="ml-2 block text-sm text-gray-700">热门</label>
+                            <input type="checkbox" id="site-is-hot" class="w-4 h-4 rounded border-red-300 text-red-600 focus:ring-red-500">
+                            <label for="site-is-hot" class="ml-2 block text-sm font-medium text-red-700">热门</label>
+                            <div class="ml-auto">
+                                <input type="date" id="site-hot-until" class="text-sm rounded-md border-red-300 shadow-sm focus:border-red-500 focus:ring-red-500 px-2 py-1">
+                            </div>
+                        </div>
                     </div>
-                        <input type="date" id="site-hot-until" class="ml-2 rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
-                    </div>
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-green-200 hover:shadow-md transition-shadow">
                         <div class="flex items-center">
-                            <input type="checkbox" id="site-is-new" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
-                            <label for="site-is-new" class="ml-2 block text-sm text-gray-700">新品</label>
-                </div>
-                        <input type="date" id="site-new-until" class="ml-2 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
-                </div>
+                            <input type="checkbox" id="site-is-new" class="w-4 h-4 rounded border-green-300 text-green-600 focus:ring-green-500">
+                            <label for="site-is-new" class="ml-2 block text-sm font-medium text-green-700">新品</label>
+                            <div class="ml-auto">
+                                <input type="date" id="site-new-until" class="text-sm rounded-md border-green-300 shadow-sm focus:border-green-500 focus:ring-green-500 px-2 py-1">
+                            </div>
+                        </div>
                     </div>
-                <div class="flex justify-end space-x-3">
-                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeModal()">取消</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">保存</button>
+                </div>
+                <div class="flex justify-end space-x-3 mt-4">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors" onclick="closeModal()">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors shadow-sm">
+                        <i class="fas fa-save mr-1"></i>保存
+                    </button>
                 </div>
             </form>
         </div>
-                </div>
-                
+    </div>
+
     <!-- 用户设置模态框 -->
     <div id="user-settings-modal" class="modal">
         <div class="modal-content">
@@ -269,6 +331,14 @@
         let tagify;
         let categories = [];
         let tags = [];
+        let allSites = [];
+        let filteredSites = [];
+        let currentFilters = {
+            searchTerm: '',
+            categoryId: '',
+            status: '',
+            sortOrder: 'default'
+        };
 
         // 检查登录状态
         function checkAuth() {
@@ -312,13 +382,21 @@
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                    categories = await response.json();
+                categories = await response.json();
                 
+                // 更新网站编辑表单中的分类选择器
                 const select = document.getElementById('site-categories');
                 select.innerHTML = categories.map(category => 
                     `<option value="${category.id}">${category.name}</option>`
                 ).join('');
-                } catch (error) {
+                
+                // 更新分类筛选下拉框
+                const categoryFilter = document.getElementById('category-filter');
+                categoryFilter.innerHTML = '<option value="">全部分类</option>' + 
+                    categories.map(category => 
+                        `<option value="${category.id}">${category.name}</option>`
+                    ).join('');
+            } catch (error) {
                 console.error('加载分类列表失败:', error);
             }
         }
@@ -332,7 +410,7 @@
                         'Authorization': `Bearer ${token}`
                     }
                 });
-                    tags = await response.json();
+                tags = await response.json();
                 
                 // 初始化Tagify
                 const input = document.getElementById('site-tags');
@@ -345,141 +423,286 @@
                         closeOnSelect: false
                     }
                 });
-                } catch (error) {
+            } catch (error) {
                 console.error('加载标签列表失败:', error);
             }
         }
             
-            // 加载网站列表
-        async function loadSites() {
+        // 加载网站列表
+        async function loadSites(refresh = true) {
             try {
-                const response = await fetch('/api/sites');
-                const sites = await response.json();
-                const tableBody = document.getElementById('sites-table-body');
-                tableBody.innerHTML = '';
-                
-                sites.forEach(site => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'border-b hover:bg-gray-50 cursor-move';
-                    tr.dataset.id = site.id;
-                    
-                    // 修改截图显示逻辑，直接使用数据库中的路径
-                    const screenshotUrl = site.screenshot || '';
-                    
-                    tr.innerHTML = `
-                        <td class="px-2 py-2 text-center">
-                            <i class="fas fa-grip-vertical text-gray-400"></i>
-                        </td>
-                        <td class="px-4 py-2">
-                            ${screenshotUrl ? 
-                                `<img src="${screenshotUrl}" alt="${site.name}" class="w-32 h-20 object-cover rounded">` :
-                                '<div class="w-32 h-20 bg-gray-200 rounded flex items-center justify-center">无截图</div>'
-                            }
-                        </td>
-                        <td class="px-4 py-2">
-                            <div class="font-semibold">${site.name}</div>
-                            <div class="text-sm text-gray-600">${site.url}</div>
-                            <div class="text-sm text-gray-500">${site.description || ''}</div>
-                        </td>
-                        <td class="px-4 py-2">
-                            ${site.categories.map(cat => 
-                                `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">${cat.name}</span>`
-                            ).join(' ')}
-                        </td>
-                        <td class="px-4 py-2">
-                            ${site.tags.map(tag => 
-                                `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">${tag.name}</span>`
-                            ).join(' ')}
-                        </td>
-                        <td class="px-4 py-2">
-                            <div class="flex space-x-4">
-                                ${site.is_hot ? '<span class="text-red-500"><i class="fas fa-fire"></i> 热门</span>' : ''}
-                                ${site.is_new ? '<span class="text-green-500"><i class="fas fa-star"></i> 新品</span>' : ''}
-                            </div>
-                        </td>
-                        <td class="px-4 py-2">
-                            <button onclick="editSite(${site.id})" class="text-blue-600 hover:text-blue-800 mr-2">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="deleteSite(${site.id})" class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    `;
-                    
-                    tableBody.appendChild(tr);
-                });
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('未登录，请先登录');
+                }
 
-                // 初始化排序功能
-                new Sortable(document.querySelector('#sites-table-body'), {
-                    handle: '.fa-grip-vertical',
-                    animation: 150,
-                    onEnd: async function(evt) {
-                        try {
-                            // 显示加载提示
-                    Swal.fire({
-                                title: '正在保存排序...',
-                                allowOutsideClick: false,
-                                showConfirmButton: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-
-                            // 获取所有行的ID
-                            const rows = Array.from(document.querySelectorAll('#sites-table-body tr'));
-                            const siteIds = rows.map(row => row.dataset.id);
-
-                            // 调用后端API更新排序
-                            const response = await fetch('/api/sites/reorder', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                },
-                                body: JSON.stringify({ siteIds })
-                            });
-
-                            if (!response.ok) {
-                                throw new Error('更新排序失败');
-                            }
-
-                            // 显示成功提示
-                            Swal.fire({
-                                icon: 'success',
-                                title: '排序已保存',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-
-                            // 重新加载网站列表以更新顺序
-                            await loadSites();
-            } catch (error) {
-                            console.error('更新排序失败:', error);
-                            
-                            // 显示错误提示
-                    Swal.fire({
-                                icon: 'error',
-                                title: '保存失败',
-                                text: '排序更新失败，将重新加载页面恢复原始顺序',
-                                showConfirmButton: true
-                            }).then(() => {
-                                // 重新加载页面以恢复原始顺序
-                                window.location.reload();
-                            });
+                // 只有在需要刷新数据或首次加载时才从服务器获取数据
+                if (refresh || allSites.length === 0) {
+                    const response = await fetch('/api/sites', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Cache-Control': 'no-cache'
                         }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            localStorage.removeItem('token');
+                            window.location.href = '/admin/login.html';
+                            return;
+                        }
+                        throw new Error(`加载失败: ${response.status} ${response.statusText}`);
                     }
-                });
+
+                    allSites = await response.json();
+                    console.log('加载的网站数据:', allSites); // 调试日志
+                }
+
+                // 应用筛选和排序
+                applyFiltersAndSort();
             } catch (error) {
                 console.error('加载网站列表失败:', error);
                 Swal.fire({
                     icon: 'error',
                     title: '加载失败',
-                    text: '获取网站列表失败，请稍后重试'
+                    text: error.message || '请稍后重试'
                 });
             }
         }
+        
+        // 应用筛选和排序，但不重新从服务器获取数据
+        function applyFiltersAndSort() {
+            const tableBody = document.getElementById('sites-table-body');
+            if (!tableBody) {
+                throw new Error('找不到网站列表容器元素');
+            }
+            tableBody.innerHTML = '';
+            
+            // 应用筛选条件
+            filteredSites = [...allSites];
+            
+            // 按搜索词筛选
+            if (currentFilters.searchTerm) {
+                const term = currentFilters.searchTerm.toLowerCase();
+                filteredSites = filteredSites.filter(site => 
+                    (site.name && site.name.toLowerCase().includes(term)) || 
+                    (site.url && site.url.toLowerCase().includes(term)) || 
+                    (site.description && site.description.toLowerCase().includes(term)) ||
+                    (site.tutorial_url && site.tutorial_url.toLowerCase().includes(term))
+                );
+            }
+            
+            // 按分类筛选
+            if (currentFilters.categoryId) {
+                filteredSites = filteredSites.filter(site => 
+                    site.categories && site.categories.some(cat => cat.id == currentFilters.categoryId)
+                );
+            }
+            
+            // 按状态筛选
+            if (currentFilters.status) {
+                if (currentFilters.status === 'hot') {
+                    filteredSites = filteredSites.filter(site => site.is_hot);
+                } else if (currentFilters.status === 'new') {
+                    filteredSites = filteredSites.filter(site => site.is_new);
+                }
+            }
+            
+            // 应用排序
+            if (currentFilters.sortOrder && currentFilters.sortOrder !== 'default') {
+                switch (currentFilters.sortOrder) {
+                    case 'name-asc':
+                        filteredSites.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                        break;
+                    case 'name-desc':
+                        filteredSites.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+                        break;
+                    case 'newest':
+                        filteredSites.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+                        break;
+                    case 'oldest':
+                        filteredSites.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+                        break;
+                }
+            }
+            
+            // 显示筛选结果
+            renderSitesList();
+        }
+        
+        // 渲染网站列表
+        function renderSitesList() {
+            const tableBody = document.getElementById('sites-table-body');
+            tableBody.innerHTML = '';
+            
+            if (filteredSites.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                            <i class="fas fa-search mb-2 text-2xl"></i>
+                            <p>未找到匹配的网站</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredSites.forEach(site => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-gray-50 cursor-move';
+                tr.dataset.id = site.id;
+                
+                // 处理截图URL，确保以/开头
+                let screenshotUrl = site.screenshot || '';
+                if (screenshotUrl && !screenshotUrl.startsWith('/') && !screenshotUrl.startsWith('http')) {
+                    screenshotUrl = '/' + screenshotUrl;
+                }
+                
+                tr.innerHTML = `
+                    <td class="px-2 py-2 text-center">
+                        <i class="fas fa-grip-vertical text-gray-400"></i>
+                    </td>
+                    <td class="px-4 py-2">
+                        ${screenshotUrl ? 
+                            `<img src="${screenshotUrl}" alt="${site.name}" class="w-32 h-20 object-cover rounded" onerror="this.onerror=null; this.src='/images/no-image.png';">` :
+                            '<div class="w-32 h-20 bg-gray-200 rounded flex items-center justify-center">无截图</div>'
+                        }
+                    </td>
+                    <td class="px-4 py-2 w-[500px]">
+                        <div class="font-semibold truncate" style="max-width: 450px;" title="${site.name}">${site.name}</div>
+                        <div class="text-sm text-gray-600 truncate" style="max-width: 450px;" title="${site.url}">${site.url}</div>
+                        <div class="text-sm text-gray-500 truncate" style="max-width: 450px;" title="${site.description || ''}">${site.description || ''}</div>
+                        ${site.tutorial_url ? `<div class="text-sm text-blue-500 truncate" style="max-width: 450px;" title="${site.tutorial_url}"><i class="fas fa-book-open mr-1"></i>${site.tutorial_url}</div>` : ''}
+                    </td>
+                    <td class="px-4 py-2">
+                        ${(site.categories || []).map(cat => 
+                            `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">${cat.name}</span>`
+                        ).join(' ')}
+                    </td>
+                    <td class="px-4 py-2">
+                        ${(site.tags || []).map(tag => 
+                            `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">${tag.name}</span>`
+                        ).join(' ')}
+                    </td>
+                    <td class="px-4 py-2">
+                        <div class="flex space-x-4">
+                            ${site.is_hot ? '<span class="text-red-500"><i class="fas fa-fire"></i> 热门</span>' : ''}
+                            ${site.is_new ? '<span class="text-green-500"><i class="fas fa-star"></i> 新品</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="px-4 py-2">
+                        <div class="flex space-x-2">
+                            <button class="text-blue-500 hover:text-blue-700" onclick="editSite(${site.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-700" onclick="deleteSite(${site.id})">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(tr);
+            });
+            
+            // 初始化拖拽排序
+            initSortable();
+        }
+        
+        // 更新排序
+        function updateOrder(newOrder) {
+            return fetch('/api/sites/reorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ siteIds: newOrder })
+            });
+        }
 
+        // 初始化拖拽排序
+        function initSortable() {
+            if (window.sortableInstance) {
+                window.sortableInstance.destroy();
+            }
+            
+            const sitesTable = document.getElementById('sites-table-body');
+            window.sortableInstance = new Sortable(sitesTable, {
+                animation: 150,
+                handle: '.fa-grip-vertical',
+                ghostClass: 'bg-blue-100',
+                onEnd: async function(evt) {
+                    try {
+                        // 显示加载提示
+                        Swal.fire({
+                            title: '正在保存排序...',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        
+                        // 获取新的排序顺序
+                        const rows = Array.from(sitesTable.querySelectorAll('tr'));
+                        const newOrder = rows.map(row => parseInt(row.dataset.id));
+                        
+                        // 更新全局数据中的顺序
+                        const newOrderMap = {};
+                        newOrder.forEach((id, index) => {
+                            newOrderMap[id] = index;
+                        });
+                        
+                        // 更新服务器上的排序
+                        const response = await updateOrder(newOrder);
+                        
+                        if (!response.ok) {
+                            throw new Error('更新排序失败');
+                        }
+                        
+                        // 获取响应数据
+                        const result = await response.json();
+                        
+                        if (!result.success) {
+                            throw new Error(result.error || '更新排序失败');
+                        }
+                        
+                        // 更新本地数据的排序
+                        allSites.sort((a, b) => {
+                            const orderA = newOrderMap[a.id] !== undefined ? newOrderMap[a.id] : 999999;
+                            const orderB = newOrderMap[b.id] !== undefined ? newOrderMap[b.id] : 999999;
+                            return orderA - orderB;
+                        });
+                        
+                        // 关闭加载提示
+                        Swal.fire({
+                            icon: 'success',
+                            title: '排序已保存',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        
+                        // 重新应用筛选和排序
+                        applyFiltersAndSort();
+                    } catch (error) {
+                        console.error('更新排序失败:', error);
+                        
+                        // 显示错误提示
+                        Swal.fire({
+                            icon: 'error',
+                            title: '保存失败',
+                            text: '排序更新失败，将重新加载页面恢复原始顺序',
+                            confirmButtonText: '确定'
+                        }).then(() => {
+                            // 重新加载网站列表以恢复原始顺序
+                            loadSites(true);
+                        });
+                    }
+                }
+            });
+        }
+        
         // 打开模态框
         function openModal(isEdit = false) {
             document.getElementById('modal-title').textContent = isEdit ? '编辑网址' : '添加网址';
@@ -489,7 +712,7 @@
                 document.getElementById('site-id').value = '';
                 // 清除截图预览
                 const screenshotPreview = document.getElementById('screenshotPreview');
-                screenshotPreview.innerHTML = '<img src="" alt="Screenshot preview" class="max-w-xs mx-auto">';
+                screenshotPreview.innerHTML = '<img src="" alt="Screenshot preview" class="max-h-24 mx-auto rounded-md shadow-sm">';
                 screenshotPreview.classList.add('hidden');
                 // 清除文件输入
                 document.getElementById('screenshot').value = '';
@@ -513,7 +736,7 @@
                 reader.onload = (e) => {
                     previewImg.src = e.target.result;
                     previewImg.alt = 'Screenshot preview';
-                    previewImg.className = 'max-w-xs mx-auto';
+                    previewImg.className = 'max-h-24 mx-auto rounded-md shadow-sm';
                     if (!screenshotPreview.contains(previewImg)) {
                         screenshotPreview.appendChild(previewImg);
                     }
@@ -521,10 +744,20 @@
                 };
                 reader.readAsDataURL(file);
                 
-                // 创建新的 FileList
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                document.getElementById('screenshot').files = dataTransfer.files;
+                try {
+                    // 使用更可靠的方式设置文件
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    const fileInput = document.getElementById('screenshot');
+                    fileInput.files = dataTransfer.files;
+                    
+                    // 添加一个隐藏的表单数据，确保文件被正确识别
+                    window.selectedScreenshotFile = file;
+                } catch (error) {
+                    console.error('设置文件时出错:', error);
+                    // 备用方案：直接存储文件对象
+                    window.selectedScreenshotFile = file;
+                }
             }
         }
 
@@ -585,7 +818,7 @@
                     title: '加载中...',
                     allowOutsideClick: false,
                     showConfirmButton: false,
-                    didOpen: () => {
+                    willOpen: () => {
                         Swal.showLoading();
                     }
                 });
@@ -621,12 +854,12 @@
                 if (site.screenshot) {
                     previewImg.src = site.screenshot;
                     previewImg.alt = site.name;
-                    previewImg.className = 'max-w-xs mx-auto';
+                    previewImg.className = 'max-h-24 mx-auto rounded-md shadow-sm';
                     if (!screenshotPreview.contains(previewImg)) {
                         screenshotPreview.appendChild(previewImg);
                     }
                     screenshotPreview.classList.remove('hidden');
-                        } else {
+                } else {
                     screenshotPreview.classList.add('hidden');
                 }
 
@@ -662,24 +895,24 @@
 
         // 删除网站
         async function deleteSite(id) {
-                const result = await Swal.fire({
-                    title: '确认删除',
+            const result = await Swal.fire({
+                title: '确认删除',
                 text: '确定要删除这个网站吗？',
-                    icon: 'warning',
-                    showCancelButton: true,
+                icon: 'warning',
+                showCancelButton: true,
                 confirmButtonText: '确定删除',
-                    cancelButtonText: '取消'
-                });
+                cancelButtonText: '取消'
+            });
 
-                if (result.isConfirmed) {
+            if (result.isConfirmed) {
                 try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`/api/sites/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`/api/sites/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
 
                     if (response.ok) {
                         Swal.fire({
@@ -687,19 +920,19 @@
                             text: '网站删除成功',
                             icon: 'success'
                         });
-                    loadSites();
+                        loadSites();
                     } else {
                         throw new Error('删除失败');
-                }
-            } catch (error) {
+                    }
+                } catch (error) {
                     console.error('删除网站失败:', error);
-                Swal.fire({
+                    Swal.fire({
                         title: '错误',
                         text: '删除网站失败',
                         icon: 'error'
-                });
+                    });
+                }
             }
-        }
         }
 
         // 修改表单提交函数
@@ -744,8 +977,16 @@
                 return;
             }
             
+            // 检查截图 - 改进的检查方式
+            let screenshotFile = document.getElementById('screenshot').files[0];
+            
+            // 如果input中没有文件，但存在全局变量中的文件，则使用全局变量中的文件
+            if (!screenshotFile && window.selectedScreenshotFile) {
+                screenshotFile = window.selectedScreenshotFile;
+            }
+            
             // 如果是新建网站且没有上传截图，显示错误
-            if (!currentSiteId && !document.getElementById('screenshot').files[0]) {
+            if (!currentSiteId && !screenshotFile) {
                 Swal.fire({
                     icon: 'error',
                     title: '请上传网站截图',
@@ -767,7 +1008,6 @@
             formData.append('tags', JSON.stringify(tags));
             
             // 添加截图文件（如果有）
-            const screenshotFile = document.getElementById('screenshot').files[0];
             if (screenshotFile) {
                 formData.append('screenshot', screenshotFile);
             }
@@ -811,7 +1051,7 @@
                     icon: 'error',
                     title: '保存失败',
                     text: error.message || '请稍后重试'
-        });
+                });
             }
         }
 
@@ -845,21 +1085,21 @@
                 return;
             }
                         
-                        try {
-                            const token = localStorage.getItem('token');
+            try {
+                const token = localStorage.getItem('token');
                 const response = await fetch('/api/auth/change-password', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${token}`
-                                },
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: JSON.stringify({
                         current_password: currentPassword,
                         new_password: newPassword
                     })
-                            });
-                            
-                            if (!response.ok) {
+                });
+                
+                if (!response.ok) {
                     throw new Error('修改密码失败');
                 }
                 
@@ -870,7 +1110,7 @@
                 });
                 
                 closeUserSettingsModal();
-                        } catch (error) {
+            } catch (error) {
                 console.error('修改密码失败:', error);
                 Swal.fire({
                     title: '错误',
@@ -922,13 +1162,76 @@
             openModal();
         });
 
+        // 搜索功能
+        document.getElementById('search-btn').addEventListener('click', function() {
+            currentFilters.searchTerm = document.getElementById('search-input').value.trim();
+            applyFiltersAndSort();
+        });
+        
+        // 回车键搜索功能
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                currentFilters.searchTerm = document.getElementById('search-input').value.trim();
+                applyFiltersAndSort();
+            }
+        });
+        
+        // 重置搜索功能
+        document.getElementById('reset-search-btn').addEventListener('click', function() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('category-filter').value = '';
+            document.getElementById('sort-order').value = 'default';
+            document.getElementById('status-filter').value = '';
+            
+            // 重置筛选条件
+            currentFilters = {
+                searchTerm: '',
+                categoryId: '',
+                status: '',
+                sortOrder: 'default'
+            };
+            
+            applyFiltersAndSort();
+        });
+        
+        // 应用筛选按钮
+        document.getElementById('apply-filters-btn').addEventListener('click', function() {
+            updateFiltersFromUI();
+        });
+        
+        // 筛选下拉框变化时自动应用
+        document.getElementById('category-filter').addEventListener('change', function() {
+            currentFilters.categoryId = this.value;
+            applyFiltersAndSort();
+        });
+        
+        document.getElementById('sort-order').addEventListener('change', function() {
+            currentFilters.sortOrder = this.value;
+            applyFiltersAndSort();
+        });
+        
+        document.getElementById('status-filter').addEventListener('change', function() {
+            currentFilters.status = this.value;
+            applyFiltersAndSort();
+        });
+        
+        // 从UI更新筛选条件
+        function updateFiltersFromUI() {
+            currentFilters.searchTerm = document.getElementById('search-input').value.trim();
+            currentFilters.categoryId = document.getElementById('category-filter').value;
+            currentFilters.sortOrder = document.getElementById('sort-order').value;
+            currentFilters.status = document.getElementById('status-filter').value;
+            
+            applyFiltersAndSort();
+        }
+
         // 页面加载时执行
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
             loadCategories();
             loadTags();
-                loadSites();
+            loadSites(true); // 首次加载时从服务器获取数据
         });
     </script>
 </body>
-</html> 
+</html>

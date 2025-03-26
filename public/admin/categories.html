@@ -86,6 +86,86 @@
         .drag-handle:hover {
             color: #6b7280;
         }
+        /* 图标选择器样式 */
+        .icon-picker {
+            position: relative;
+        }
+        .icon-picker-button {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            background-color: white;
+        }
+        .icon-picker-button:hover {
+            border-color: #6366f1;
+        }
+        .icon-picker-button i {
+            margin-right: 0.5rem;
+        }
+        .icon-picker-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            margin-top: 0.5rem;
+            padding: 1rem;
+        }
+        .icon-picker-dropdown.active {
+            display: block;
+        }
+        .icon-search {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.75rem;
+        }
+        .icon-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.25rem;
+        }
+        .icon-item:hover {
+            border-color: #6366f1;
+            background-color: #f3f4f6;
+        }
+        .icon-item.selected {
+            border-color: #6366f1;
+            background-color: #e0e7ff;
+        }
+        .icon-category {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        .icon-category-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -149,7 +229,9 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead>
                         <tr>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">排序</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类名称</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">图标</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">网站数量</th>
                             <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
@@ -175,6 +257,20 @@
                     <input type="text" id="category-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700">图标</label>
+                    <div class="icon-picker mt-1">
+                        <div class="icon-picker-button" id="iconPickerButton">
+                            <i id="selectedIcon" class=""></i>
+                            <span id="selectedIconName">选择图标</span>
+                        </div>
+                        <div class="icon-picker-dropdown" id="iconPickerDropdown">
+                            <input type="text" class="icon-search" id="iconSearch" placeholder="搜索图标...">
+                            <div class="icon-grid" id="iconGrid"></div>
+                        </div>
+                        <input type="hidden" id="category-icon" name="icon">
+                    </div>
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700">描述</label>
                     <textarea id="category-description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" rows="3"></textarea>
                 </div>
@@ -190,19 +286,19 @@
     <div id="user-settings-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2 class="text-2xl font-bold mb-4">修改密码</h2>
-            <form id="change-password-form" class="space-y-4">
+            <h2 class="text-2xl font-bold mb-4">用户设置</h2>
+            <form id="user-settings-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">当前密码</label>
-                    <input type="password" id="current-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                    <input type="password" id="current-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">新密码</label>
-                    <input type="password" id="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                    <input type="password" id="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">确认新密码</label>
-                    <input type="password" id="confirm-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-3" required>
+                    <input type="password" id="confirm-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
                 </div>
                 <div class="flex justify-end space-x-3">
                     <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" onclick="closeUserSettingsModal()">取消</button>
@@ -246,6 +342,225 @@
             });
         }
 
+        // 图标选择器相关代码
+        const commonIcons = {
+            '常用图标': [
+                'fas fa-folder', 'fas fa-globe', 'fas fa-link', 'fas fa-star',
+                'fas fa-heart', 'fas fa-book', 'fas fa-music', 'fas fa-video',
+                'fas fa-image', 'fas fa-file', 'fas fa-code', 'fas fa-database',
+                'fas fa-bookmark', 'fas fa-tag', 'fas fa-list', 'fas fa-check',
+                'fas fa-book-reader', 'fas fa-newspaper', 'fas fa-rss', 'fas fa-bell'
+            ],
+            '阅读与新闻': [
+                'fas fa-book-reader', 'fas fa-newspaper', 'fas fa-book-open', 'fas fa-bookmark',
+                'fas fa-glasses', 'fas fa-rss', 'fas fa-scroll', 'fas fa-atlas',
+                'fas fa-journal-whills', 'fas fa-book-medical', 'fas fa-address-book',
+                'fas fa-book-dead', 'fas fa-sticky-note', 'fas fa-pen-fancy', 'fas fa-feather',
+                'fas fa-feather-alt', 'fas fa-quote-left', 'fas fa-quote-right', 'fas fa-pen-nib',
+                'fas fa-signature'
+            ],
+            '科技图标': [
+                'fas fa-robot', 'fas fa-microchip', 'fas fa-laptop', 'fas fa-desktop',
+                'fas fa-mobile-alt', 'fas fa-tablet-alt', 'fas fa-server', 'fas fa-network-wired',
+                'fas fa-wifi', 'fas fa-code', 'fas fa-terminal', 'fas fa-keyboard',
+                'fas fa-memory', 'fas fa-hdd', 'fas fa-usb', 'fas fa-satellite-dish',
+                'fas fa-broadcast-tower', 'fas fa-cloud', 'fas fa-cloud-download-alt',
+                'fas fa-cloud-upload-alt', 'fas fa-laptop-code', 'fas fa-bug', 'fas fa-shield-alt',
+                'fas fa-qrcode', 'fas fa-barcode', 'fas fa-fingerprint', 'fas fa-sim-card'
+            ],
+            '天气与自然': [
+                'fas fa-sun', 'fas fa-moon', 'fas fa-cloud-sun', 'fas fa-cloud-moon',
+                'fas fa-cloud-rain', 'fas fa-cloud-showers-heavy', 'fas fa-snowflake',
+                'fas fa-wind', 'fas fa-rainbow', 'fas fa-umbrella', 'fas fa-bolt',
+                'fas fa-temperature-high', 'fas fa-temperature-low', 'fas fa-leaf',
+                'fas fa-tree', 'fas fa-seedling', 'fas fa-mountain', 'fas fa-water',
+                'fas fa-fire', 'fas fa-meteor'
+            ],
+            '食物与餐饮': [
+                'fas fa-utensils', 'fas fa-hamburger', 'fas fa-pizza-slice', 'fas fa-ice-cream',
+                'fas fa-cookie', 'fas fa-candy-cane', 'fas fa-apple-alt', 'fas fa-carrot',
+                'fas fa-coffee', 'fas fa-wine-glass', 'fas fa-wine-bottle', 'fas fa-beer',
+                'fas fa-cocktail', 'fas fa-glass-martini', 'fas fa-glass-whiskey',
+                'fas fa-mug-hot', 'fas fa-egg', 'fas fa-bread-slice', 'fas fa-cheese',
+                'fas fa-drumstick-bite'
+            ],
+            '运动与健康': [
+                'fas fa-running', 'fas fa-walking', 'fas fa-swimming-pool', 'fas fa-bicycle',
+                'fas fa-skiing', 'fas fa-skating', 'fas fa-dumbbell', 'fas fa-basketball-ball',
+                'fas fa-football-ball', 'fas fa-volleyball-ball', 'fas fa-baseball-ball',
+                'fas fa-table-tennis', 'fas fa-heartbeat', 'fas fa-heart-rate', 'fas fa-weight',
+                'fas fa-apple-alt', 'fas fa-medkit', 'fas fa-prescription', 'fas fa-pills',
+                'fas fa-first-aid'
+            ],
+            '工具图标': [
+                'fas fa-tools', 'fas fa-wrench', 'fas fa-screwdriver', 'fas fa-hammer',
+                'fas fa-toolbox', 'fas fa-ruler', 'fas fa-pencil-ruler', 'fas fa-compass',
+                'fas fa-calculator', 'fas fa-magic', 'fas fa-brush', 'fas fa-pen',
+                'fas fa-paint-brush', 'fas fa-palette', 'fas fa-spray-can', 'fas fa-tape',
+                'fas fa-scissors', 'fas fa-stamp', 'fas fa-drafting-compass', 'fas fa-syringe'
+            ],
+            '媒体图标': [
+                'fas fa-image', 'fas fa-video', 'fas fa-camera', 'fas fa-film',
+                'fas fa-music', 'fas fa-headphones', 'fas fa-play', 'fas fa-pause',
+                'fas fa-stop', 'fas fa-volume-up', 'fas fa-photo-video', 'fas fa-podcast',
+                'fas fa-microphone', 'fas fa-record-vinyl', 'fas fa-broadcast-tower',
+                'fas fa-video-slash', 'fas fa-closed-captioning', 'fas fa-film',
+                'fas fa-compact-disc', 'fas fa-photo-video'
+            ],
+            '文档图标': [
+                'fas fa-file', 'fas fa-file-alt', 'fas fa-file-word', 'fas fa-file-excel',
+                'fas fa-file-powerpoint', 'fas fa-file-pdf', 'fas fa-file-image',
+                'fas fa-file-video', 'fas fa-file-audio', 'fas fa-file-archive',
+                'fas fa-file-code', 'fas fa-file-signature', 'fas fa-file-medical',
+                'fas fa-file-invoice', 'fas fa-file-contract', 'fas fa-file-csv',
+                'fas fa-file-download', 'fas fa-file-export', 'fas fa-file-import',
+                'fas fa-file-prescription'
+            ],
+            '社交图标': [
+                'fab fa-github', 'fab fa-gitlab', 'fab fa-twitter', 'fab fa-facebook',
+                'fab fa-instagram', 'fab fa-linkedin', 'fab fa-youtube', 'fab fa-discord',
+                'fab fa-slack', 'fab fa-telegram', 'fab fa-weixin', 'fab fa-weibo',
+                'fab fa-qq', 'fab fa-tiktok', 'fab fa-reddit', 'fab fa-twitch',
+                'fab fa-whatsapp', 'fab fa-line', 'fab fa-pinterest', 'fab fa-medium'
+            ],
+            '界面图标': [
+                'fas fa-home', 'fas fa-user', 'fas fa-cog', 'fas fa-search',
+                'fas fa-plus', 'fas fa-minus', 'fas fa-times', 'fas fa-check',
+                'fas fa-bars', 'fas fa-bell', 'fas fa-envelope', 'fas fa-calendar',
+                'fas fa-clock', 'fas fa-trash', 'fas fa-edit', 'fas fa-save',
+                'fas fa-filter', 'fas fa-sort', 'fas fa-columns', 'fas fa-layer-group'
+            ],
+            '方向图标': [
+                'fas fa-arrow-up', 'fas fa-arrow-right', 'fas fa-arrow-down', 'fas fa-arrow-left',
+                'fas fa-chevron-up', 'fas fa-chevron-right', 'fas fa-chevron-down', 'fas fa-chevron-left',
+                'fas fa-angle-up', 'fas fa-angle-right', 'fas fa-angle-down', 'fas fa-angle-left',
+                'fas fa-caret-up', 'fas fa-caret-right', 'fas fa-caret-down', 'fas fa-caret-left',
+                'fas fa-arrows-alt', 'fas fa-expand', 'fas fa-compress', 'fas fa-exchange-alt'
+            ],
+            '商务图标': [
+                'fas fa-chart-line', 'fas fa-chart-bar', 'fas fa-chart-pie', 'fas fa-chart-area',
+                'fas fa-briefcase', 'fas fa-building', 'fas fa-industry', 'fas fa-shopping-cart',
+                'fas fa-money-bill', 'fas fa-credit-card', 'fas fa-wallet', 'fas fa-coins',
+                'fas fa-piggy-bank', 'fas fa-percentage', 'fas fa-funnel-dollar', 'fas fa-hand-holding-usd',
+                'fas fa-donate', 'fas fa-receipt', 'fas fa-cash-register', 'fas fa-store'
+            ],
+            '教育图标': [
+                'fas fa-graduation-cap', 'fas fa-book', 'fas fa-chalkboard-teacher',
+                'fas fa-school', 'fas fa-university', 'fas fa-pencil-alt',
+                'fas fa-book-open', 'fas fa-award', 'fas fa-user-graduate',
+                'fas fa-microscope', 'fas fa-atom', 'fas fa-flask',
+                'fas fa-dna', 'fas fa-brain', 'fas fa-glasses', 'fas fa-apple-alt',
+                'fas fa-calculator', 'fas fa-pen', 'fas fa-marker', 'fas fa-highlighter'
+            ],
+            'AI和机器学习': [
+                'fas fa-robot', 'fas fa-brain', 'fas fa-microchip', 'fas fa-network-wired',
+                'fas fa-project-diagram', 'fas fa-sitemap', 'fas fa-chart-network',
+                'fas fa-laptop-code', 'fas fa-code-branch', 'fas fa-terminal',
+                'fas fa-server', 'fas fa-database', 'fas fa-cogs', 'fas fa-layer-group',
+                'fas fa-random', 'fas fa-chart-scatter', 'fas fa-function', 'fas fa-infinity',
+                'fas fa-wave-square', 'fas fa-atom'
+            ]
+        };
+
+        // 初始化图标选择器
+        function initIconPicker() {
+            const iconPickerButton = document.getElementById('iconPickerButton');
+            const iconPickerDropdown = document.getElementById('iconPickerDropdown');
+            const iconSearch = document.getElementById('iconSearch');
+            const iconGrid = document.getElementById('iconGrid');
+            const selectedIcon = document.getElementById('selectedIcon');
+            const selectedIconName = document.getElementById('selectedIconName');
+            const categoryIcon = document.getElementById('category-icon');
+
+            // 渲染图标网格
+            function renderIconGrid(icons = commonIcons) {
+                iconGrid.innerHTML = '';
+                Object.entries(icons).forEach(([category, iconList]) => {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'icon-category';
+                    
+                    const categoryTitle = document.createElement('div');
+                    categoryTitle.className = 'icon-category-title';
+                    categoryTitle.textContent = category;
+                    categoryDiv.appendChild(categoryTitle);
+
+                    const iconsDiv = document.createElement('div');
+                    iconsDiv.className = 'icon-grid';
+
+                    iconList.forEach(icon => {
+                        const iconDiv = document.createElement('div');
+                        iconDiv.className = 'icon-item';
+                        iconDiv.innerHTML = `<i class="${icon}"></i>`;
+                        iconDiv.setAttribute('data-icon', icon);
+                        
+                        // 如果是当前选中的图标，添加selected类
+                        if (icon === categoryIcon.value) {
+                            iconDiv.classList.add('selected');
+                        }
+
+                        iconDiv.addEventListener('click', () => {
+                            // 移除其他图标的选中状态
+                            document.querySelectorAll('.icon-item.selected').forEach(item => {
+                                item.classList.remove('selected');
+                            });
+                            
+                            // 添加当前图标的选中状态
+                            iconDiv.classList.add('selected');
+                            
+                            // 更新选中的图标
+                            selectedIcon.className = icon;
+                            selectedIconName.textContent = icon;
+                            categoryIcon.value = icon;
+                            
+                            // 关闭下拉框
+                            iconPickerDropdown.classList.remove('active');
+                        });
+
+                        iconsDiv.appendChild(iconDiv);
+                    });
+
+                    categoryDiv.appendChild(iconsDiv);
+                    iconGrid.appendChild(categoryDiv);
+                });
+            }
+
+            // 初始化图标网格
+            renderIconGrid();
+
+            // 点击按钮显示/隐藏下拉框
+            iconPickerButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                iconPickerDropdown.classList.toggle('active');
+            });
+
+            // 点击其他地方关闭下拉框
+            document.addEventListener('click', (e) => {
+                if (!iconPickerDropdown.contains(e.target) && !iconPickerButton.contains(e.target)) {
+                    iconPickerDropdown.classList.remove('active');
+                }
+            });
+
+            // 搜索图标
+            iconSearch.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                if (!searchTerm) {
+                    renderIconGrid();
+                    return;
+                }
+
+                const filteredIcons = {};
+                Object.entries(commonIcons).forEach(([category, icons]) => {
+                    const filtered = icons.filter(icon => 
+                        icon.toLowerCase().includes(searchTerm)
+                    );
+                    if (filtered.length > 0) {
+                        filteredIcons[category] = filtered;
+                    }
+                });
+                renderIconGrid(filteredIcons);
+            });
+        }
+
         // 加载分类列表
         async function loadCategories() {
             try {
@@ -260,31 +575,44 @@
                 const tbody = document.getElementById('categories-list');
                 tbody.innerHTML = '';
                 
-                categories.forEach(category => {
+                categories.forEach((category, index) => {
+                    // 获取网站数量，尝试多种可能的字段名
+                    const siteCount = category.site_count || category.siteCount || category.sites_count || 0;
+                    
                     const tr = document.createElement('tr');
-                    tr.dataset.id = category.id;
+                    tr.dataset.id = category.id; // 添加数据属性用于排序
                     tr.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-6 py-4">
                             <div class="flex items-center">
-                                <span class="drag-handle mr-3">
+                                <span class="text-sm text-gray-900">${index + 1}</span>
+                                <button class="ml-2 text-gray-400 hover:text-gray-600 drag-handle">
                                     <i class="fas fa-grip-vertical"></i>
-                                </span>
-                                <div class="text-sm font-medium text-gray-900">${category.name}</div>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-gray-900">${category.name}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-500">
+                                <i class="${category.icon || 'fas fa-folder'}" title="${category.icon || '默认图标'}"></i>
                             </div>
                         </td>
                         <td class="px-6 py-4">
                             <div class="text-sm text-gray-500">${category.description || ''}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-500">${category.siteCount || 0}</div>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-500">${siteCount}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button onclick="editCategory('${category.id}')" class="text-blue-600 hover:text-blue-900 mr-3">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="deleteCategory('${category.id}')" class="text-red-600 hover:text-red-900">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-3">
+                                <button class="text-blue-600 hover:text-blue-800" onclick="editCategory(${category.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800" onclick="deleteCategory(${category.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -405,6 +733,21 @@
                     name: document.getElementById('category-name').value,
                     description: document.getElementById('category-description').value
                 });
+
+                // 设置图标
+                const selectedIcon = document.getElementById('selectedIcon');
+                const selectedIconName = document.getElementById('selectedIconName');
+                const categoryIcon = document.getElementById('category-icon');
+                
+                if (category.icon) {
+                    selectedIcon.className = category.icon;
+                    selectedIconName.textContent = category.icon;
+                    categoryIcon.value = category.icon;
+                } else {
+                    selectedIcon.className = '';
+                    selectedIconName.textContent = '选择图标';
+                    categoryIcon.value = '';
+                }
             } catch (error) {
                 console.error('加载分类详情失败:', error);
                 alert('加载分类详情失败: ' + error.message);
@@ -477,11 +820,9 @@
             const categoryId = document.getElementById('category-id').value;
             const data = {
                 name: document.getElementById('category-name').value,
-                description: document.getElementById('category-description').value
+                description: document.getElementById('category-description').value,
+                icon: document.getElementById('category-icon').value || 'fas fa-folder' // 添加图标数据，默认使用文件夹图标
             };
-            
-            const url = categoryId ? `/api/categories/${categoryId}` : '/api/categories';
-            const method = categoryId ? 'PUT' : 'POST';
             
             try {
                 // 显示加载状态
@@ -496,8 +837,8 @@
                 });
 
                 const token = localStorage.getItem('token');
-                const response = await fetch(url, {
-                    method: method,
+                const response = await fetch(categoryId ? `/api/categories/${categoryId}` : '/api/categories', {
+                    method: categoryId ? 'PUT' : 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -553,11 +894,11 @@
 
         function closeUserSettingsModal() {
             document.getElementById('user-settings-modal').style.display = 'none';
-            document.getElementById('change-password-form').reset();
+            document.getElementById('user-settings-form').reset();
         }
 
         // 修改密码表单提交
-        document.getElementById('change-password-form').addEventListener('submit', async function(e) {
+        document.getElementById('user-settings-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const currentPassword = document.getElementById('current-password').value;
@@ -643,6 +984,7 @@
         // 页面加载时执行
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
+            initIconPicker();
             loadCategories();
         });
     </script>

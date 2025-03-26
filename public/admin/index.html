@@ -273,6 +273,13 @@
                 document.getElementById('total-sites').textContent = sites.length;
                 document.getElementById('total-categories').textContent = categories.length;
                 document.getElementById('total-tags').textContent = tags.length;
+
+                // 更新分类图标
+                const categoryIcon = document.querySelector('.bg-green-100 i');
+                if (categories.length > 0) {
+                    // 如果有分类，使用第一个分类的图标
+                    categoryIcon.className = categories[0].icon || 'fas fa-folder text-2xl';
+                }
                 
                 // 显示最近添加的网站
                 const recentSites = sites

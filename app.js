@@ -296,6 +296,38 @@ app.post('/api/sites', authenticateToken, upload.fields([
     await db.run('BEGIN TRANSACTION');
     
     try {
+      // 处理上传的截图文件
+      let screenshotPath = null;
+      if (req.files.screenshot && req.files.screenshot[0]) {
+        const screenshotFile = req.files.screenshot[0];
+        const fileExt = path.extname(screenshotFile.originalname) || '.png';
+        const screenshotFilename = `screenshot-${Date.now()}${fileExt}`;
+        screenshotPath = `/uploads/screenshots/${screenshotFilename}`;
+        const absolutePath = path.join(__dirname, 'public', 'uploads', 'screenshots', screenshotFilename);
+        
+        // 确保目录存在
+        await fsPromises.mkdir(path.join(__dirname, 'public/uploads/screenshots'), { recursive: true });
+        
+        // 保存文件
+        await fsPromises.writeFile(absolutePath, screenshotFile.buffer);
+      }
+      
+      // 处理上传的图标文件
+      let iconPath = null;
+      if (req.files.icon && req.files.icon[0]) {
+        const iconFile = req.files.icon[0];
+        const fileExt = path.extname(iconFile.originalname) || '.png';
+        const iconFilename = `icon-${Date.now()}${fileExt}`;
+        iconPath = `/uploads/icons/${iconFilename}`;
+        const absolutePath = path.join(__dirname, 'public', 'uploads', 'icons', iconFilename);
+        
+        // 确保目录存在
+        await fsPromises.mkdir(path.join(__dirname, 'public/uploads/icons'), { recursive: true });
+        
+        // 保存文件
+        await fsPromises.writeFile(absolutePath, iconFile.buffer);
+      }
+      
       // 插入站点基本信息
       const result = await db.run(
         `INSERT INTO sites (
@@ -307,8 +339,8 @@ app.post('/api/sites', authenticateToken, upload.fields([
           req.body.name,
           req.body.url,
           req.body.description || '',
-          req.files.screenshot ? `/uploads/screenshots/${req.files.screenshot[0].filename}` : null,
-          req.files.icon ? `/uploads/icons/${req.files.icon[0].filename}` : null,
+          screenshotPath,
+          iconPath,
           req.body.is_hot === '1' ? 1 : 0,
           req.body.hot_until || null,
           req.body.is_new === '1' ? 1 : 0,
@@ -426,10 +458,10 @@ app.put('/api/sites/:id', authenticateToken, upload.fields([
     // 处理截图上传
     if (req.files?.screenshot?.[0]) {
       const screenshotFile = req.files.screenshot[0];
-      const fileExt = path.extname(screenshotFile.originalname);
+      const fileExt = path.extname(screenshotFile.originalname) || '.png';
       const screenshotFilename = `screenshot-${Date.now()}${fileExt}`;
       const relativePath = '/uploads/screenshots/' + screenshotFilename;
-      const absolutePath = path.join(__dirname, 'public', relativePath);
+      const absolutePath = path.join(__dirname, 'public', 'uploads', 'screenshots', screenshotFilename);
       
       try {
         // 确保目录存在
@@ -641,168 +673,105 @@ app.post('/api/sites/reorder', authenticateToken, async (req, res) => {
 
 // 分类相关路由
 app.get('/api/categories', async (req, res) => {
-  try {
-    const categories = await db.all(`
-      SELECT c.*,
-             COUNT(DISTINCT sc.siteId) as siteCount
-      FROM categories c
-      LEFT JOIN site_categories sc ON c.id = sc.categoryId
-      GROUP BY c.id
-      ORDER BY c.display_order ASC, c.id ASC
-    `);
-
-    // 确保返回一个数组
-    if (!Array.isArray(categories)) {
-      console.error('分类列表不是数组:', categories);
-      res.json([]);
-      return;
+    try {
+        const categories = await db.all(`
+            SELECT 
+                c.*, 
+                (SELECT COUNT(*) FROM site_categories WHERE categoryId = c.id) as site_count 
+            FROM categories c 
+            ORDER BY c.display_order ASC`
+        );
+        res.json(categories);
+    } catch (error) {
+        console.error('获取分类列表失败:', error);
+        res.status(500).json({ error: '获取分类列表失败' });
     }
-
-    // 确保每个分类对象的字段都有合适的默认值
-    const formattedCategories = categories.map(category => ({
-      id: category.id,
-      name: category.name || '',
-      description: category.description || '',
-      display_order: category.display_order || 0,
-      siteCount: category.siteCount || 0,
-      created_at: category.created_at,
-      updated_at: category.updated_at
-    }));
-
-    res.json(formattedCategories);
-  } catch (error) {
-    console.error('获取分类列表失败:', error);
-    res.status(500).json({ error: '服务器错误' });
-  }
 });
 
-app.get('/api/categories/:id', authenticateToken, async (req, res) => {
-  try {
-    console.log(`获取分类详情, ID: ${req.params.id}`);
+app.get('/api/categories/:id', async (req, res) => {
+    const categoryId = req.params.id;
     
-    const category = await db.get(`
-      SELECT c.*,
-             COUNT(DISTINCT sc.siteId) as siteCount
-      FROM categories c
-      LEFT JOIN site_categories sc ON c.id = sc.categoryId
-      WHERE c.id = ?
-      GROUP BY c.id
-    `, [req.params.id]);
-    
-    console.log('查询结果:', category);
-    
-    if (!category) {
-      console.log(`分类不存在: ${req.params.id}`);
-      return res.status(404).json({ error: '分类不存在' });
+    try {
+        const category = await db.get(`
+            SELECT 
+                c.*, 
+                (SELECT COUNT(*) FROM site_categories WHERE categoryId = c.id) as site_count 
+            FROM categories c 
+            WHERE c.id = ?`,
+            [categoryId]
+        );
+        
+        if (!category) {
+            return res.status(404).json({ error: '分类不存在' });
+        }
+        
+        res.json(category);
+    } catch (error) {
+        console.error('获取分类详情失败:', error);
+        res.status(500).json({ error: '获取分类详情失败' });
     }
-    
-    console.log('返回分类详情:', JSON.stringify(category));
-    res.json(category);
-  } catch (error) {
-    console.error('获取分类详情失败:', error);
-    res.status(500).json({ error: '服务器错误' });
-  }
 });
 
 app.post('/api/categories', authenticateToken, async (req, res) => {
-  const { name, description } = req.body;
-  
-  if (!name) {
-    return res.status(400).json({ error: '分类名称不能为空' });
-  }
-
-  if (!description) {
-    return res.status(400).json({ error: '分类描述不能为空' });
-  }
-
-  try {
-    // 检查是否已存在同名分类
-    const existingCategory = await db.get('SELECT * FROM categories WHERE name = ?', [name]);
-    if (existingCategory) {
-      return res.status(400).json({ error: '已存在同名分类' });
+    const { name, description, icon } = req.body;
+    
+    if (!name) {
+        return res.status(400).json({ error: '分类名称不能为空' });
     }
-
-    // 使用自增ID
-    const result = await db.run(
-      'INSERT INTO categories (name, description, created_at, updated_at) VALUES (?, ?, datetime("now"), datetime("now"))',
-      [name, description]
-    );
     
-    const category = await db.get(`
-      SELECT c.*,
-             COUNT(DISTINCT sc.siteId) as siteCount
-      FROM categories c
-      LEFT JOIN site_categories sc ON c.id = sc.categoryId
-      WHERE c.id = ?
-      GROUP BY c.id
-    `, [result.lastID]);
-    
-    res.status(201).json(category);
-  } catch (error) {
-    console.error('创建分类失败:', error);
-    res.status(500).json({ error: '服务器错误' });
-  }
+    try {
+        const result = await db.run(
+            'INSERT INTO categories (name, description, icon) VALUES (?, ?, ?)',
+            [name, description, icon || 'fas fa-folder']
+        );
+        
+        const categoryId = result.lastID;
+        const category = await db.get(
+            `SELECT c.*, 
+                    (SELECT COUNT(*) FROM site_categories WHERE categoryId = c.id) as site_count 
+             FROM categories c 
+             WHERE c.id = ?`,
+            [categoryId]
+        );
+        
+        res.json(category);
+    } catch (error) {
+        console.error('创建分类失败:', error);
+        res.status(500).json({ error: '创建分类失败' });
+    }
 });
 
 app.put('/api/categories/:id', authenticateToken, async (req, res) => {
-  const { name, description } = req.body;
-  const { id } = req.params;
-  
-  console.log(`更新分类请求 - ID: ${id}`);
-  console.log('请求体:', req.body);
-  
-  if (!name) {
-    console.log('失败: 分类名称为空');
-    return res.status(400).json({ error: '分类名称不能为空' });
-  }
-
-  try {
-    // 先检查分类是否存在
-    const existingCategoryById = await db.get('SELECT * FROM categories WHERE id = ?', [id]);
-    if (!existingCategoryById) {
-      console.log(`失败: 分类ID不存在: ${id}`);
-      return res.status(404).json({ error: '分类不存在' });
+    const categoryId = req.params.id;
+    const { name, description, icon } = req.body;
+    
+    if (!name) {
+        return res.status(400).json({ error: '分类名称不能为空' });
     }
     
-    // 检查是否存在同名分类（排除当前分类）
-    const existingCategory = await db.get('SELECT * FROM categories WHERE name = ? AND id != ?', [name, id]);
-    if (existingCategory) {
-      console.log(`失败: 已存在同名分类: ${name}, ID: ${existingCategory.id}`);
-      return res.status(400).json({ error: '已存在同名分类' });
+    try {
+        await db.run(
+            'UPDATE categories SET name = ?, description = ?, icon = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            [name, description, icon || 'fas fa-folder', categoryId]
+        );
+        
+        const category = await db.get(
+            `SELECT c.*, 
+                    (SELECT COUNT(*) FROM site_categories WHERE categoryId = c.id) as site_count 
+             FROM categories c 
+             WHERE c.id = ?`,
+            [categoryId]
+        );
+        
+        if (!category) {
+            return res.status(404).json({ error: '分类不存在' });
+        }
+        
+        res.json(category);
+    } catch (error) {
+        console.error('更新分类失败:', error);
+        res.status(500).json({ error: '更新分类失败' });
     }
-
-    console.log(`执行更新SQL: UPDATE categories SET name = '${name}', description = '${description}', updated_at = datetime("now") WHERE id = '${id}'`);
-    const result = await db.run(
-      'UPDATE categories SET name = ?, description = ?, updated_at = datetime("now") WHERE id = ?',
-      [name, description, id]
-    );
-    
-    console.log('SQL结果:', result);
-    
-    if (result.changes === 0) {
-      console.log(`警告: 更新操作未改变任何记录, ID: ${id}`);
-    }
-    
-    const category = await db.get(`
-      SELECT c.*,
-             COUNT(DISTINCT sc.siteId) as siteCount
-      FROM categories c
-      LEFT JOIN site_categories sc ON c.id = sc.categoryId
-      WHERE c.id = ?
-      GROUP BY c.id
-    `, [id]);
-    
-    if (!category) {
-      console.log(`错误: 更新后无法获取分类信息, ID: ${id}`);
-      return res.status(500).json({ error: '更新后无法获取分类信息' });
-    }
-    
-    console.log('成功: 分类已更新, 返回数据:', category);
-    res.json(category);
-  } catch (error) {
-    console.error('更新分类失败:', error);
-    res.status(500).json({ error: '服务器错误: ' + error.message });
-  }
 });
 
 app.delete('/api/categories/:id', authenticateToken, async (req, res) => {
@@ -1047,7 +1016,7 @@ app.get('/api/settings', async (req, res) => {
         ) VALUES (
           '导航网站',
           '精选优质网站导航',
-          '© 2024 导航网站. All rights reserved.',
+          ' 2024 导航网站. All rights reserved.',
           '',
           '',
           '',
@@ -1108,7 +1077,7 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
       const filePath = path.join(__dirname, 'public', 'uploads', 'qrcodes', fileName);
       
       // 确保目录存在
-      await fsPromises.mkdir(path.join(__dirname, 'public', 'uploads', 'qrcodes'), { recursive: true });
+      await fsPromises.mkdir(path.join(__dirname, 'public/uploads/qrcodes'), { recursive: true });
       
       // 写入文件
       await fsPromises.writeFile(filePath, file.buffer);
@@ -1135,7 +1104,7 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
       const filePath = path.join(__dirname, 'public', 'uploads', 'qrcodes', fileName);
       
       // 确保目录存在
-      await fsPromises.mkdir(path.join(__dirname, 'public', 'uploads', 'qrcodes'), { recursive: true });
+      await fsPromises.mkdir(path.join(__dirname, 'public/uploads/qrcodes'), { recursive: true });
       
       // 写入文件
       await fsPromises.writeFile(filePath, file.buffer);
