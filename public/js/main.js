@@ -152,6 +152,11 @@ function initMobileMenu() {
         document.body.style.overflow = ''; // 恢复背景滚动
     };
     
+    // 清除之前可能存在的事件监听器
+    menuToggle.removeEventListener('click', openMenu);
+    if (mobileClose) mobileClose.removeEventListener('click', closeMenu);
+    if (overlay) overlay.removeEventListener('click', closeMenu);
+    
     // 添加事件监听器
     menuToggle.addEventListener('click', openMenu);
     
@@ -174,16 +179,16 @@ function initMobileMenu() {
     loadMobileNavigation(mobileNavList);
     
     // 加载分类菜单
+    window.loadMobileCategories = loadMobileCategories;
     loadMobileCategories(mobileCategoryList);
     
     // 添加联系作者事件监听器
     if (mobileDonateTrigger) {
-        mobileDonateTrigger.addEventListener('click', () => {
-            closeMenu(); // 关闭移动菜单
-            const donationModal = document.getElementById('donationModal');
-            if (donationModal) {
-                donationModal.classList.add('active');
-                document.body.style.overflow = 'hidden';
+        mobileDonateTrigger.addEventListener('click', function() {
+            const donateModal = document.getElementById('donateModal');
+            if (donateModal) {
+                donateModal.classList.remove('hidden');
+                closeMenu(); // 关闭移动菜单
             }
         });
     }
@@ -198,67 +203,132 @@ function loadMobileNavigation(mobileNavList) {
         return;
     }
     
-    // 获取桌面端导航菜单
-    const desktopNav = document.getElementById('desktopNav');
-    if (!desktopNav) {
-        console.error('桌面端导航菜单元素未找到');
-        return;
-    }
-    
     // 清空移动端导航菜单
     mobileNavList.innerHTML = '';
     
-    // 创建导航菜单项
-    const navItems = [
-        { text: '首页', href: '#' },
-        { text: '关于', href: '#about' },
-        { text: '联系', href: '#contact' }
-    ];
-    
-    // 添加导航菜单项
-    navItems.forEach(item => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = item.href;
-        a.textContent = item.text;
-        a.addEventListener('click', () => {
-            // 关闭移动菜单
-            const mobileMenu = document.getElementById('mobileMenu');
-            const overlay = document.getElementById('overlay');
-            const menuToggle = document.getElementById('menuToggle');
-            
-            if (mobileMenu && overlay && menuToggle) {
-                mobileMenu.classList.remove('active');
-                overlay.classList.remove('active');
-                menuToggle.classList.remove('active');
-                document.body.style.overflow = '';
+    // 从API获取导航菜单数据
+    fetch('/api/nav-menu')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('获取导航菜单失败');
             }
+            return response.json();
+        })
+        .then(navItems => {
+            // 添加导航菜单项
+            navItems.forEach(item => {
+                if (item.is_active) {
+                    const li = document.createElement('li');
+                    li.className = 'mobile-menu-item';
+                    
+                    const a = document.createElement('a');
+                    a.href = item.href;
+                    a.className = 'mobile-menu-link';
+                    
+                    // 添加图标
+                    if (item.icon) {
+                        const icon = document.createElement('i');
+                        icon.className = item.icon;
+                        a.appendChild(icon);
+                    }
+                    
+                    // 添加文本
+                    const span = document.createElement('span');
+                    span.textContent = item.title;
+                    a.appendChild(span);
+                    
+                    // 设置是否在新窗口打开
+                    if (item.open_in_new) {
+                        a.target = '_blank';
+                        a.rel = 'noopener noreferrer';
+                    }
+                    
+                    a.addEventListener('click', () => {
+                        // 关闭移动菜单
+                        const mobileMenu = document.getElementById('mobileMenu');
+                        const overlay = document.getElementById('overlay');
+                        const menuToggle = document.getElementById('menuToggle');
+                        
+                        if (mobileMenu && overlay && menuToggle) {
+                            mobileMenu.classList.remove('active');
+                            overlay.classList.remove('active');
+                            menuToggle.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                    
+                    li.appendChild(a);
+                    mobileNavList.appendChild(li);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('加载导航菜单失败:', error);
+            mobileNavList.innerHTML = '<li class="mobile-menu-item"><span class="mobile-menu-link">加载导航菜单失败</span></li>';
         });
-        li.appendChild(a);
-        mobileNavList.appendChild(li);
-    });
 }
 
 // 加载移动端分类菜单
 function loadMobileCategories(mobileCategoryList) {
+    console.log('loadMobileCategories被调用，参数:', mobileCategoryList);
+    
     if (!mobileCategoryList) {
         console.error('移动端分类菜单元素未找到');
-        return;
+        // 尝试再次获取元素
+        mobileCategoryList = document.getElementById('mobileCategoryList');
+        console.log('尝试重新获取mobileCategoryList元素:', mobileCategoryList);
+        
+        if (!mobileCategoryList) {
+            console.error('再次尝试获取mobileCategoryList元素失败');
+            return;
+        }
     }
     
     // 清空移动端分类菜单
     mobileCategoryList.innerHTML = '';
+    console.log('已清空mobileCategoryList内容');
     
     // 获取所有分类
+    console.log('开始获取分类数据...');
     fetch('/api/categories')
-        .then(response => response.json())
+        .then(response => {
+            console.log('分类数据API响应:', response);
+            if (!response.ok) {
+                throw new Error('获取分类数据失败');
+            }
+            return response.json();
+        })
         .then(categories => {
-            // 添加分类菜单项
+            console.log('获取到的分类数据:', categories);
+            // 按 display_order 排序
+            categories.sort((a, b) => a.display_order - b.display_order);
+            
+            // 添加分类菜单项（不包括"全部"选项）
             categories.forEach(category => {
                 const li = document.createElement('li');
+                li.className = 'mobile-menu-item';
+                
                 const a = document.createElement('a');
                 a.href = `#category-${category.id}`;
-                a.textContent = category.name;
+                a.className = 'mobile-menu-link';
+                
+                // 添加图标
+                if (category.icon) {
+                    const icon = document.createElement('i');
+                    icon.className = category.icon;
+                    a.appendChild(icon);
+                } else {
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-folder';
+                    a.appendChild(icon);
+                }
+                
+                // 添加文本
+                const span = document.createElement('span');
+                span.textContent = category.name;
+                a.appendChild(span);
+                
+                // 添加点击事件，点击后关闭菜单
                 a.addEventListener('click', () => {
                     // 关闭移动菜单
                     const mobileMenu = document.getElementById('mobileMenu');
@@ -271,13 +341,26 @@ function loadMobileCategories(mobileCategoryList) {
                         menuToggle.classList.remove('active');
                         document.body.style.overflow = '';
                     }
+                    
+                    // 滚动到对应的分类区域
+                    const categorySection = document.getElementById(`category-${category.id}`);
+                    if (categorySection) {
+                        setTimeout(() => {
+                            categorySection.scrollIntoView({ behavior: 'smooth' });
+                        }, 300); // 等待菜单关闭后再滚动
+                    }
                 });
+                
                 li.appendChild(a);
                 mobileCategoryList.appendChild(li);
+                console.log(`已添加分类菜单项: ${category.name}`);
             });
+            
+            console.log('分类菜单加载完成');
         })
         .catch(error => {
             console.error('获取分类数据失败:', error);
+            mobileCategoryList.innerHTML = '<li class="mobile-menu-item"><span class="mobile-menu-link">加载分类失败</span></li>';
         });
 }
 

@@ -1095,10 +1095,6 @@
             z-index: 1;
         }
 
-        .footer-wave .wave {
-            animation-duration: 30s;
-        }
-
         /* 社交图标美化 */
         .social-icon {
             display: inline-flex;
@@ -1466,6 +1462,165 @@
             color: white;
         }
     </style>
+    <style>
+        /* 移动菜单样式 */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #fff;
+            z-index: 1001;
+            transition: right 0.3s ease;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+        
+        .dark .mobile-menu {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dark .mobile-menu-header {
+            border-bottom-color: #333;
+        }
+        
+        .mobile-menu-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 15px 0 10px;
+            padding: 0 15px;
+        }
+        
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        .mobile-menu-close:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark .mobile-menu-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .mobile-menu-content {
+            padding: 10px 0;
+        }
+        
+        .mobile-menu-section {
+            margin-bottom: 20px;
+        }
+        
+        .mobile-menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .mobile-menu-item {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .mobile-menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        
+        .dark .mobile-menu-link {
+            color: #f0f0f0;
+        }
+        
+        .mobile-menu-link:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark .mobile-menu-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .mobile-menu-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .mobile-menu-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .dark .mobile-menu-footer {
+            border-top-color: #333;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* 移动菜单切换按钮 */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .desktop-nav {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- 页面加载动画 -->
@@ -1715,7 +1870,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM加载完成，开始初始化页面...');
             initThemeToggle();
-            initMobileMenu();
+            setupMobileMenuInline();
             loadNavMenu();
             
             // 使用main.js中的loadSiteSettings函数
@@ -1725,6 +1880,15 @@
             } else {
                 console.error('main.js中的loadSiteSettings函数未找到');
             }
+            
+            // 确保分类菜单加载
+            setTimeout(function() {
+                const mobileCategoryList = document.getElementById('mobileCategoryList');
+                if (mobileCategoryList && typeof window.loadMobileCategories === 'function') {
+                    console.log('延迟加载移动端分类菜单...');
+                    window.loadMobileCategories(mobileCategoryList);
+                }
+            }, 1000); // 延迟1秒加载，确保其他脚本已加载完成
         });
 
         // 加载导航菜单
@@ -1762,53 +1926,90 @@
 
         // 渲染移动端导航菜单
         function renderMobileNav(menuItems) {
-            const mobileNav = document.getElementById('mobileNav');
-            if (!mobileNav) return;
+            const mobileNavList = document.getElementById('mobileNavList');
+            if (!mobileNavList) {
+                console.error('移动端导航菜单元素未找到');
+                return;
+            }
 
-            mobileNav.innerHTML = menuItems
+            // 清空移动端导航菜单
+            mobileNavList.innerHTML = '';
+            
+            // 添加导航菜单项
+            menuItems
                 .filter(item => item.is_active)
-                .map(item => `
-                    <a href="${item.href}" 
-                       class="block py-2 text-lg font-medium hover:text-primary transition-colors mobile-link" 
-                       style="color: var(--text-primary);"
-                       ${item.open_in_new ? 'target="_blank" rel="noopener noreferrer"' : ''}>
-                        ${item.icon ? `<i class="${item.icon} mr-3"></i>` : ''}
-                        ${item.title}
-                    </a>
-                `).join('');
-
-            // 添加点击事件，点击链接后关闭菜单
-            const mobileLinks = mobileNav.querySelectorAll('.mobile-link');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    toggleMobileMenu();
+                .forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'mobile-menu-item';
+                    
+                    const a = document.createElement('a');
+                    a.href = item.href;
+                    a.className = 'mobile-menu-link';
+                    
+                    // 添加图标
+                    if (item.icon) {
+                        const icon = document.createElement('i');
+                        icon.className = item.icon;
+                        a.appendChild(icon);
+                    }
+                    
+                    // 添加文本
+                    const span = document.createElement('span');
+                    span.textContent = item.title;
+                    a.appendChild(span);
+                    
+                    // 设置是否在新窗口打开
+                    if (item.open_in_new) {
+                        a.target = '_blank';
+                        a.rel = 'noopener noreferrer';
+                    }
+                    
+                    // 添加点击事件，点击链接后关闭菜单
+                    a.addEventListener('click', () => {
+                        const mobileMenu = document.getElementById('mobileMenu');
+                        const overlay = document.getElementById('overlay');
+                        const menuToggle = document.getElementById('menuToggle');
+                        
+                        if (mobileMenu && overlay && menuToggle) {
+                            mobileMenu.classList.remove('active');
+                            overlay.classList.remove('active');
+                            menuToggle.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                    
+                    li.appendChild(a);
+                    mobileNavList.appendChild(li);
                 });
-            });
         }
 
-        // 初始化移动端菜单
-        function initMobileMenu() {
-            const menuToggle = document.getElementById('menuToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-            const overlay = document.getElementById('overlay');
-
-            menuToggle.addEventListener('click', toggleMobileMenu);
-            overlay.addEventListener('click', toggleMobileMenu);
-        }
-
-        // 切换移动端菜单状态
-        function toggleMobileMenu() {
-            const menuToggle = document.getElementById('menuToggle');
-            const mobileMenu = document.getElementById('mobileMenu');
-            const overlay = document.getElementById('overlay');
+        // 初始化移动端菜单 - 仅用于HTML内联脚本
+        function setupMobileMenuInline() {
+            const mobileCategoryList = document.getElementById('mobileCategoryList');
             
-            isMenuOpen = !isMenuOpen;
-            
-            menuToggle.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            overlay.classList.toggle('active');
-            document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+            // 仅加载移动端分类菜单，不处理菜单打开/关闭事件
+            // 菜单打开/关闭事件由main.js中的initMobileMenu函数处理
+            if (typeof window.loadMobileCategories === 'function' && mobileCategoryList) {
+                console.log('内联脚本: 加载移动端分类菜单...');
+                window.loadMobileCategories(mobileCategoryList);
+            } else {
+                console.error('内联脚本: loadMobileCategories函数未找到或mobileCategoryList元素不存在');
+            }
         }
+
+        // 切换移动端菜单状态 - 此函数已在main.js中实现，此处不再使用
+        // function toggleMobileMenu() {
+        //     const menuToggle = document.getElementById('menuToggle');
+        //     const mobileMenu = document.getElementById('mobileMenu');
+        //     const overlay = document.getElementById('overlay');
+        //     
+        //     isMenuOpen = !isMenuOpen;
+        //     
+        //     menuToggle.classList.toggle('active');
+        //     mobileMenu.classList.toggle('active');
+        //     overlay.classList.toggle('active');
+        //     document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+        // }
 
         // 初始化主题切换
         function initThemeToggle() {
