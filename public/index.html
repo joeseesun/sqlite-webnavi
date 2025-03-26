@@ -134,6 +134,8 @@
             border: 1px solid var(--card-border);
             text-decoration: none;
             color: inherit;
+            visibility: visible !important; /* 强制显示 */
+            opacity: 1 !important; /* 强制不透明 */
         }
 
         .site-card:hover {
@@ -603,39 +605,59 @@
         }
 
         .wave-1 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%232563eb' fill-opacity='0.08' d='M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: 50% 100%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'%3E%3Cpath fill='%232563eb' fill-opacity='0.05' d='M0,192 C120,160 240,128 480,160 C720,192 960,224 1200,208 C1320,200 1380,192 1440,176 L1440,320 L0,320 Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 100% 100%;
             z-index: 3;
+            animation: wave-animation-1 15s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+            height: 120px;
         }
 
         .wave-2 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%230ea5e9' fill-opacity='0.06' d='M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: 50% 100%;
-            animation-duration: 30s;
-            animation-delay: -5s;
-            opacity: 0.7;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'%3E%3Cpath fill='%230ea5e9' fill-opacity='0.04' d='M0,256 C48,245.3 96,234.7 192,224 C288,213.3 384,202.7 576,213.3 C768,224 960,256 1152,261.3 C1344,266.7 1392,245.3 1440,224 L1440,320 L0,320 Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 100% 100%;
+            animation: wave-animation-2 18s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+            opacity: 0.9;
             z-index: 2;
+            height: 100px;
         }
 
         .wave-3 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f97316' fill-opacity='0.03' d='M0,128L48,149.3C96,171,192,213,288,218.7C384,224,480,192,576,181.3C672,171,768,181,864,186.7C960,192,1056,192,1152,170.7C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-            background-size: 50% 100%;
-            animation-duration: 35s;
-            animation-delay: -2s;
-            opacity: 0.5;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'%3E%3Cpath fill='%23f97316' fill-opacity='0.03' d='M0,224 C240,245.3 480,266.7 720,261.3 C960,256 1200,224 1320,208 L1440,192 L1440,320 L0,320 Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: 100% 100%;
+            animation: wave-animation-3 20s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+            opacity: 0.7;
             z-index: 1;
+            height: 80px;
         }
 
         .dark .wave-1 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%233b82f6' fill-opacity='0.15' d='M0,64L48,90.7C96,117,192,171,288,170.7C384,171,480,117,576,128C672,139,768,213,864,213.3C960,213,1056,139,1152,122.7C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'%3E%3Cpath fill='%233b82f6' fill-opacity='0.15' d='M0,192 C120,160 240,128 480,160 C720,192 960,224 1200,208 C1320,200 1380,192 1440,176 L1440,320 L0,320 Z'%3E%3C/path%3E%3C/svg%3E");
         }
 
         .dark .wave-2 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2338bdf8' fill-opacity='0.1' d='M0,192L48,176C96,160,192,128,288,122.7C384,117,480,139,576,170.7C672,203,768,245,864,245.3C960,245,1056,203,1152,170.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'%3E%3Cpath fill='%2338bdf8' fill-opacity='0.1' d='M0,256 C48,245.3 96,234.7 192,224 C288,213.3 384,202.7 576,213.3 C768,224 960,256 1152,261.3 C1344,266.7 1392,245.3 1440,224 L1440,320 L0,320 Z'%3E%3C/path%3E%3C/svg%3E");
         }
 
         .dark .wave-3 {
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23fb923c' fill-opacity='0.07' d='M0,128L48,149.3C96,171,192,213,288,218.7C384,224,480,192,576,181.3C672,171,768,181,864,186.7C960,192,1056,192,1152,170.7C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320' preserveAspectRatio='none'%3E%3Cpath fill='%23fb923c' fill-opacity='0.07' d='M0,224 C240,245.3 480,266.7 720,261.3 C960,256 1200,224 1320,208 L1440,192 L1440,320 L0,320 Z'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        @keyframes wave-animation-1 {
+            0% { transform: translateX(0) scaleY(1); }
+            50% { transform: translateX(-25%) scaleY(0.85); }
+            100% { transform: translateX(-50%) scaleY(1); }
+        }
+
+        @keyframes wave-animation-2 {
+            0% { transform: translateX(0) scaleY(1); }
+            50% { transform: translateX(-25%) scaleY(1.15); }
+            100% { transform: translateX(-50%) scaleY(1); }
+        }
+
+        @keyframes wave-animation-3 {
+            0% { transform: translateX(0) scaleY(1); }
+            50% { transform: translateX(-25%) scaleY(0.8); }
+            100% { transform: translateX(-50%) scaleY(1); }
         }
 
         @keyframes wave-animation {
@@ -710,20 +732,101 @@
             pointer-events: none;
         }
         
-        .loader-circle {
-            width: 48px;
-            height: 48px;
-            border: 3px solid rgba(37, 99, 235, 0.2);
-            border-top: 3px solid var(--primary);
+        .loader-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fancy-loader {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .fancy-loader-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            border: 2px solid transparent;
+            border-top-color: var(--primary);
+            animation: fancy-loader-rotate 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        .fancy-loader-ring:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .fancy-loader-ring:nth-child(2) {
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            border-top-color: var(--secondary);
+            animation-delay: 0.2s;
+            animation-direction: reverse;
+        }
+
+        .fancy-loader-ring:nth-child(3) {
+            width: 40%;
+            height: 40%;
+            top: 30%;
+            left: 30%;
+            border-top-color: var(--accent);
+            animation-delay: 0.4s;
+        }
+
+        .fancy-loader-dot {
+            position: absolute;
+            width: 15%;
+            height: 15%;
+            top: 42.5%;
+            left: 42.5%;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: fancy-loader-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes fancy-loader-rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fancy-loader-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+        }
+
+        .loading-dots {
+            display: inline-block;
+            animation: loading-dots 1.5s infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes loading-dots {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
         }
         
         .loader-text {
+            margin-top: 24px;
             color: var(--text-primary);
-            font-size: 16px;
             font-weight: 500;
+            letter-spacing: 0.5px;
         }
         
         @keyframes spin {
@@ -1463,180 +1566,72 @@
         }
     </style>
     <style>
-        /* 移动菜单样式 */
-        .mobile-menu {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
+        /* 懒加载图片样式 */
+        .lazy-image {
+            opacity: 1; /* 初始设置为可见 */
+            transition: opacity 0.5s ease-in-out;
+            width: 100%;
             height: 100%;
-            background-color: #fff;
-            z-index: 1001;
-            transition: right 0.3s ease;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
+            object-fit: cover;
+            display: block;
         }
         
-        .dark .mobile-menu {
-            background-color: #1a1a1a;
-            color: #f0f0f0;
+        .lazy-loaded {
+            opacity: 1;
         }
         
-        .mobile-menu.active {
-            right: 0;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
         }
         
-        .mobile-menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        .dark .mobile-menu-header {
-            border-bottom-color: #333;
-        }
-        
-        .mobile-menu-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin: 15px 0 10px;
-            padding: 0 15px 0 18px;
+        .card-img-container {
             position: relative;
-            display: inline-block;
+            overflow: hidden;
+            padding-top: 56.25%; /* 16:9 比例 */
         }
         
-        .mobile-menu-title::before {
-            content: '';
+        .card-img {
             position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 1.2em;
-            background-color: var(--primary-color, #3b82f6);
-            border-radius: 2px;
-        }
-        
-        .dark .mobile-menu-title::before {
-            background-color: var(--primary-light, #60a5fa);
-        }
-        
-        .mobile-menu-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-        
-        .mobile-menu-close:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-        
-        .dark .mobile-menu-close:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .mobile-menu-content {
-            padding: 10px 0;
-        }
-        
-        .mobile-menu-section {
-            margin-bottom: 20px;
-        }
-        
-        .mobile-menu-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .mobile-menu-item {
-            margin: 0;
-            padding: 0;
-        }
-        
-        .mobile-menu-link {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            color: #333;
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-        
-        .dark .mobile-menu-link {
-            color: #f0f0f0;
-        }
-        
-        .mobile-menu-link:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-        
-        .dark .mobile-menu-link:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-        
-        .mobile-menu-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .mobile-menu-footer {
-            padding: 15px;
-            border-top: 1px solid #eee;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        
-        .dark .mobile-menu-footer {
-            border-top-color: #333;
-        }
-        
-        .overlay {
-            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            object-fit: cover;
         }
         
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .site-card {
+            display: block;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid #e2e8f0;
+            visibility: visible !important; /* 强制显示 */
+            opacity: 1 !important; /* 强制不透明 */
         }
         
-        /* 移动菜单切换按钮 */
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
+        .site-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            border-color: #3182ce;
         }
         
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: block;
-            }
-            
-            .desktop-nav {
-                display: none;
-            }
+        .dark .site-card {
+            background-color: #1a202c;
+            border-color: #2d3748;
+            color: #e2e8f0;
+        }
+        
+        .dark .site-card:hover {
+            border-color: #63b3ed;
         }
     </style>
     <style>
@@ -1673,9 +1668,13 @@
 <body>
     <!-- 页面加载动画 -->
     <div id="pageLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-primary); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease;">
-        <div class="loader-content" style="text-align: center;">
-            <div class="spinner" style="width: 50px; height: 50px; border: 3px solid rgba(59, 130, 246, 0.2); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <p style="margin-top: 20px; color: var(--text-primary);">正在加载精选网站...</p>
+        <div class="loader-content" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div class="fancy-loader">
+                <div class="fancy-loader-ring"></div>
+                <div class="fancy-loader-ring"></div>
+                <div class="fancy-loader-ring"></div>
+                <div class="fancy-loader-dot"></div>
+            </div>
         </div>
     </div>
     

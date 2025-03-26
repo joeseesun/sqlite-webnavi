@@ -665,6 +665,84 @@ function initDonationQrcodeModal() {
     console.log('打赏二维码模态框初始化完成');
 }
 
+// 初始化懒加载
+function initLazyLoading() {
+    console.log('初始化懒加载...');
+    
+    // 立即加载所有图片
+    const lazyImages = document.querySelectorAll('.lazy-image');
+    console.log(`找到 ${lazyImages.length} 个懒加载图片`);
+    
+    lazyImages.forEach(lazyImage => {
+        if (lazyImage.dataset.src) {
+            console.log('加载图片:', lazyImage.dataset.src);
+            lazyImage.src = lazyImage.dataset.src;
+            lazyImage.classList.add('lazy-loaded');
+            lazyImage.removeAttribute('data-src');
+        }
+    });
+    
+    // 检查浏览器是否支持 IntersectionObserver - 暂时不使用懒加载
+    if ('IntersectionObserver' in window && false) {
+        console.log('浏览器支持 IntersectionObserver API');
+        
+        // 创建 IntersectionObserver 实例
+        const lazyImageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                // 当图片进入视口
+                if (entry.isIntersecting) {
+                    const lazyImage = entry.target;
+                    console.log('图片进入视口:', lazyImage.dataset.src);
+                    
+                    // 如果有 data-src 属性，则加载实际图片
+                    if (lazyImage.dataset.src) {
+                        // 先设置图片的src为data-src
+                        lazyImage.src = lazyImage.dataset.src;
+                        
+                        // 图片加载完成后添加已加载类
+                        lazyImage.onload = function() {
+                            lazyImage.classList.add('lazy-loaded');
+                            console.log('图片加载完成:', lazyImage.src);
+                        };
+                        
+                        // 移除data-src属性，避免重复加载
+                        lazyImage.removeAttribute('data-src');
+                    }
+                    
+                    // 停止观察这个元素
+                    observer.unobserve(lazyImage);
+                }
+            });
+        }, {
+            rootMargin: '200px', // 提前200px开始加载
+            threshold: 0.01 // 当图片有1%进入视口时触发
+        });
+        
+        // 获取所有懒加载图片
+        const lazyImages = document.querySelectorAll('.lazy-image');
+        console.log(`找到 ${lazyImages.length} 个懒加载图片`);
+        
+        // 观察每一个懒加载图片
+        lazyImages.forEach(lazyImage => {
+            lazyImageObserver.observe(lazyImage);
+        });
+    }
+}
+
+// 将图片URL转换为懒加载格式
+function lazyLoadImageUrl(url) {
+    if (!url) return '';
+    
+    // 使用静态占位图
+    const placeholder = '/images/placeholder.jpg';
+    
+    // 确保URL是有效的
+    const safeUrl = url.startsWith('/') ? url : `/${url}`;
+    
+    // 直接使用实际图片URL，不使用懒加载
+    return `<img src="${safeUrl}" class="card-img" alt="网站截图" onerror="this.src='${placeholder}'">`;
+}
+
 // 更新导航栏分类标签
 function updateCategoryTabs(categories) {
     console.log('更新导航栏分类标签...');
@@ -769,116 +847,155 @@ function renderSiteCards(sitesByCategory, categories) {
 function createSiteCard(site) {
     console.log(`创建网站卡片: ${site.name}`);
     
-    // 创建卡片元素
+    const placeholderImage = '/images/placeholder.jpg';
+    
+    // 创建卡片容器
     const card = document.createElement('div');
-    card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:-translate-y-1 cursor-pointer';
-    card.dataset.id = site.id;
-    card.dataset.tags = site.tags.map(tag => tag.name).join(',');
+    card.className = 'site-card';
     
-    // 占位图片的数据URL
-    const placeholderImage = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22348%22%20height%3D%22225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20348%20225%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18e5eb468a8%20text%20%7B%20fill%3A%23eceeef%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A17pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18e5eb468a8%22%3E%3Crect%20width%3D%22348%22%20height%3D%22225%22%20fill%3D%22%2355595c%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22116.7109375%22%20y%3D%22120.3%22%3EThumbnail%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E';
+    // 处理标签 - 确保是字符串数组
+    let tagStrings = [];
+    if (Array.isArray(site.tags)) {
+        tagStrings = site.tags.map(tag => typeof tag === 'string' ? tag : (tag.name || ''));
+    }
+    card.dataset.tags = tagStrings.join(',');
     
-    // 设置卡片内容 - 完全重构以避免嵌套链接问题
-    const cardContent = document.createElement('div');
-    cardContent.className = 'h-full';
+    // 创建链接
+    const link = document.createElement('a');
+    link.href = site.url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.className = 'card-link';
     
     // 图片容器
-    const imageContainer = document.createElement('div');
-    imageContainer.className = 'relative overflow-hidden';
-    imageContainer.style.paddingTop = '56.25%';
+    const imgContainer = document.createElement('div');
+    imgContainer.className = 'card-img-container';
     
     // 图片
-    const image = document.createElement('img');
-    image.src = site.screenshot || placeholderImage;
-    image.alt = site.name;
-    image.className = 'absolute top-0 left-0 w-full h-full object-cover';
-    image.onerror = function() { this.src = placeholderImage; };
-    imageContainer.appendChild(image);
+    const imgHTML = lazyLoadImageUrl(site.screenshot || placeholderImage);
+    imgContainer.innerHTML = imgHTML;
     
-    // 标签容器 - 右上角
-    const tagsContainer = document.createElement('div');
-    tagsContainer.className = 'absolute top-2 right-2 flex flex-row gap-1';
+    // 图片加载错误处理
+    const img = imgContainer.querySelector('img');
+    img.onerror = function() { 
+        this.src = placeholderImage;
+    };
     
-    // 添加热门标签
-    if (site.is_hot) {
-        const hotTag = document.createElement('span');
-        hotTag.className = 'bg-red-500 text-white text-xs px-2 py-1 rounded';
-        hotTag.textContent = '热门';
-        tagsContainer.appendChild(hotTag);
-    }
+    // 卡片内容
+    const cardContent = document.createElement('div');
+    cardContent.className = 'card-content p-4';
     
-    // 添加新品标签
-    if (site.is_new) {
-        const newTag = document.createElement('span');
-        newTag.className = 'bg-blue-500 text-white text-xs px-2 py-1 rounded';
-        newTag.textContent = '新品';
-        tagsContainer.appendChild(newTag);
-    }
-    
-    imageContainer.appendChild(tagsContainer);
-    
-    // 添加教程链接 - 左下角
-    if (site.tutorial_url) {
-        const tutorialContainer = document.createElement('div');
-        tutorialContainer.className = 'absolute bottom-2 left-2';
-        
-        const tutorialLink = document.createElement('a');
-        tutorialLink.href = site.tutorial_url;
-        tutorialLink.target = '_blank';
-        tutorialLink.className = 'bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600 transition-colors';
-        tutorialLink.textContent = '教程';
-        tutorialLink.onclick = function(e) {
-            e.stopPropagation(); // 阻止事件冒泡
-        };
-        
-        tutorialContainer.appendChild(tutorialLink);
-        imageContainer.appendChild(tutorialContainer);
-    }
-    
-    cardContent.appendChild(imageContainer);
-    
-    // 网站信息容器
-    const infoContainer = document.createElement('div');
-    infoContainer.className = 'p-4';
-    
-    // 网站标题
+    // 网站名称
     const title = document.createElement('h3');
-    title.className = 'font-bold text-lg mb-2 text-gray-900 dark:text-white';
+    title.className = 'text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100';
     title.textContent = site.name;
-    infoContainer.appendChild(title);
     
     // 网站描述
     const description = document.createElement('p');
-    description.className = 'text-gray-600 dark:text-gray-300 text-sm mb-4';
-    description.textContent = site.description || '暂无描述';
-    infoContainer.appendChild(description);
+    description.className = 'text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2';
+    description.textContent = site.description;
     
-    // 标签列表
-    const tagsList = document.createElement('div');
-    tagsList.className = 'flex flex-wrap gap-2';
+    // 标签容器
+    const tagsContainer = document.createElement('div');
+    tagsContainer.className = 'flex flex-wrap';
     
-    site.tags.forEach(tag => {
-        const tagSpan = document.createElement('span');
-        tagSpan.className = 'text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 cursor-pointer';
-        tagSpan.textContent = tag.name;
-        tagSpan.onclick = function(e) {
-            e.stopPropagation(); // 阻止事件冒泡
-            filterByTag(tag.name);
-        };
-        tagsList.appendChild(tagSpan);
-    });
+    // 添加标签
+    if (Array.isArray(site.tags)) {
+        site.tags.forEach(tag => {
+            const tagElement = document.createElement('span');
+            
+            // 获取标签文本
+            const tagText = typeof tag === 'string' ? tag : (tag.name || '');
+            if (!tagText) return; // 跳过空标签
+            
+            // 根据标签类型设置样式
+            let tagClass = 'tag-other';
+            const tagLower = tagText.toLowerCase();
+            if (tagLower.includes('ai')) {
+                tagClass = 'tag-ai';
+            } else if (tagLower.includes('生产力') || tagLower.includes('效率') || tagLower.includes('工具')) {
+                tagClass = 'tag-productivity';
+            } else if (tagLower.includes('阅读') || tagLower.includes('知识')) {
+                tagClass = 'tag-reading';
+            } else if (tagLower.includes('写作') || tagLower.includes('文字')) {
+                tagClass = 'tag-writing';
+            }
+            
+            tagElement.className = `tag ${tagClass}`;
+            tagElement.textContent = tagText;
+            tagElement.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                filterByTag(tagText);
+            });
+            
+            tagsContainer.appendChild(tagElement);
+        });
+    }
     
-    infoContainer.appendChild(tagsList);
-    cardContent.appendChild(infoContainer);
+    // 组装卡片
+    cardContent.appendChild(title);
+    cardContent.appendChild(description);
+    cardContent.appendChild(tagsContainer);
     
-    // 添加点击事件 - 整个卡片点击跳转到网站
-    card.onclick = function() {
-        window.open(site.url, '_blank');
-    };
-    
-    card.appendChild(cardContent);
+    link.appendChild(imgContainer);
+    link.appendChild(cardContent);
+    card.appendChild(link);
     
     return card;
+}
+
+// 根据分类筛选网站
+function filterByCategory(categoryId) {
+    console.log('根据分类筛选网站:', categoryId, typeof categoryId);
+    
+    // 更新分类标签的激活状态
+    document.querySelectorAll('.category-tab').forEach(tab => {
+        if (tab.dataset.id === categoryId) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+    
+    // 获取分类名称
+    const categoryLink = document.querySelector(`.category-link[data-id="${categoryId}"]`);
+    const categoryName = categoryLink ? categoryLink.textContent.trim() : categoryId;
+    
+    // 如果是"全部"分类，则显示所有分类
+    if (categoryId === 'all') {
+        // 显示所有分类区域
+        document.querySelectorAll('.category-section').forEach(section => {
+            section.style.display = '';
+        });
+        
+        return;
+    }
+    
+    // 获取所有分类区域
+    const sections = document.querySelectorAll('.category-section');
+    console.log('找到分类区域数量:', sections.length);
+    
+    // 筛选分类
+    let foundMatch = false;
+    sections.forEach(section => {
+        try {
+            const sectionCategoryId = section.dataset.categoryId;
+            console.log(`分类区域 ID: ${sectionCategoryId} (${typeof sectionCategoryId}), 比较: ${categoryId} (${typeof categoryId})`);
+            
+            // 确保类型一致进行比较 - dataset 总是返回字符串，所以将 categoryId 转为字符串
+            if (sectionCategoryId === String(categoryId)) {
+                section.style.display = '';
+                foundMatch = true;
+                console.log(`匹配成功: ${section.id}`);
+            } else {
+                section.style.display = 'none';
+                console.log(`匹配失败: ${section.id}`);
+            }
+        } catch (error) {
+            console.error('处理分类区域时出错:', error);
+        }
+    });
 }
 
 // 添加事件监听器
@@ -944,79 +1061,6 @@ function filterByTag(tagName) {
     
     // 筛选网站
     filterSites(tagName.toLowerCase());
-}
-
-// 根据分类筛选网站
-function filterByCategory(categoryId) {
-    console.log('根据分类筛选网站:', categoryId, typeof categoryId);
-    
-    // 更新分类标签的激活状态
-    document.querySelectorAll('.category-tab').forEach(tab => {
-        if (tab.dataset.id === categoryId) {
-            tab.classList.add('active');
-        } else {
-            tab.classList.remove('active');
-        }
-    });
-    
-    // 显示筛选状态
-    const filterStatus = document.getElementById('filter-status');
-    const filterStatusText = document.getElementById('filter-status-text');
-    
-    // 获取分类名称
-    const categoryLink = document.querySelector(`.category-link[data-id="${categoryId}"]`);
-    const categoryName = categoryLink ? categoryLink.textContent.trim() : categoryId;
-    
-    // 如果是"全部"分类，则显示所有分类
-    if (categoryId === 'all') {
-        if (filterStatus) {
-            filterStatus.classList.add('hidden');
-            filterStatus.classList.add('translate-y-full');
-        }
-        
-        // 显示所有分类区域
-        document.querySelectorAll('.category-section').forEach(section => {
-            section.style.display = '';
-        });
-        
-        return;
-    }
-    
-    if (filterStatus && filterStatusText) {
-        filterStatus.classList.remove('hidden');
-        filterStatus.classList.remove('translate-y-full');
-        filterStatusText.textContent = `正在筛选分类: "${categoryName}"`;
-    }
-    
-    // 获取所有分类区域
-    const sections = document.querySelectorAll('.category-section');
-    console.log('找到分类区域数量:', sections.length);
-    
-    // 筛选分类
-    let foundMatch = false;
-    sections.forEach(section => {
-        try {
-            const sectionCategoryId = section.dataset.categoryId;
-            console.log(`分类区域 ID: ${sectionCategoryId} (${typeof sectionCategoryId}), 比较: ${categoryId} (${typeof categoryId})`);
-            
-            // 确保类型一致进行比较 - dataset 总是返回字符串，所以将 categoryId 转为字符串
-            if (sectionCategoryId === String(categoryId)) {
-                section.style.display = '';
-                foundMatch = true;
-                console.log(`匹配成功: ${section.id}`);
-            } else {
-                section.style.display = 'none';
-                console.log(`匹配失败: ${section.id}`);
-            }
-        } catch (error) {
-            console.error('处理分类区域时出错:', error);
-        }
-    });
-    
-    // 如果没有找到匹配的分类，显示提示
-    if (!foundMatch && filterStatus && filterStatusText) {
-        filterStatusText.textContent = `没有找到分类: "${categoryName}" 的内容`;
-    }
 }
 
 // 筛选网站
@@ -1176,4 +1220,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 加载网站设置（包括打赏二维码）
     loadSiteSettings();
+    
+    // 初始化懒加载
+    initLazyLoading();
 });

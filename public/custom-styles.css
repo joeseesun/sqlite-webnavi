@@ -334,6 +334,8 @@
     text-decoration: none;
     color: inherit;
     cursor: pointer;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .site-card:hover {
@@ -368,6 +370,8 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .site-card:hover .card-img {
