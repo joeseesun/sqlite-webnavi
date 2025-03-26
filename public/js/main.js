@@ -50,6 +50,9 @@ function initMobileMenu() {
     const mobileMenu = document.getElementById('mobileMenu');
     const mobileClose = document.getElementById('mobileClose');
     const overlay = document.getElementById('overlay');
+    const mobileNavList = document.getElementById('mobileNavList');
+    const mobileCategoryList = document.getElementById('mobileCategoryList');
+    const mobileDonateTrigger = document.getElementById('mobileDonateTrigger');
     
     if (!menuToggle || !mobileMenu) {
         console.error('移动菜单元素未找到');
@@ -58,6 +61,7 @@ function initMobileMenu() {
     
     // 打开菜单
     const openMenu = () => {
+        console.log('打开移动菜单');
         menuToggle.classList.add('active');
         mobileMenu.classList.add('active');
         overlay.classList.add('active');
@@ -66,6 +70,7 @@ function initMobileMenu() {
     
     // 关闭菜单
     const closeMenu = () => {
+        console.log('关闭移动菜单');
         menuToggle.classList.remove('active');
         mobileMenu.classList.remove('active');
         overlay.classList.remove('active');
@@ -76,14 +81,129 @@ function initMobileMenu() {
     menuToggle.addEventListener('click', openMenu);
     
     if (mobileClose) {
-        mobileClose.addEventListener('click', closeMenu);
+        console.log('为移动菜单关闭按钮添加事件监听器');
+        mobileClose.addEventListener('click', function(event) {
+            console.log('移动菜单关闭按钮被点击');
+            event.preventDefault();
+            closeMenu();
+        });
+    } else {
+        console.error('移动菜单关闭按钮未找到');
     }
     
     if (overlay) {
         overlay.addEventListener('click', closeMenu);
     }
     
+    // 加载导航菜单
+    loadMobileNavigation(mobileNavList);
+    
+    // 加载分类菜单
+    loadMobileCategories(mobileCategoryList);
+    
+    // 添加联系作者事件监听器
+    if (mobileDonateTrigger) {
+        mobileDonateTrigger.addEventListener('click', () => {
+            closeMenu(); // 关闭移动菜单
+            const donationModal = document.getElementById('donationModal');
+            if (donationModal) {
+                donationModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
+    
     console.log('移动菜单初始化完成');
+}
+
+// 加载移动端导航菜单
+function loadMobileNavigation(mobileNavList) {
+    if (!mobileNavList) {
+        console.error('移动端导航菜单元素未找到');
+        return;
+    }
+    
+    // 获取桌面端导航菜单
+    const desktopNav = document.getElementById('desktopNav');
+    if (!desktopNav) {
+        console.error('桌面端导航菜单元素未找到');
+        return;
+    }
+    
+    // 清空移动端导航菜单
+    mobileNavList.innerHTML = '';
+    
+    // 创建导航菜单项
+    const navItems = [
+        { text: '首页', href: '#' },
+        { text: '关于', href: '#about' },
+        { text: '联系', href: '#contact' }
+    ];
+    
+    // 添加导航菜单项
+    navItems.forEach(item => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = item.href;
+        a.textContent = item.text;
+        a.addEventListener('click', () => {
+            // 关闭移动菜单
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('overlay');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (mobileMenu && overlay && menuToggle) {
+                mobileMenu.classList.remove('active');
+                overlay.classList.remove('active');
+                menuToggle.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+        li.appendChild(a);
+        mobileNavList.appendChild(li);
+    });
+}
+
+// 加载移动端分类菜单
+function loadMobileCategories(mobileCategoryList) {
+    if (!mobileCategoryList) {
+        console.error('移动端分类菜单元素未找到');
+        return;
+    }
+    
+    // 清空移动端分类菜单
+    mobileCategoryList.innerHTML = '';
+    
+    // 获取所有分类
+    fetch('/api/categories')
+        .then(response => response.json())
+        .then(categories => {
+            // 添加分类菜单项
+            categories.forEach(category => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `#category-${category.id}`;
+                a.textContent = category.name;
+                a.addEventListener('click', () => {
+                    // 关闭移动菜单
+                    const mobileMenu = document.getElementById('mobileMenu');
+                    const overlay = document.getElementById('overlay');
+                    const menuToggle = document.getElementById('menuToggle');
+                    
+                    if (mobileMenu && overlay && menuToggle) {
+                        mobileMenu.classList.remove('active');
+                        overlay.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+                li.appendChild(a);
+                mobileCategoryList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('获取分类数据失败:', error);
+        });
 }
 
 // 加载网站数据

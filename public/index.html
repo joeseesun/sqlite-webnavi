@@ -1313,6 +1313,97 @@
         .dark .comment-icon-container:hover {
             background-color: var(--primary-light);
         }
+        
+        /* 移动菜单样式 */
+        .mobile-menu-section {
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+        
+        .mobile-menu-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .mobile-menu-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .mobile-menu-list li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .mobile-menu-list a {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-list a:hover {
+            color: var(--primary-color);
+            padding-left: 0.5rem;
+        }
+        
+        .mobile-logo {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        
+        .mobile-logo .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        
+        /* 移动菜单关闭按钮 */
+        .mobile-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .mobile-close:hover {
+            background: var(--primary-color);
+        }
+        
+        .mobile-close i {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-close:hover i {
+            color: white;
+        }
+        
+        /* 移动菜单头部 */
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -1373,26 +1464,39 @@
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
             <div class="mobile-logo">
-                <img src="/logo.png" alt="乔木精选推荐" class="h-8">
+                <a href="#" class="logo text-black dark:text-white">乔木精选推荐</a>
             </div>
-            <button class="mobile-close" id="mobileClose">
+            <button type="button" class="mobile-close" id="mobileClose" onclick="document.getElementById('mobileMenu').classList.remove('active'); document.getElementById('menuToggle').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); document.body.style.overflow = '';">
                 <i class="fas fa-times"></i>
             </button>
         </div>
         <div class="mobile-menu-content">
-            <!-- 移动端导航菜单将通过JavaScript动态加载 -->
+            <!-- 导航菜单 -->
+            <div class="mobile-menu-section">
+                <h3 class="mobile-menu-title">导航</h3>
+                <ul class="mobile-menu-list" id="mobileNavList">
+                    <!-- 导航菜单项将通过JavaScript动态加载 -->
+                </ul>
+            </div>
+            
+            <!-- 分类菜单 -->
+            <div class="mobile-menu-section">
+                <h3 class="mobile-menu-title">分类</h3>
+                <ul class="mobile-menu-list" id="mobileCategoryList">
+                    <!-- 分类菜单项将通过JavaScript动态加载 -->
+                </ul>
+            </div>
         </div>
         <div class="mobile-menu-footer">
             <div class="flex justify-center space-x-6">
-                <div class="tooltip">
-                    <div id="mobileDonationQrcodeTrigger" class="coffee-icon-container">
-                        <i class="fas fa-coffee coffee-icon text-xl"></i>
-                    </div>
-                    <span class="tooltiptext">打赏支持</span>
+                <div id="mobileDonationQrcodeTrigger" class="coffee-icon-container">
+                    <i class="fas fa-coffee coffee-icon text-xl"></i>
+                </div>
+                <div id="mobileDonateTrigger" class="coffee-icon-container">
+                    <i class="fas fa-comment coffee-icon text-xl"></i>
                 </div>
                 <div class="mobile-theme-toggle" id="mobileThemeToggle">
                     <i class="fas fa-sun"></i>
-                    <i class="fas fa-moon"></i>
                 </div>
             </div>
         </div>
