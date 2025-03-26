@@ -176,63 +176,63 @@
 
 /* 深色模式下的标签样式 */
 .dark .tag-ai {
-    background-color: rgba(59, 130, 246, 0.15) !important;
-    border: 1px solid rgba(59, 130, 246, 0.3) !important;
-    color: #93c5fd !important;
+    background-color: rgba(59, 130, 246, 0.3) !important;
+    border: 1px solid rgba(59, 130, 246, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-productivity {
-    background-color: rgba(56, 189, 248, 0.15) !important;
-    border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    color: #7dd3fc !important;
+    background-color: rgba(56, 189, 248, 0.3) !important;
+    border: 1px solid rgba(56, 189, 248, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-reading {
-    background-color: rgba(251, 146, 60, 0.15) !important;
-    border: 1px solid rgba(251, 146, 60, 0.3) !important;
-    color: #fdba74 !important;
+    background-color: rgba(251, 146, 60, 0.3) !important;
+    border: 1px solid rgba(251, 146, 60, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-tool {
-    background-color: rgba(167, 139, 250, 0.15) !important;
-    border: 1px solid rgba(167, 139, 250, 0.3) !important;
-    color: #c4b5fd !important;
+    background-color: rgba(167, 139, 250, 0.3) !important;
+    border: 1px solid rgba(167, 139, 250, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-design {
-    background-color: rgba(244, 114, 182, 0.15) !important;
-    border: 1px solid rgba(244, 114, 182, 0.3) !important;
-    color: #f9a8d4 !important;
+    background-color: rgba(244, 114, 182, 0.3) !important;
+    border: 1px solid rgba(244, 114, 182, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-writing {
-    background-color: rgba(52, 211, 153, 0.15) !important;
-    border: 1px solid rgba(52, 211, 153, 0.3) !important;
-    color: #6ee7b7 !important;
+    background-color: rgba(52, 211, 153, 0.3) !important;
+    border: 1px solid rgba(52, 211, 153, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-social {
-    background-color: rgba(248, 113, 113, 0.15) !important;
-    border: 1px solid rgba(248, 113, 113, 0.3) !important;
-    color: #fca5a5 !important;
+    background-color: rgba(248, 113, 113, 0.3) !important;
+    border: 1px solid rgba(248, 113, 113, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-learning {
-    background-color: rgba(252, 211, 77, 0.15) !important;
-    border: 1px solid rgba(252, 211, 77, 0.3) !important;
-    color: #fcd34d !important;
+    background-color: rgba(252, 211, 77, 0.3) !important;
+    border: 1px solid rgba(252, 211, 77, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-development {
-    background-color: rgba(96, 165, 250, 0.15) !important;
-    border: 1px solid rgba(96, 165, 250, 0.3) !important;
-    color: #93c5fd !important;
+    background-color: rgba(96, 165, 250, 0.3) !important;
+    border: 1px solid rgba(96, 165, 250, 0.5) !important;
+    color: #ffffff !important;
 }
 
 .dark .tag-creative {
-    background-color: rgba(45, 212, 191, 0.15) !important;
-    border: 1px solid rgba(45, 212, 191, 0.3) !important;
-    color: #5eead4 !important;
+    background-color: rgba(45, 212, 191, 0.3) !important;
+    border: 1px solid rgba(45, 212, 191, 0.5) !important;
+    color: #ffffff !important;
 }
 
 /* 深色模式下的热门标签和新标签样式 */
@@ -271,6 +271,13 @@
 .search-box:hover {
     border-color: var(--primary-light);
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.07), inset 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.h-full{
+    border-color: var(--primary) !important;
+}
+.h-full:hover{
+    border-color: var(--primary) !important;
 }
 
 .search-icon {
@@ -341,7 +348,7 @@
 .site-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 20px var(--card-shadow);
-    border-color: var(--primary-light);
+    border-color: #999 !important;
 }
 
 .card-link {
@@ -434,8 +441,8 @@
 }
 
 .dark .tag-ai {
-    background-color: rgba(59, 130, 246, 0.15);
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    background-color: rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(59, 130, 246, 0.5);
 }
 
 .tag-productivity {
@@ -445,8 +452,8 @@
 }
 
 .dark .tag-productivity {
-    background-color: rgba(56, 189, 248, 0.15);
-    border: 1px solid rgba(56, 189, 248, 0.3);
+    background-color: rgba(56, 189, 248, 0.3);
+    border: 1px solid rgba(56, 189, 248, 0.5);
 }
 
 .tag-reading {
@@ -456,8 +463,8 @@
 }
 
 .dark .tag-reading {
-    background-color: rgba(251, 146, 60, 0.15);
-    border: 1px solid rgba(251, 146, 60, 0.3);
+    background-color: rgba(251, 146, 60, 0.3);
+    border: 1px solid rgba(251, 146, 60, 0.5);
 }
 
 /* 热门和新品标签 */
@@ -743,4 +750,23 @@
     100% {
         background-position: 200% center;
     }
+}
+
+/* 移动菜单样式优化 */
+.mobile-menu-link {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.mobile-menu-link i {
+    margin-right: 8px !important;
+}
+
+.mobile-menu-item {
+    margin-bottom: 10px !important;
+}
+
+/* 深色模式下的移动菜单样式 */
+.dark .mobile-menu-link {
+    color: var(--text-primary) !important;
 }
