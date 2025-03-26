@@ -1051,7 +1051,9 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
       twitter_url, 
       email,
       hero_title,
-      hero_subtitle
+      hero_subtitle,
+      contact_qrcode_remove,
+      donation_qrcode_remove
     } = req.body;
 
     // 验证必填字段
@@ -1069,8 +1071,20 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
     let contactQrcodePath = existingSettings.contact_qrcode;
     let donationQrcodePath = existingSettings.donation_qrcode;
 
+    // 处理联系二维码删除
+    if (contact_qrcode_remove === '1') {
+      if (existingSettings.contact_qrcode) {
+        try {
+          const oldPath = path.join(__dirname, 'public', existingSettings.contact_qrcode);
+          await fsPromises.unlink(oldPath);
+          contactQrcodePath = null;
+        } catch (err) {
+          console.error('删除联系二维码失败:', err);
+        }
+      }
+    }
     // 处理联系二维码上传
-    if (req.files && req.files.contact_qrcode && req.files.contact_qrcode.length > 0) {
+    else if (req.files && req.files.contact_qrcode && req.files.contact_qrcode.length > 0) {
       const file = req.files.contact_qrcode[0];
       const fileExt = file.originalname.split('.').pop();
       const fileName = `contact_qrcode_${Date.now()}.${fileExt}`;
@@ -1083,12 +1097,12 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
       await fsPromises.writeFile(filePath, file.buffer);
       
       // 更新路径
-      contactQrcodePath = `/public/uploads/qrcodes/${fileName}`;
+      contactQrcodePath = `/uploads/qrcodes/${fileName}`;
       
       // 如果有旧文件，尝试删除
       if (existingSettings.contact_qrcode) {
         try {
-          const oldPath = path.join(__dirname, existingSettings.contact_qrcode.replace(/^\//, ''));
+          const oldPath = path.join(__dirname, 'public', existingSettings.contact_qrcode);
           await fsPromises.unlink(oldPath);
         } catch (err) {
           console.error('删除旧联系二维码失败:', err);
@@ -1096,8 +1110,20 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
       }
     }
 
+    // 处理赞赏二维码删除
+    if (donation_qrcode_remove === '1') {
+      if (existingSettings.donation_qrcode) {
+        try {
+          const oldPath = path.join(__dirname, 'public', existingSettings.donation_qrcode);
+          await fsPromises.unlink(oldPath);
+          donationQrcodePath = null;
+        } catch (err) {
+          console.error('删除赞赏二维码失败:', err);
+        }
+      }
+    }
     // 处理赞赏二维码上传
-    if (req.files && req.files.donation_qrcode && req.files.donation_qrcode.length > 0) {
+    else if (req.files && req.files.donation_qrcode && req.files.donation_qrcode.length > 0) {
       const file = req.files.donation_qrcode[0];
       const fileExt = file.originalname.split('.').pop();
       const fileName = `donation_qrcode_${Date.now()}.${fileExt}`;
@@ -1110,12 +1136,12 @@ app.put('/api/settings/:id', authenticateToken, upload.fields([
       await fsPromises.writeFile(filePath, file.buffer);
       
       // 更新路径
-      donationQrcodePath = `/public/uploads/qrcodes/${fileName}`;
+      donationQrcodePath = `/uploads/qrcodes/${fileName}`;
       
       // 如果有旧文件，尝试删除
       if (existingSettings.donation_qrcode) {
         try {
-          const oldPath = path.join(__dirname, existingSettings.donation_qrcode.replace(/^\//, ''));
+          const oldPath = path.join(__dirname, 'public', existingSettings.donation_qrcode);
           await fsPromises.unlink(oldPath);
         } catch (err) {
           console.error('删除旧赞赏二维码失败:', err);

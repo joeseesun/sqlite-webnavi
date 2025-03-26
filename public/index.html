@@ -229,26 +229,34 @@
             background-color: var(--card-bg);
             border: 1px solid var(--card-border); /* 添加边框 */
             border-radius: 8px; /* 减小圆角 */
-            padding: 0.9rem 1.5rem 0.9rem 3.2rem;
+            padding: 0.9rem 1.5rem; /* 移除左侧额外内边距 */
             width: 100%;
             transition: all 0.25s ease;
             font-size: 1rem; /* 减小字号 */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* 更精细的阴影 */
+            color: var(--text-primary);
         }
 
         .search-box:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); /* 调整聚焦阴影 */
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3); /* 调整聚焦阴影 */
             outline: none;
         }
 
-        .search-icon {
-            position: absolute;
-            left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-            font-size: 1.1rem;
+        /* 深色模式下的搜索框优化 */
+        .dark .search-box {
+            background-color: #2d3748; /* 稍微亮一点的背景 */
+            border-color: #4a5568; /* 更明显的边框 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 更强的阴影 */
+        }
+
+        .dark .search-box:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.4); /* 更明显的聚焦效果 */
+        }
+
+        .dark .search-box::placeholder {
+            color: #9ca3af; /* 更亮的占位符文本 */
         }
 
         /* 美化的分类标签 */
@@ -800,7 +808,7 @@
             display: inline-block;
             position: relative;
             text-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
-            animation: float 4s ease-in-out 1; /* 修改为只执行一次 */
+            animation: none; /* 移除浮动动画 */
         }
 
         @keyframes float {
@@ -870,21 +878,6 @@
             box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2), 0 0 0 4px rgba(37, 99, 235, 0.1);
             outline: none;
             transform: translateY(-4px);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary);
-            font-size: 1.5rem;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .search-container:hover .search-icon {
-            transform: translateY(-50%) scale(1.1);
         }
 
         /* 鼠标追踪效果 */
@@ -1034,15 +1027,6 @@
             transform: translateY(-2px);
         }
 
-        .search-icon {
-            position: absolute;
-            left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary);
-            font-size: 1.25rem;
-        }
-
         /* 波浪动画加强 */
         .wave-bg {
             position: absolute;
@@ -1131,7 +1115,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            z-index: 10000;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
@@ -1168,115 +1152,166 @@
             cursor: pointer;
             color: var(--text-secondary);
             transition: color 0.3s;
+            z-index: 1;
         }
 
         .donation-close:hover {
-            color: var(--primary);
+            color: #f97316;
         }
 
         .donation-qrcode {
-            max-width: 200px;
-            border-radius: 8px;
-            margin: 1.5rem auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 180px;
+            border-radius: 4px;
+            margin: 0 auto;
+            display: block;
         }
-
-        /* 提示气泡 */
+        
+        .qrcode-container {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 0 auto 1rem auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f0f0f0;
+        }
+        
         .tooltip {
             position: relative;
             display: inline-block;
         }
-
-        .tooltip .tooltip-text {
+        
+        .tooltip .tooltiptext {
             visibility: hidden;
             width: 120px;
-            background-color: var(--card-bg);
-            color: var(--text-primary);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
             text-align: center;
             border-radius: 6px;
-            padding: 0.5rem;
+            padding: 5px;
             position: absolute;
             z-index: 1;
-            bottom: 125%;
+            top: 125%; 
             left: 50%;
-            transform: translateX(-50%);
+            margin-left: -60px;
             opacity: 0;
             transition: opacity 0.3s;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--card-border);
             font-size: 0.8rem;
         }
-
-        .tooltip:hover .tooltip-text {
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            bottom: 100%; 
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent; 
+        }
+        
+        .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
         }
-
-        @media (min-width: 1024px) {
-            .lg\:grid-cols-4 {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-            .gap-6 {
-                gap: 1.5rem;
-            }
-        }
-
-        /* 占位图样式 */
-        .placeholder-img {
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--card-bg) 100%);
+        
+        /* 咖啡图标样式 */
+        .coffee-icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--card-border);
+        }
+        
+        .coffee-icon-container:hover {
+            transform: scale(1.1);
+            background: var(--primary-light);
+        }
+        
+        .coffee-icon {
             font-size: 1.2rem;
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        
-        .placeholder-img i {
-            margin-right: 0.5rem;
-            opacity: 0.7;
-        }
-
-        /* 确保筛选后卡片正确显示 */
-        .site-card {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card-img-container {
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .card-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .tag-container {
-            margin-top: auto;
-        }
-        
-        /* 筛选状态栏样式 */
-        #filter-status {
+            color: var(--text-primary);
             transition: all 0.3s ease;
         }
         
-        #clear-filter {
-            transition: all 0.2s ease;
+        .coffee-icon-container:hover .coffee-icon {
+            color: white;
         }
         
-        #clear-filter:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+        /* 深色模式下的咖啡图标 */
+        .dark .coffee-icon {
+            color: var(--text-primary);
+        }
+
+        /* 图标容器通用样式 */
+        .icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .icon-container:hover {
+            background: var(--primary-color);
+        }
+        
+        .icon-container i {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .icon-container:hover i {
+            color: white;
+        }
+
+        /* 评论图标样式 */
+        .comment-icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--card-border);
+        }
+        
+        .comment-icon-container:hover {
+            transform: scale(1.1);
+            background: var(--primary-light);
+        }
+        
+        .comment-icon {
+            font-size: 1.2rem;
+            color: black;
+            transition: all 0.3s ease;
+        }
+        
+        .comment-icon-container:hover .comment-icon {
+            color: white;
+        }
+        
+        /* 深色模式下的评论图标 */
+        .dark .comment-icon-container {
+            background-color: var(--bg-secondary);
+        }
+        
+        .dark .comment-icon-container:hover {
+            background-color: var(--primary-light);
         }
     </style>
 </head>
@@ -1284,7 +1319,7 @@
     <!-- 页面加载动画 -->
     <div id="pageLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-primary); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease;">
         <div class="loader-content" style="text-align: center;">
-            <div class="spinner" style="width: 50px; height: 50px; border: 5px solid rgba(59, 130, 246, 0.2); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s linear infinite;"></div>
+            <div class="spinner" style="width: 50px; height: 50px; border: 3px solid rgba(59, 130, 246, 0.2); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
             <p style="margin-top: 20px; color: var(--text-primary);">正在加载精选网站...</p>
         </div>
     </div>
@@ -1305,13 +1340,27 @@
                         <span></span>
                         <span></span>
                         <span></span>
-            </div>
+                    </div>
                     <a href="#" class="logo">乔木精选推荐</a>
-        </div>
+                </div>
                 <div class="hidden md:flex items-center space-x-8" id="desktopNav">
                     <!-- 导航菜单将通过JavaScript动态加载 -->
                 </div>
                 <div class="flex items-center space-x-4">
+                    <div class="tooltip">
+                        <div id="donationQrcodeTrigger" class="coffee-icon-container">
+                            <i class="fas fa-coffee coffee-icon"></i>
+                        </div>
+                        <span class="tooltiptext">打赏支持</span>
+                    </div>
+                    
+                    <div class="tooltip">
+                        <div id="donateTrigger" class="coffee-icon-container">
+                            <i class="fas fa-comment coffee-icon"></i>
+                        </div>
+                        <span class="tooltiptext">联系作者</span>
+                    </div>
+                    
                     <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">
                         <i class="fas fa-sun"></i>
                     </button>
@@ -1322,30 +1371,32 @@
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <div class="mb-8">
-            <a href="#" class="logo">乔木精选推荐</a>
+        <div class="mobile-menu-header">
+            <div class="mobile-logo">
+                <img src="/logo.png" alt="乔木精选推荐" class="h-8">
+            </div>
+            <button class="mobile-close" id="mobileClose">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <nav class="space-y-5" id="mobileNav">
-            <!-- 导航菜单将通过JavaScript动态加载 -->
-        </nav>
-        <div class="mt-8 pt-6 border-t" style="border-color: var(--card-border);">
-            <div class="flex justify-center mt-4">
-                <a href="https://github.com/joeseesun" target="_blank" class="social-icon mx-2" title="GitHub">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="https://twitter.com/vista8" target="_blank" class="social-icon mx-2" title="Twitter">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="mailto:vista8@gmail.com" class="social-icon mx-2" title="Email">
-                    <i class="fas fa-envelope"></i>
-                </a>
-                <div class="social-icon mx-2 cursor-pointer" id="mobileDonateTrigger" title="联系作者">
-                    <i class="fas fa-user-plus"></i>
+        <div class="mobile-menu-content">
+            <!-- 移动端导航菜单将通过JavaScript动态加载 -->
+        </div>
+        <div class="mobile-menu-footer">
+            <div class="flex justify-center space-x-6">
+                <div class="tooltip">
+                    <div id="mobileDonationQrcodeTrigger" class="coffee-icon-container">
+                        <i class="fas fa-coffee coffee-icon text-xl"></i>
+                    </div>
+                    <span class="tooltiptext">打赏支持</span>
                 </div>
+                <div class="mobile-theme-toggle" id="mobileThemeToggle">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
                 </div>
             </div>
         </div>
-
+    </div>
     <!-- Overlay -->
     <div class="overlay" id="overlay"></div>
 
@@ -1365,7 +1416,6 @@
                     发现最佳AI、阅读与知识管理工具，<span class="hero-highlight">提升工作效率</span>
                 </p>
                 <div class="search-container">
-                    <i class="fas fa-search search-icon"></i>
                     <input 
                         type="text" 
                         id="searchInput" 
@@ -1412,10 +1462,11 @@
         </div>
         <div class="container mx-auto px-4 py-12 relative z-10">
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-8 md:mb-0 text-center md:text-left">
-                    <a href="#" class="logo">乔木精选推荐</a>
-                    <p class="mt-3 text-lg" style="color: var(--text-secondary);">精选AI与知识工具集</p>
-                    <p class="mt-2" style="color: var(--text-secondary);">更快、更智能地找到你需要的工具</p>
+                <div class="mb-6 md:mb-0">
+                    <h2 class="text-xl font-bold mb-4">乔木精选推荐</h2>
+                    <p class="text-sm md:max-w-md" style="color: var(--text-secondary);">
+                        发现最佳AI、阅读与知识管理工具，提升工作效率
+                    </p>
                 </div>
                 <div class="flex flex-col items-center md:items-end">
                     <div class="flex space-x-4 mb-4">
@@ -1428,18 +1479,11 @@
                         <a href="mailto:vista8@gmail.com" class="social-icon" title="Email">
                             <i class="fas fa-envelope"></i>
                         </a>
-                        <div class="social-icon cursor-pointer" id="donateTrigger" title="联系作者">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                    </div>
-                    <div class="tooltip">
-                        <img src="https://pic.readnow.pro/2025/03/7b8ace4a97643e3ad0471cd0c26c02fb.png" alt="赞赏二维码" class="w-32 h-32 rounded-lg shadow-md">
-                        <span class="tooltip-text">打赏向阳乔木</span>
                     </div>
                 </div>
             </div>
             <div class="mt-10 pt-6 border-t text-center" style="border-color: var(--card-border);">
-                <p style="color: var(--text-secondary);"> 2025 向阳乔木. 保留所有权利.</p>
+                <p id="footer-copyright" style="color: var(--text-secondary);"> 2025 向阳乔木. 保留所有权利.</p>
             </div>
         </div>
     </footer>
@@ -1471,10 +1515,27 @@
             <div class="donation-close" id="donationClose">
                 <i class="fas fa-times"></i>
             </div>
-            <h3 class="text-xl font-bold mb-2">添加作者微信</h3>
+            <h3 class="text-xl font-bold mb-2" style="color: #f97316;">添加作者微信</h3>
             <p style="color: var(--text-secondary);" class="mb-4">欢迎添加作者微信交流</p>
-            <img src="https://pic.readnow.pro/2025/03/03508452238484facfd20e858c2e16e1.png" alt="微信二维码" class="donation-qrcode">
+            <div class="qrcode-container">
+                <img id="contactQrcode" src="/uploads/qrcodes/default-qrcode.png" alt="微信二维码" class="donation-qrcode">
+            </div>
             <p style="color: var(--text-secondary);" class="text-sm">扫描二维码添加微信</p>
+        </div>
+    </div>
+
+    <!-- 打赏二维码模态框 -->
+    <div class="donation-modal" id="donationQrcodeModal">
+        <div class="donation-content">
+            <div class="donation-close" id="donationQrcodeClose">
+                <i class="fas fa-times"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2" style="color: #f97316;">打赏支持</h3>
+            <p style="color: var(--text-secondary);" class="mb-4">如果您觉得本站对您有帮助，欢迎打赏支持</p>
+            <div class="qrcode-container">
+                <img id="donationQrcode" src="/uploads/qrcodes/donation_qrcode_1742958643677.png" alt="打赏二维码" class="donation-qrcode">
+            </div>
+            <p style="color: var(--text-secondary);" class="text-sm">感谢您的支持！</p>
         </div>
     </div>
 
@@ -1487,54 +1548,19 @@
 
         // 页面加载完成后执行
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM加载完成，开始初始化页面...');
             initThemeToggle();
             initMobileMenu();
             loadNavMenu();
-            loadSiteSettings();
+            
+            // 使用main.js中的loadSiteSettings函数
+            if (typeof window.loadSiteSettings === 'function') {
+                console.log('调用main.js中的loadSiteSettings函数');
+                window.loadSiteSettings();
+            } else {
+                console.error('main.js中的loadSiteSettings函数未找到');
+            }
         });
-
-        // 加载网站设置
-        async function loadSiteSettings() {
-            try {
-                const response = await fetch('/api/settings');
-                if (!response.ok) {
-                    throw new Error('获取网站设置失败');
-                }
-                siteSettings = await response.json();
-                applySiteSettings();
-            } catch (error) {
-                console.error('加载网站设置失败:', error);
-            }
-        }
-
-        // 应用网站设置
-        function applySiteSettings() {
-            if (!siteSettings) return;
-            
-            // 更新页面标题和描述
-            document.title = siteSettings.site_name || "乔木精选推荐";
-            const metaDescription = document.querySelector('meta[name="description"]');
-            if (metaDescription) {
-                metaDescription.content = siteSettings.site_description || "发现最佳AI、阅读与知识管理工具，提升工作效率";
-            }
-            
-            // 更新导航栏和移动菜单中的网站名称
-            const logoElements = document.querySelectorAll('.logo');
-            logoElements.forEach(el => {
-                el.textContent = siteSettings.site_name || "乔木精选推荐";
-            });
-            
-            // 更新Hero区域的标题和描述
-            const heroTitle = document.querySelector('.hero-section h1');
-            if (heroTitle) {
-                heroTitle.textContent = siteSettings.hero_title || "乔木精选推荐";
-            }
-            
-            const heroSubtitle = document.querySelector('.hero-section .hero-subtitle');
-            if (heroSubtitle) {
-                heroSubtitle.textContent = siteSettings.hero_subtitle || "发现最佳AI、阅读与知识管理工具，提升工作效率";
-            }
-        }
 
         // 加载导航菜单
         async function loadNavMenu() {

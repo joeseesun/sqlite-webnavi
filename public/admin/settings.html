@@ -363,8 +363,14 @@
 
         // 二维码图片预览功能
         function setupFilePreview(fileInput, previewContainer, previewImg) {
+            // 保存文件的全局变量
+            window['selected_' + fileInput.id + '_file'] = null;
+            
             fileInput.addEventListener('change', function() {
                 if (this.files && this.files[0]) {
+                    // 保存文件到全局变量
+                    window['selected_' + this.id + '_file'] = this.files[0];
+                    
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         previewImg.src = e.target.result;
@@ -380,6 +386,14 @@
             removeBtn.addEventListener('click', function() {
                 fileInput.value = '';
                 previewContainer.classList.add('hidden');
+                // 清除全局变量中保存的文件
+                window['selected_' + fileInput.id + '_file'] = null;
+                // 添加一个隐藏字段，标记需要删除该图片
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = fileInput.name + '_remove';
+                hiddenInput.value = '1';
+                fileInput.parentNode.appendChild(hiddenInput);
             });
         }
 
@@ -440,6 +454,15 @@
 
             // 准备表单数据
             const formData = new FormData(this);
+            
+            // 添加保存的文件（如果有）
+            if (window.selected_contact_qrcode_file) {
+                formData.set('contact_qrcode', window.selected_contact_qrcode_file);
+            }
+            
+            if (window.selected_donation_qrcode_file) {
+                formData.set('donation_qrcode', window.selected_donation_qrcode_file);
+            }
             
             try {
                 // 显示保存按钮加载状态
@@ -616,4 +639,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

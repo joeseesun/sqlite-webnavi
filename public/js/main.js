@@ -1,15 +1,90 @@
 // 网站导航主要功能
 console.log('main.js 文件已加载');
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM加载完成，开始初始化...');
+// 初始化主题
+function initTheme() {
+    console.log('初始化主题...');
     
-    // 初始化主题
-    initTheme();
+    const themeToggle = document.getElementById('themeToggle');
+    const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+    const htmlElement = document.documentElement;
     
-    // 加载网站数据
-    loadSiteData();
-});
+    // 检查本地存储中的主题设置
+    const savedTheme = localStorage.getItem('theme');
+    
+    // 根据保存的主题或系统偏好设置初始主题
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        htmlElement.classList.add('dark');
+    } else {
+        htmlElement.classList.remove('dark');
+    }
+    
+    // 切换主题的函数
+    const toggleTheme = () => {
+        if (htmlElement.classList.contains('dark')) {
+            htmlElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        } else {
+            htmlElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    };
+    
+    // 添加事件监听器
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+    
+    if (mobileThemeToggle) {
+        mobileThemeToggle.addEventListener('click', toggleTheme);
+    }
+    
+    console.log('主题初始化完成');
+}
+
+// 初始化移动菜单
+function initMobileMenu() {
+    console.log('初始化移动菜单...');
+    
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileClose = document.getElementById('mobileClose');
+    const overlay = document.getElementById('overlay');
+    
+    if (!menuToggle || !mobileMenu) {
+        console.error('移动菜单元素未找到');
+        return;
+    }
+    
+    // 打开菜单
+    const openMenu = () => {
+        menuToggle.classList.add('active');
+        mobileMenu.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // 防止背景滚动
+    };
+    
+    // 关闭菜单
+    const closeMenu = () => {
+        menuToggle.classList.remove('active');
+        mobileMenu.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // 恢复背景滚动
+    };
+    
+    // 添加事件监听器
+    menuToggle.addEventListener('click', openMenu);
+    
+    if (mobileClose) {
+        mobileClose.addEventListener('click', closeMenu);
+    }
+    
+    if (overlay) {
+        overlay.addEventListener('click', closeMenu);
+    }
+    
+    console.log('移动菜单初始化完成');
+}
 
 // 加载网站数据
 async function loadSiteData() {
@@ -71,6 +146,245 @@ async function loadSiteData() {
         // 隐藏加载动画
         hideLoader();
     }
+}
+
+// 加载网站设置
+window.loadSiteSettings = async function() {
+    try {
+        console.log('正在加载网站设置...');
+        const response = await fetch('/api/settings');
+        if (!response.ok) {
+            throw new Error(`获取网站设置失败: ${response.status} ${response.statusText}`);
+        }
+        const settings = await response.json();
+        console.log('获取到网站设置:', settings);
+        
+        // 设置打赏二维码
+        if (settings.donation_qrcode) {
+            const donationQrcodeImg = document.getElementById('donationQrcode');
+            if (donationQrcodeImg) {
+                console.log('设置打赏二维码图片前的src:', donationQrcodeImg.src);
+                donationQrcodeImg.src = settings.donation_qrcode + '?t=' + new Date().getTime();
+                console.log('设置打赏二维码图片后的src:', donationQrcodeImg.src);
+            } else {
+                console.warn('未找到打赏二维码图片元素 #donationQrcode');
+            }
+        } else {
+            console.warn('数据库中没有设置打赏二维码路径');
+        }
+        
+        // 设置联系二维码
+        if (settings.contact_qrcode) {
+            const contactQrcodeImg = document.getElementById('contactQrcode');
+            if (contactQrcodeImg) {
+                console.log('设置联系二维码图片前的src:', contactQrcodeImg.src);
+                contactQrcodeImg.src = settings.contact_qrcode + '?t=' + new Date().getTime();
+                console.log('设置联系二维码图片后的src:', contactQrcodeImg.src);
+                
+                contactQrcodeImg.onload = function() {
+                    console.log('联系二维码图片加载成功');
+                };
+                
+                contactQrcodeImg.onerror = function() {
+                    console.error('联系二维码图片加载失败:', settings.contact_qrcode);
+                    // 设置默认图片
+                    contactQrcodeImg.src = '/uploads/qrcodes/default-qrcode.png';
+                };
+            } else {
+                console.warn('未找到联系二维码图片元素 #contactQrcode');
+                // 尝试查找页面中所有的img元素
+                const allImages = document.querySelectorAll('img');
+                console.log('页面中的所有图片元素:', allImages.length);
+                allImages.forEach((img, index) => {
+                    console.log(`图片${index}:`, img.id, img.src);
+                });
+            }
+        } else {
+            console.warn('数据库中没有设置联系二维码路径');
+        }
+        
+        // 设置底部版权信息
+        if (settings.footer_text) {
+            const footerCopyright = document.getElementById('footer-copyright');
+            if (footerCopyright) {
+                console.log('更新前的页脚文本:', footerCopyright.textContent);
+                footerCopyright.textContent = settings.footer_text;
+                console.log('更新后的页脚文本:', footerCopyright.textContent);
+            } else {
+                console.error('未找到页脚版权元素 #footer-copyright');
+            }
+        } else {
+            console.warn('数据库中没有页脚文本');
+        }
+        
+        // 更新页面标题和描述
+        document.title = settings.site_name || "乔木精选推荐";
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.content = settings.site_description || "发现最佳AI、阅读与知识管理工具，提升工作效率";
+        }
+        
+        // 更新导航栏和移动菜单中的网站名称
+        const logoElements = document.querySelectorAll('.logo');
+        logoElements.forEach(el => {
+            el.textContent = settings.site_name || "乔木精选推荐";
+        });
+        
+        // 更新Hero区域的标题和描述
+        const heroTitle = document.querySelector('.hero-section h1');
+        if (heroTitle) {
+            heroTitle.textContent = settings.hero_title || "乔木精选推荐";
+        }
+        
+        const heroSubtitle = document.querySelector('.hero-section .hero-subtitle');
+        if (heroSubtitle) {
+            heroSubtitle.textContent = settings.hero_subtitle || "发现最佳AI、阅读与知识管理工具，提升工作效率";
+        }
+        
+        // 初始化打赏二维码和联系作者功能
+        window.initDonationModal();
+    } catch (error) {
+        console.error('加载网站设置失败:', error);
+    }
+}
+
+// 初始化打赏二维码和联系作者功能
+window.initDonationModal = function() {
+    console.log('初始化打赏二维码和联系作者功能');
+    
+    // 初始化联系作者模态框
+    initContactModal();
+    
+    // 初始化打赏二维码模态框
+    initDonationQrcodeModal();
+    
+    console.log('打赏二维码和联系作者功能初始化完成');
+}
+
+// 初始化联系作者模态框
+function initContactModal() {
+    console.log('初始化联系作者模态框');
+    
+    // 获取元素
+    const donationModal = document.getElementById('donationModal');
+    const donateTrigger = document.getElementById('donateTrigger');
+    const mobileDonateTrigger = document.getElementById('mobileDonateTrigger');
+    const donationClose = document.getElementById('donationClose');
+    
+    if (!donationModal) {
+        console.error('未找到联系作者模态框 #donationModal');
+        return;
+    }
+    
+    console.log('找到联系作者模态框:', donationModal);
+    
+    // 打开模态框
+    const openModal = () => {
+        console.log('打开联系作者模态框');
+        donationModal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // 防止背景滚动
+    };
+    
+    // 关闭模态框
+    const closeModal = () => {
+        console.log('关闭联系作者模态框');
+        donationModal.classList.remove('active');
+        document.body.style.overflow = ''; // 恢复背景滚动
+    };
+    
+    // 添加事件监听器
+    if (donateTrigger) {
+        console.log('为联系作者按钮添加事件监听器');
+        donateTrigger.addEventListener('click', openModal);
+    } else {
+        console.warn('未找到联系作者按钮 #donateTrigger');
+    }
+    
+    if (mobileDonateTrigger) {
+        console.log('为移动端联系作者按钮添加事件监听器');
+        mobileDonateTrigger.addEventListener('click', openModal);
+    } else {
+        console.warn('未找到移动端联系作者按钮 #mobileDonateTrigger');
+    }
+    
+    if (donationClose) {
+        console.log('为联系作者模态框关闭按钮添加事件监听器');
+        donationClose.addEventListener('click', closeModal);
+    } else {
+        console.warn('未找到联系作者模态框关闭按钮 #donationClose');
+    }
+    
+    // 点击模态框背景关闭模态框
+    donationModal.addEventListener('click', function(event) {
+        if (event.target === donationModal) {
+            closeModal();
+        }
+    });
+    
+    console.log('联系作者模态框初始化完成');
+}
+
+// 初始化打赏二维码模态框
+function initDonationQrcodeModal() {
+    console.log('初始化打赏二维码模态框');
+    
+    // 获取元素
+    const donationQrcodeModal = document.getElementById('donationQrcodeModal');
+    const donationQrcodeTrigger = document.getElementById('donationQrcodeTrigger');
+    const mobileDonationQrcodeTrigger = document.getElementById('mobileDonationQrcodeTrigger');
+    const donationQrcodeClose = document.getElementById('donationQrcodeClose');
+    
+    if (!donationQrcodeModal) {
+        console.error('未找到打赏二维码模态框 #donationQrcodeModal');
+        return;
+    }
+    
+    console.log('找到打赏二维码模态框:', donationQrcodeModal);
+    
+    // 打开模态框
+    const openModal = () => {
+        console.log('打开打赏二维码模态框');
+        donationQrcodeModal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // 防止背景滚动
+    };
+    
+    // 关闭模态框
+    const closeModal = () => {
+        console.log('关闭打赏二维码模态框');
+        donationQrcodeModal.classList.remove('active');
+        document.body.style.overflow = ''; // 恢复背景滚动
+    };
+    
+    // 添加事件监听器
+    if (donationQrcodeTrigger) {
+        console.log('为打赏二维码按钮添加事件监听器');
+        donationQrcodeTrigger.addEventListener('click', openModal);
+    } else {
+        console.warn('未找到打赏二维码按钮 #donationQrcodeTrigger');
+    }
+    
+    if (mobileDonationQrcodeTrigger) {
+        console.log('为移动端打赏二维码按钮添加事件监听器');
+        mobileDonationQrcodeTrigger.addEventListener('click', openModal);
+    } else {
+        console.warn('未找到移动端打赏二维码按钮 #mobileDonationQrcodeTrigger');
+    }
+    
+    if (donationQrcodeClose) {
+        console.log('为打赏二维码模态框关闭按钮添加事件监听器');
+        donationQrcodeClose.addEventListener('click', closeModal);
+    } else {
+        console.warn('未找到打赏二维码模态框关闭按钮 #donationQrcodeClose');
+    }
+    
+    // 点击模态框背景关闭模态框
+    donationQrcodeModal.addEventListener('click', function(event) {
+        if (event.target === donationQrcodeModal) {
+            closeModal();
+        }
+    });
+    
+    console.log('打赏二维码模态框初始化完成');
 }
 
 // 更新导航栏分类标签
@@ -546,48 +860,18 @@ function hideLoader() {
     }
 }
 
-// 初始化主题
-function initTheme() {
-    // 调用index.html中定义的initThemeToggle函数
-    if (typeof initThemeToggle === 'function') {
-        initThemeToggle();
-    } else {
-        console.warn('initThemeToggle函数未定义，可能在index.html中未正确加载');
-        
-        // 备用实现，仅在主函数不可用时使用
-        const themeToggle = document.getElementById('themeToggle');
-        const html = document.documentElement;
-        
-        // 检查本地存储中的主题偏好
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-        
-        // 应用主题
-        html.classList.remove('light', 'dark');
-        html.classList.add(currentTheme);
-        
-        // 更新图标
-        if (themeToggle) {
-            const icon = themeToggle.querySelector('i');
-            if (icon) {
-                icon.className = `fas ${currentTheme === 'dark' ? 'fa-moon' : 'fa-sun'}`;
-            }
-            
-            // 添加主题切换事件
-            themeToggle.addEventListener('click', function() {
-                const isDark = html.classList.contains('dark');
-                const newTheme = isDark ? 'light' : 'dark';
-                
-                html.classList.remove('light', 'dark');
-                html.classList.add(newTheme);
-                localStorage.setItem('theme', newTheme);
-                
-                // 更新图标
-                if (icon) {
-                    icon.className = `fas ${newTheme === 'dark' ? 'fa-moon' : 'fa-sun'}`;
-                }
-            });
-        }
-    }
-}
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM加载完成，开始初始化...');
+    
+    // 初始化主题
+    initTheme();
+    
+    // 初始化移动菜单
+    initMobileMenu();
+    
+    // 加载网站数据
+    loadSiteData();
+    
+    // 加载网站设置（包括打赏二维码）
+    loadSiteSettings();
+});
