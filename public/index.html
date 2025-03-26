@@ -1639,6 +1639,36 @@
             }
         }
     </style>
+    <style>
+        /* 分类标题下划线动效 */
+        .category-section h2 {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .category-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: var(--primary);
+            transition: width 0.4s ease;
+            border-radius: 3px;
+        }
+        
+        .category-section:hover h2::after,
+        .category-section:focus-within h2::after {
+            width: 100%;
+        }
+        
+        .dark .category-section h2::after {
+            background-color: var(--primary-light);
+        }
+    </style>
 </head>
 <body>
     <!-- 页面加载动画 -->
