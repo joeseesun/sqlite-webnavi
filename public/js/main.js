@@ -1,75 +1,117 @@
 // 网站导航主要功能
 console.log('main.js 文件已加载');
 
-// 初始化主题
+// 主题初始化函数
 function initTheme() {
     console.log('初始化主题...');
     
+    // 获取DOM元素
+    const htmlElement = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
     const mobileThemeToggle = document.getElementById('mobileThemeToggle');
-    const htmlElement = document.documentElement;
     
-    // 检查本地存储中的主题设置
+    // 从localStorage获取保存的主题
     const savedTheme = localStorage.getItem('theme');
     
-    // 根据保存的主题或系统偏好设置初始主题
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    // 判断当前应该使用的主题
+    const shouldUseDarkTheme = savedTheme === 'dark' || 
+                              (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    // 设置初始主题
+    if (shouldUseDarkTheme) {
         htmlElement.classList.add('dark');
-        updateThemeIcons(true);
     } else {
         htmlElement.classList.remove('dark');
-        updateThemeIcons(false);
     }
     
-    // 切换主题的函数
-    const toggleTheme = () => {
+    // 更新主题图标函数
+    function updateThemeIcons() {
         const isDark = htmlElement.classList.contains('dark');
+        console.log('更新所有图标，当前是深色模式:', isDark);
         
-        if (isDark) {
-            htmlElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-            updateThemeIcons(false);
-        } else {
-            htmlElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-            updateThemeIcons(true);
-        }
-    };
-    
-    // 更新主题图标
-    function updateThemeIcons(isDark) {
-        // 更新桌面端主题图标
+        // 更新桌面端图标
         if (themeToggle) {
-            const themeIcon = themeToggle.querySelector('i');
-            if (themeIcon) {
-                themeIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-            } else {
-                const newIcon = document.createElement('i');
-                newIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-                themeToggle.appendChild(newIcon);
+            const icon = themeToggle.querySelector('i');
+            if (icon) {
+                // 先移除旧的图标类
+                icon.classList.remove('fa-sun', 'fa-moon');
+                // 添加新的图标类
+                icon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
+                console.log('桌面端图标已更新为:', icon.className);
             }
         }
         
-        // 更新移动端主题图标
+        // 更新移动端图标
         if (mobileThemeToggle) {
-            const mobileThemeIcon = mobileThemeToggle.querySelector('i');
-            if (mobileThemeIcon) {
-                mobileThemeIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-            } else {
-                const newIcon = document.createElement('i');
-                newIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-                mobileThemeToggle.appendChild(newIcon);
+            const icon = mobileThemeToggle.querySelector('i');
+            if (icon) {
+                // 先移除旧的图标类
+                icon.classList.remove('fa-sun', 'fa-moon');
+                // 添加新的图标类
+                icon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
+                console.log('移动端图标已更新为:', icon.className);
             }
         }
     }
     
-    // 添加事件监听器
+    // 初始化所有图标
+    updateThemeIcons();
+    
+    // 主题切换函数
+    function toggleTheme(event) {
+        // 阻止默认行为和事件冒泡
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        // 获取当前按钮上的图标元素
+        const iconElement = event.currentTarget.querySelector('i');
+        
+        // 立即切换图标类 - 这是关键部分
+        if (iconElement) {
+            // 检查当前图标类型
+            const isMoon = iconElement.classList.contains('fa-moon');
+            // 移除当前图标类
+            iconElement.classList.remove(isMoon ? 'fa-moon' : 'fa-sun');
+            // 添加新图标类
+            iconElement.classList.add(isMoon ? 'fa-sun' : 'fa-moon');
+            console.log('图标已立即切换为:', iconElement.className);
+        }
+        
+        // 延迟切换主题，确保图标先更新
+        setTimeout(() => {
+            const isDark = htmlElement.classList.contains('dark');
+            if (isDark) {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            // 更新所有其他图标
+            updateThemeIcons();
+        }, 10);
+        
+        return false;
+    }
+    
+    // 为桌面端和移动端主题切换按钮添加点击事件
     if (themeToggle) {
+        // 移除所有现有事件
+        themeToggle.removeEventListener('click', toggleTheme);
+        // 添加新的事件监听器
         themeToggle.addEventListener('click', toggleTheme);
+        console.log('桌面端主题切换按钮事件已设置');
     }
     
     if (mobileThemeToggle) {
+        // 移除所有现有事件
+        mobileThemeToggle.removeEventListener('click', toggleTheme);
+        // 添加新的事件监听器
         mobileThemeToggle.addEventListener('click', toggleTheme);
+        console.log('移动端主题切换按钮事件已设置');
     }
     
     console.log('主题初始化完成');
@@ -1015,6 +1057,30 @@ function hideLoader() {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM加载完成，开始初始化...');
+    
+    // 强制刷新主题图标
+    setTimeout(() => {
+        const themeToggle = document.getElementById('themeToggle');
+        const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+        const htmlElement = document.documentElement;
+        const isDark = htmlElement.classList.contains('dark');
+        
+        if (themeToggle) {
+            const themeIcon = themeToggle.querySelector('i');
+            if (themeIcon) {
+                themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                console.log('强制更新桌面端主题图标:', themeIcon.className);
+            }
+        }
+        
+        if (mobileThemeToggle) {
+            const mobileThemeIcon = mobileThemeToggle.querySelector('i');
+            if (mobileThemeIcon) {
+                mobileThemeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                console.log('强制更新移动端主题图标:', mobileThemeIcon.className);
+            }
+        }
+    }, 100);
     
     // 初始化主题
     initTheme();

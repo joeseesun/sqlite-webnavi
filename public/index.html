@@ -460,6 +460,21 @@
             color: white;
         }
 
+        /* 主题图标切换动画 */
+        .theme-toggle i, .mobile-theme-toggle i {
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle:active i, .mobile-theme-toggle:active i {
+            transform: scale(1.2);
+        }
+        /* 确保图标立即可见 */
+        .theme-toggle, .mobile-theme-toggle {
+            will-change: contents;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            -webkit-font-smoothing: subpixel-antialiased;
+        }
+
         /* 热门标签 */
         .hot-label {
             position: absolute;
@@ -1499,7 +1514,7 @@
                     </div>
                     
                     <button class="theme-toggle" id="themeToggle" title="切换深色/浅色模式">
-                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-moon"></i>
                     </button>
                 </div>
             </div>
@@ -1885,6 +1900,31 @@
                 console.log('主题切换功能已初始化');
             }
         });
+    </script>
+    <script>
+        // 确保主题图标正确显示的内联脚本
+        (function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+            const htmlElement = document.documentElement;
+            const isDark = htmlElement.classList.contains('dark');
+            
+            if (themeToggle) {
+                const themeIcon = themeToggle.querySelector('i');
+                if (themeIcon) {
+                    themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                    console.log('内联脚本更新桌面端主题图标:', themeIcon.className);
+                }
+            }
+            
+            if (mobileThemeToggle) {
+                const mobileThemeIcon = mobileThemeToggle.querySelector('i');
+                if (mobileThemeIcon) {
+                    mobileThemeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                    console.log('内联脚本更新移动端主题图标:', mobileThemeIcon.className);
+                }
+            }
+        })();
     </script>
 </body>
 </html>
