@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fafafa">
     <title>乔木精选推荐 | 精选AI与知识工具集</title>
     <meta name="description" content="发现最佳AI、阅读与知识管理工具，提升工作效率">
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
@@ -51,33 +52,40 @@
             --nav-blur: rgba(250, 250, 250, 0.9);
         }
 
-        /* 深色模式配色优化 */
+        /* 深色模式变量 */
         .dark {
+            /* 主色调：调整为更亮的蓝色，提高对比度 */
             --primary: #3b82f6;
             --primary-light: #60a5fa;
             --primary-dark: #2563eb;
             --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
             
+            /* 次要色调：调整为更亮的蓝色 */
             --secondary: #38bdf8;
             --secondary-light: #7dd3fc;
             --secondary-dark: #0ea5e9;
             --secondary-gradient: linear-gradient(135deg, #38bdf8 0%, #7dd3fc 100%);
             
+            /* 强调色：调整为更亮的橙色 */
             --accent: #fb923c;
             --accent-light: #fdba74;
             --accent-dark: #f97316;
             --accent-gradient: linear-gradient(135deg, #fb923c 0%, #fdba74 100%);
             
+            /* 文本颜色：调整为浅色 */
             --text-primary: #f9fafb;
             --text-secondary: #d1d5db;
             
+            /* 背景颜色：深色背景 */
             --bg-primary: #111827;
             --bg-secondary: #1f2937;
             
-            --card-bg: #1f2937;
-            --card-border: #374151;
-            --card-shadow: rgba(0, 0, 0, 0.25);
+            /* 卡片样式优化 */
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --card-shadow: rgba(0, 0, 0, 0.3);
             
+            /* 导航栏背景 */
             --nav-blur: rgba(17, 24, 39, 0.9);
         }
 
@@ -1274,7 +1282,7 @@
 </head>
 <body>
     <!-- 页面加载动画 -->
-    <div id="page-loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-primary); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease;">
+    <div id="pageLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-primary); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease;">
         <div class="loader-content" style="text-align: center;">
             <div class="spinner" style="width: 50px; height: 50px; border: 5px solid rgba(59, 130, 246, 0.2); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s linear infinite;"></div>
             <p style="margin-top: 20px; color: var(--text-primary);">正在加载精选网站...</p>
@@ -1392,18 +1400,6 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
-        <!-- 筛选状态条 -->
-        <div id="filter-status" class="mb-6 py-3 px-4 rounded-lg hidden" style="background-color: var(--bg-secondary); border: 1px solid var(--card-border);">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
-                    <i class="fas fa-filter mr-2"></i>
-                    <span id="filter-status-text">正在筛选:</span>
-                </div>
-                <button id="clear-filter" class="px-3 py-1 rounded text-sm" style="background-color: var(--primary); color: white;">
-                    <i class="fas fa-times mr-1"></i>清除筛选
-                </button>
-            </div>
-        </div>
         <!-- 分类和网站卡片将通过 JavaScript 动态加载 -->
     </main>
 
@@ -1448,6 +1444,27 @@
         </div>
     </footer>
 
+    <!-- 固定在底部的筛选状态条 -->
+    <div id="filter-status" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 py-2 px-4 hidden z-50 transition-all duration-300 translate-y-full max-w-md rounded-full shadow-lg" style="background-color: var(--primary); color: white; border: 2px solid rgba(255,255,255,0.2);">
+        <div class="flex justify-between items-center gap-3">
+            <div class="flex items-center">
+                <i class="fas fa-filter mr-2"></i>
+                <span id="filter-status-text" class="text-sm font-medium">正在筛选:</span>
+            </div>
+            <button id="clear-filter" class="px-2 py-1 rounded-full text-xs bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 回到顶部按钮 -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- 添加新的粒子容器 -->
+    <div class="particles-container" id="particles-container"></div>
+
     <!-- 赞赏二维码模态框 -->
     <div class="donation-modal" id="donationModal">
         <div class="donation-content">
@@ -1460,14 +1477,6 @@
             <p style="color: var(--text-secondary);" class="text-sm">扫描二维码添加微信</p>
         </div>
     </div>
-
-    <!-- Back to Top Button -->
-    <div class="back-to-top" id="backToTop">
-        <i class="fas fa-arrow-up"></i>
-    </div>
-
-    <!-- 添加新的粒子容器 -->
-    <div class="particles-container" id="particles-container"></div>
 
     <!-- 引入外部JavaScript文件 -->
     <script src="/js/main.js"></script>
@@ -1637,8 +1646,11 @@
                 applyTheme(newTheme);
                 updateThemeToggleIcon(newTheme);
                 localStorage.setItem('theme', newTheme);
+                
+                // 调试信息
+                console.log('主题已切换为:', newTheme);
             });
-
+            
             // 监听系统主题变化
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
                 if (!localStorage.getItem('theme')) {
@@ -1668,6 +1680,12 @@
             document.body.style.display = 'none';
             document.body.offsetHeight; // 强制重排
             document.body.style.display = '';
+            
+            // 更新meta主题色
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+                metaThemeColor.content = theme === 'dark' ? '#111827' : '#fafafa';
+            }
         }
 
         // 更新主题切换按钮图标
@@ -1681,6 +1699,16 @@
             icon.className = `fas ${theme === 'dark' ? 'fa-moon' : 'fa-sun'}`;
             themeToggle.title = `切换到${theme === 'dark' ? '浅色' : '深色'}模式`;
         }
+    </script>
+    <script>
+        // 在页面加载完成后立即初始化主题
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化主题切换
+            if (typeof initThemeToggle === 'function') {
+                initThemeToggle();
+                console.log('主题切换功能已初始化');
+            }
+        });
     </script>
 </body>
 </html>

@@ -538,3 +538,158 @@
         left: 10px;
     }
 }
+
+/* 深色模式下的特定元素样式优化 */
+.dark .navbar {
+    background-color: var(--nav-blur);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.dark .search-box {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+    color: var(--text-primary);
+}
+
+.dark .search-box:focus {
+    border-color: var(--primary);
+    box-shadow: 0 6px 24px rgba(59, 130, 246, 0.2), 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.dark .category-tab {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+.dark .category-tab.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary-dark);
+}
+
+.dark .category-tab:hover:not(.active) {
+    background-color: var(--bg-secondary);
+}
+
+.dark .footer-content {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+.dark .footer-link {
+    color: var(--text-primary);
+}
+
+.dark .footer-link:hover {
+    color: var(--primary-light);
+}
+
+.dark .social-icon {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--card-border);
+}
+
+.dark .social-icon:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.dark #filter-status {
+    background-color: var(--primary-dark);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 主题切换按钮样式 */
+.theme-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--bg-secondary);
+    transform: rotate(15deg);
+}
+
+.dark .theme-toggle {
+    color: var(--text-primary);
+}
+
+.dark .theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 动画效果 */
+.theme-toggle i {
+    transition: transform 0.5s ease;
+}
+
+.theme-toggle:hover i {
+    transform: rotate(30deg);
+}
+
+/* 深色模式下的卡片样式优化 */
+.dark .card {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+}
+
+.dark .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.dark .card-title {
+    color: var(--text-primary);
+}
+
+.dark .card-description {
+    color: var(--text-secondary);
+}
+
+.dark .card-img-container {
+    background-color: var(--bg-secondary);
+}
+
+/* 深色模式下的标签样式 */
+.dark .text-blue-800 {
+    color: #93c5fd !important;
+}
+
+.dark .bg-blue-100 {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+.dark .dark\:bg-blue-900 {
+    background-color: rgba(30, 64, 175, 0.5) !important;
+}
+
+.dark .dark\:text-blue-200 {
+    color: #bfdbfe !important;
+}
+
+/* 深色模式下的页面加载器 */
+.dark #pageLoader {
+    background-color: var(--bg-primary);
+}
+
+.dark #pageLoader p {
+    color: var(--text-primary);
+}
+
+.dark .spinner {
+    border-color: rgba(59, 130, 246, 0.2);
+    border-top-color: var(--primary);
+}

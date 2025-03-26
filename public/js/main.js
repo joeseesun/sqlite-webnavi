@@ -179,32 +179,112 @@ function createSiteCard(site) {
     
     // 创建卡片元素
     const card = document.createElement('div');
-    card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:-translate-y-1';
+    card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:-translate-y-1 cursor-pointer';
     card.dataset.id = site.id;
     card.dataset.tags = site.tags.map(tag => tag.name).join(',');
     
     // 占位图片的数据URL
     const placeholderImage = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22348%22%20height%3D%22225%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20348%20225%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_18e5eb468a8%20text%20%7B%20fill%3A%23eceeef%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A17pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_18e5eb468a8%22%3E%3Crect%20width%3D%22348%22%20height%3D%22225%22%20fill%3D%22%2355595c%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22116.7109375%22%20y%3D%22120.3%22%3EThumbnail%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E';
     
-    // 设置卡片内容
-    card.innerHTML = `
-        <a href="${site.url}" target="_blank" class="block h-full">
-            <div class="relative overflow-hidden" style="padding-top: 56.25%;">
-                <img src="${site.screenshot || placeholderImage}" alt="${site.name}" 
-                     class="absolute top-0 left-0 w-full h-full object-cover"
-                     onerror="this.src='${placeholderImage}'">
-                ${site.is_hot ? '<span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">热门</span>' : ''}
-                ${site.is_new ? '<span class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">新品</span>' : ''}
-            </div>
-            <div class="p-4">
-                <h3 class="font-bold text-lg mb-2 text-gray-900 dark:text-white">${site.name}</h3>
-                <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">${site.description || '暂无描述'}</p>
-                <div class="flex flex-wrap gap-2">
-                    ${site.tags.map(tag => `<span class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">${tag.name}</span>`).join('')}
-                </div>
-            </div>
-        </a>
-    `;
+    // 设置卡片内容 - 完全重构以避免嵌套链接问题
+    const cardContent = document.createElement('div');
+    cardContent.className = 'h-full';
+    
+    // 图片容器
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'relative overflow-hidden';
+    imageContainer.style.paddingTop = '56.25%';
+    
+    // 图片
+    const image = document.createElement('img');
+    image.src = site.screenshot || placeholderImage;
+    image.alt = site.name;
+    image.className = 'absolute top-0 left-0 w-full h-full object-cover';
+    image.onerror = function() { this.src = placeholderImage; };
+    imageContainer.appendChild(image);
+    
+    // 标签容器 - 右上角
+    const tagsContainer = document.createElement('div');
+    tagsContainer.className = 'absolute top-2 right-2 flex flex-row gap-1';
+    
+    // 添加热门标签
+    if (site.is_hot) {
+        const hotTag = document.createElement('span');
+        hotTag.className = 'bg-red-500 text-white text-xs px-2 py-1 rounded';
+        hotTag.textContent = '热门';
+        tagsContainer.appendChild(hotTag);
+    }
+    
+    // 添加新品标签
+    if (site.is_new) {
+        const newTag = document.createElement('span');
+        newTag.className = 'bg-blue-500 text-white text-xs px-2 py-1 rounded';
+        newTag.textContent = '新品';
+        tagsContainer.appendChild(newTag);
+    }
+    
+    imageContainer.appendChild(tagsContainer);
+    
+    // 添加教程链接 - 左下角
+    if (site.tutorial_url) {
+        const tutorialContainer = document.createElement('div');
+        tutorialContainer.className = 'absolute bottom-2 left-2';
+        
+        const tutorialLink = document.createElement('a');
+        tutorialLink.href = site.tutorial_url;
+        tutorialLink.target = '_blank';
+        tutorialLink.className = 'bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600 transition-colors';
+        tutorialLink.textContent = '教程';
+        tutorialLink.onclick = function(e) {
+            e.stopPropagation(); // 阻止事件冒泡
+        };
+        
+        tutorialContainer.appendChild(tutorialLink);
+        imageContainer.appendChild(tutorialContainer);
+    }
+    
+    cardContent.appendChild(imageContainer);
+    
+    // 网站信息容器
+    const infoContainer = document.createElement('div');
+    infoContainer.className = 'p-4';
+    
+    // 网站标题
+    const title = document.createElement('h3');
+    title.className = 'font-bold text-lg mb-2 text-gray-900 dark:text-white';
+    title.textContent = site.name;
+    infoContainer.appendChild(title);
+    
+    // 网站描述
+    const description = document.createElement('p');
+    description.className = 'text-gray-600 dark:text-gray-300 text-sm mb-4';
+    description.textContent = site.description || '暂无描述';
+    infoContainer.appendChild(description);
+    
+    // 标签列表
+    const tagsList = document.createElement('div');
+    tagsList.className = 'flex flex-wrap gap-2';
+    
+    site.tags.forEach(tag => {
+        const tagSpan = document.createElement('span');
+        tagSpan.className = 'text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 cursor-pointer';
+        tagSpan.textContent = tag.name;
+        tagSpan.onclick = function(e) {
+            e.stopPropagation(); // 阻止事件冒泡
+            filterByTag(tag.name);
+        };
+        tagsList.appendChild(tagSpan);
+    });
+    
+    infoContainer.appendChild(tagsList);
+    cardContent.appendChild(infoContainer);
+    
+    // 添加点击事件 - 整个卡片点击跳转到网站
+    card.onclick = function() {
+        window.open(site.url, '_blank');
+    };
+    
+    card.appendChild(cardContent);
     
     return card;
 }
@@ -212,18 +292,6 @@ function createSiteCard(site) {
 // 添加事件监听器
 function addEventListeners() {
     console.log('添加事件监听器');
-    
-    // 标签点击事件 - 使用事件委托处理动态添加的标签
-    document.addEventListener('click', function(e) {
-        // 检查点击的是否是标签元素
-        if (e.target.matches('.bg-blue-100, .dark\\:bg-blue-900, [class*="bg-blue-100"], [class*="bg-blue-900"]')) {
-            e.preventDefault();
-            e.stopPropagation();
-            const tagName = e.target.textContent.trim();
-            console.log('标签点击:', tagName);
-            filterByTag(tagName);
-        }
-    });
     
     // 分类点击事件
     const categoryLinks = document.querySelectorAll('.category-link');
@@ -272,6 +340,7 @@ function filterByTag(tagName) {
     
     if (filterStatus && filterStatusText) {
         filterStatus.classList.remove('hidden');
+        filterStatus.classList.remove('translate-y-full');
         filterStatusText.textContent = `正在筛选标签: "${tagName}"`;
     }
     
@@ -310,6 +379,7 @@ function filterByCategory(categoryId) {
     if (categoryId === 'all') {
         if (filterStatus) {
             filterStatus.classList.add('hidden');
+            filterStatus.classList.add('translate-y-full');
         }
         
         // 显示所有分类区域
@@ -322,6 +392,7 @@ function filterByCategory(categoryId) {
     
     if (filterStatus && filterStatusText) {
         filterStatus.classList.remove('hidden');
+        filterStatus.classList.remove('translate-y-full');
         filterStatusText.textContent = `正在筛选分类: "${categoryName}"`;
     }
     
@@ -365,20 +436,20 @@ function filterSites(searchTerm) {
         return;
     }
     
-    // 获取所有网站卡片（使用更精确的选择器）
+    // 获取所有分类区域
+    const sections = document.querySelectorAll('.category-section');
+    
+    // 获取所有卡片
     const cards = document.querySelectorAll('[class*="bg-white"][class*="rounded-lg"], [class*="dark:bg-gray-800"]');
     console.log('找到卡片数量:', cards.length);
     
-    // 获取所有分类区域
-    const sections = document.querySelectorAll('.category-section');
-    console.log('找到分类区域数量:', sections.length);
+    let matchFound = false;
     
     // 筛选卡片
-    let matchFound = false;
     cards.forEach(card => {
         try {
-            const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
-            const description = card.querySelector('p')?.textContent.toLowerCase() || '';
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.querySelector('p').textContent.toLowerCase();
             const tags = card.dataset.tags ? card.dataset.tags.toLowerCase() : '';
             
             const matches = title.includes(searchTerm) || 
@@ -409,6 +480,7 @@ function filterSites(searchTerm) {
     const filterStatusText = document.getElementById('filter-status-text');
     if (filterStatus && filterStatusText) {
         filterStatus.classList.remove('hidden');
+        filterStatus.classList.remove('translate-y-full');
         filterStatusText.textContent = `正在筛选: "${searchTerm}"`;
         
         // 如果没有匹配结果，显示提示
@@ -425,7 +497,11 @@ function clearFilter() {
     // 隐藏筛选状态
     const filterStatus = document.getElementById('filter-status');
     if (filterStatus) {
-        filterStatus.classList.add('hidden');
+        filterStatus.classList.add('translate-y-full');
+        // 使用setTimeout确保动画完成后再隐藏元素
+        setTimeout(() => {
+            filterStatus.classList.add('hidden');
+        }, 300);
     }
     
     // 清空搜索框
@@ -461,7 +537,7 @@ function showError(error) {
 
 // 隐藏加载动画
 function hideLoader() {
-    const loader = document.getElementById('page-loader');
+    const loader = document.getElementById('pageLoader');
     if (loader) {
         loader.style.opacity = '0';
         setTimeout(() => {
@@ -472,25 +548,46 @@ function hideLoader() {
 
 // 初始化主题
 function initTheme() {
-    const themeToggle = document.getElementById('themeToggle');
-    const html = document.documentElement;
-    
-    // 检查本地存储中的主题偏好
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        html.classList.add('dark');
-    }
-    
-    // 添加主题切换事件
-    if (themeToggle) {
-        themeToggle.addEventListener('click', function() {
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
+    // 调用index.html中定义的initThemeToggle函数
+    if (typeof initThemeToggle === 'function') {
+        initThemeToggle();
+    } else {
+        console.warn('initThemeToggle函数未定义，可能在index.html中未正确加载');
+        
+        // 备用实现，仅在主函数不可用时使用
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        
+        // 检查本地存储中的主题偏好
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+        
+        // 应用主题
+        html.classList.remove('light', 'dark');
+        html.classList.add(currentTheme);
+        
+        // 更新图标
+        if (themeToggle) {
+            const icon = themeToggle.querySelector('i');
+            if (icon) {
+                icon.className = `fas ${currentTheme === 'dark' ? 'fa-moon' : 'fa-sun'}`;
             }
-        });
+            
+            // 添加主题切换事件
+            themeToggle.addEventListener('click', function() {
+                const isDark = html.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                
+                html.classList.remove('light', 'dark');
+                html.classList.add(newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // 更新图标
+                if (icon) {
+                    icon.className = `fas ${newTheme === 'dark' ? 'fa-moon' : 'fa-sun'}`;
+                }
+            });
+        }
     }
 }
