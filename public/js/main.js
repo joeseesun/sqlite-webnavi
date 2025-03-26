@@ -15,20 +15,53 @@ function initTheme() {
     // 根据保存的主题或系统偏好设置初始主题
     if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         htmlElement.classList.add('dark');
+        updateThemeIcons(true);
     } else {
         htmlElement.classList.remove('dark');
+        updateThemeIcons(false);
     }
     
     // 切换主题的函数
     const toggleTheme = () => {
-        if (htmlElement.classList.contains('dark')) {
+        const isDark = htmlElement.classList.contains('dark');
+        
+        if (isDark) {
             htmlElement.classList.remove('dark');
             localStorage.setItem('theme', 'light');
+            updateThemeIcons(false);
         } else {
             htmlElement.classList.add('dark');
             localStorage.setItem('theme', 'dark');
+            updateThemeIcons(true);
         }
     };
+    
+    // 更新主题图标
+    function updateThemeIcons(isDark) {
+        // 更新桌面端主题图标
+        if (themeToggle) {
+            const themeIcon = themeToggle.querySelector('i');
+            if (themeIcon) {
+                themeIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            } else {
+                const newIcon = document.createElement('i');
+                newIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+                themeToggle.appendChild(newIcon);
+            }
+        }
+        
+        // 更新移动端主题图标
+        if (mobileThemeToggle) {
+            const mobileThemeIcon = mobileThemeToggle.querySelector('i');
+            if (mobileThemeIcon) {
+                mobileThemeIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            } else {
+                const newIcon = document.createElement('i');
+                newIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+                mobileThemeToggle.appendChild(newIcon);
+            }
+        }
+    }
     
     // 添加事件监听器
     if (themeToggle) {

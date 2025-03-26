@@ -1404,6 +1404,52 @@
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 1.5rem;
         }
+        
+        /* 移动菜单底部图标 */
+        .mobile-menu-footer {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        
+        .mobile-donate-trigger,
+        .mobile-contact-trigger,
+        .mobile-theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--card-border);
+        }
+        
+        .mobile-donate-trigger:hover,
+        .mobile-contact-trigger:hover,
+        .mobile-theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--primary-light);
+        }
+        
+        .mobile-donate-trigger i,
+        .mobile-contact-trigger i,
+        .mobile-theme-toggle i {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-donate-trigger:hover i,
+        .mobile-contact-trigger:hover i,
+        .mobile-theme-toggle:hover i {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -1496,7 +1542,7 @@
                     <i class="fas fa-comment coffee-icon text-xl"></i>
                 </div>
                 <div class="mobile-theme-toggle" id="mobileThemeToggle">
-                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
                 </div>
             </div>
         </div>
