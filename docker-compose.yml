@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: sqlite-webnavi
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./database.sqlite:/app/database.sqlite
+      - ./public/uploads:/app/public/uploads
+    environment:
+      - PORT=3002
+      - JWT_SECRET=your-secret-key
+    restart: unless-stopped
