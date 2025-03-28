@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/usr/src/app/data
+      - ./public/uploads:/usr/src/app/public/uploads
+      - ./database.sql:/usr/src/app/database.sql
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=your-secret-key-change-me
+      - FORCE_INIT_DB=false
+      - DB_PATH=/usr/src/app/data/database.sqlite
+    restart: unless-stopped
+
+volumes:
+  sqlite-data: 

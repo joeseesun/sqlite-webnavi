@@ -30,12 +30,16 @@
 │   ├── favicon/       # 网站图标
 │   ├── js/           # JavaScript 文件
 │   └── index.html    # 主页
+├── data/              # 数据库存储目录
 ├── app.js             # 应用入口
+├── init-db.js         # 数据库初始化脚本
 ├── database.sql       # 数据库结构
-└── database.sqlite    # SQLite 数据库文件
+└── database.sqlite    # SQLite 数据库文件（本地开发使用）
 ```
 
 ## 安装和使用
+
+### 方法 1: 传统方式
 
 1. 克隆仓库：
 ```bash
@@ -58,11 +62,69 @@ node init-db.js
 node app.js
 ```
 
-5. 访问网站：
+### 方法 2: 使用 Docker
+
+1. 克隆仓库：
+```bash
+git clone https://github.com/yourusername/sqlite-webnavi.git
+cd sqlite-webnavi
+```
+
+2. 创建数据目录：
+```bash
+mkdir -p data
+```
+
+3. 使用 Docker Compose 启动:
+```bash
+# 首次运行会自动初始化数据库
+docker-compose up -d
+```
+
+4. 或者使用 Docker 构建和运行:
+```bash
+# 构建 Docker 镜像
+docker build -t sqlite-webnavi .
+
+# 运行容器
+docker run -p 3000:3000 \
+  -v $(pwd)/data:/usr/src/app/data \
+  -v $(pwd)/database.sql:/usr/src/app/database.sql \
+  -v $(pwd)/public/uploads:/usr/src/app/public/uploads \
+  -e JWT_SECRET=your-secret-key \
+  -e DB_PATH=/usr/src/app/data/database.sqlite \
+  -e FORCE_INIT_DB=false \
+  sqlite-webnavi
+```
+
+5. 强制重新初始化数据库:
+```bash
+# 使用 Docker Compose
+FORCE_INIT_DB=true docker-compose up -d
+
+# 或使用 docker run
+docker run -p 3000:3000 \
+  -v $(pwd)/data:/usr/src/app/data \
+  -v $(pwd)/database.sql:/usr/src/app/database.sql \
+  -v $(pwd)/public/uploads:/usr/src/app/public/uploads \
+  -e JWT_SECRET=your-secret-key \
+  -e DB_PATH=/usr/src/app/data/database.sqlite \
+  -e FORCE_INIT_DB=true \
+  sqlite-webnavi
+```
+
+6. 访问网站：
 - 前台：http://localhost:3000
 - 后台：http://localhost:3000/admin
 
 ## 配置说明
+
+### 环境变量
+
+- `PORT`: 应用运行的端口 (默认: 3000)
+- `JWT_SECRET`: JWT 认证密钥 (使用 Docker 时请务必修改默认值)
+- `FORCE_INIT_DB`: 设置为 true 时强制重新初始化数据库 (默认: false)
+- `DB_PATH`: 数据库文件路径 (默认: ./database.sqlite，Docker 中默认为 /usr/src/app/data/database.sqlite)
 
 ### 网站设置
 
