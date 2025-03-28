@@ -19,6 +19,8 @@ const __dirname = dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+// 获取数据库路径，优先使用环境变量中的路径
+const dbPath = process.env.DB_PATH || join(__dirname, 'database.sqlite');
 
 // 文件上传配置
 const upload = multer({
@@ -59,8 +61,9 @@ let db;
 
 async function initializeDB() {
   try {
+    console.log(`使用数据库路径: ${dbPath}`);
     db = await open({
-      filename: join(__dirname, 'database.sqlite'),
+      filename: dbPath,
       driver: sqlite3.Database
     });
 
